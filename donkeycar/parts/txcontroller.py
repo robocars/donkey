@@ -59,6 +59,14 @@ class Txserial():
 
         '''
         TODO par line to extract throttle, steering and freq
+        format is <throttle_pwm>,<steering_pwm>,<freq_pwm>
+        throttle_pwm and steering_pwm are in us
+        freq_pwm is in Hz.
+        Should we normalize here ?
+        (1/freq_pwm)*1000000 -> pwm_period
+        throttle = ((throttle_pwm-(pwm_period/2))/(pwm_period/2)
+        steering = ((steering_pwm-(pwm_period/2))/(pwm_period/2)
+        for sure, filtering is needed for throttle (we know that reverse throttle is not usefull, we can implement a simple threshold)
         '''
 
         return throttle_tx, steering_tx, freq_tx
@@ -72,7 +80,7 @@ class TXController(object):
     def __init__(self, poll_delay=0.0,
                  max_throttle=1.0,
                  steering_scale=1.0,
-                 throttle_scale=-1.0,
+                 throttle_scale=1.0,
                  auto_record_on_throttle=True,
                  verbose = False
                  ):
