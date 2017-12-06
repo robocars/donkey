@@ -22,7 +22,7 @@ from donkeycar.parts.transform import Lambda
 from donkeycar.parts.keras import KerasCategorical
 from donkeycar.parts.actuator import PCA9685, PWMSteering, PWMThrottle
 from donkeycar.parts.datastore import TubHandler, TubGroup
-from donkeycar.parts.controller import LocalWebController, JoystickController
+from donkeycar.parts.controller import LocalWebController, JoystickController, TxController
 
 
 def drive(cfg, model_path=None, use_joystick=False):
@@ -60,6 +60,8 @@ def drive(cfg, model_path=None, use_joystick=False):
                                  btn_toggle_const_throttle = cfg.JOYSTICK_TOGGLE_CONSTANT_THROTTLE_BUTTON,
                                  verbose = cfg.JOYSTICK_VERBOSE
                                  )
+    elif use_tx or cfg.USE_TX:
+        ctr = TxController()
     else:        
         #This web controller will create a web server that is capable
         #of managing steering, throttle, and modes, and more.
