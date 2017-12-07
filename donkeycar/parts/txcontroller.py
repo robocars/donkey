@@ -60,7 +60,7 @@ class Txserial():
         pressed, or released. axis_val will be a float from -1 to +1. button and axis will 
         be the string label determined by the axis map in init.
         '''
-        throttle_tx, steering_tx, freq_tx = map(int,self.ser.readline().decode('utf-8').split(','))
+        steering_tx, throttle_tx, freq_tx = map(int,self.ser.readline().decode('utf-8').split(','))
 
         return throttle_tx, steering_tx, freq_tx
 
@@ -128,7 +128,8 @@ class TxController(object):
                 throttle = 0
             self.on_throttle_changes()
             angle = map_range(steering_tx, 800, 2000, -1, 1)
-
+            print("throttle_tx : "+str(throttle_tx)+" -> throttle : "+str(throttle))            
+            print("steering_tx : "+str(steering_tx)+" -> angle : "+str(angle))
             time.sleep(self.poll_delay)
 
     def run_threaded(self, img_arr=None):
