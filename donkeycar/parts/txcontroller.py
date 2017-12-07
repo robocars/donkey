@@ -72,6 +72,7 @@ class TxController(object):
         self.poll_delay = poll_delay
         self.running = True
         self.max_throttle = max_throttle
+        self.throttle_tx_thresh = throttle_tx_thresh
         self.recording = False
         self.auto_record_on_throttle = auto_record_on_throttle
         self.tx = None
@@ -119,7 +120,7 @@ class TxController(object):
 
     def run_threaded(self, img_arr=None):
         self.img_arr = img_arr
-        return self.steering, self.throttle, self.mode, self.recording
+        return self.angle, self.throttle, self.mode, self.recording
 
     def run(self, img_arr=None):
         raise Exception("We expect for this part to be run with the threaded=True argument.")
