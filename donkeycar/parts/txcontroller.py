@@ -74,7 +74,7 @@ class TxController(object):
                  max_throttle=1.0,
                  steering_scale=1.0,
                  throttle_scale=1.0,
-                 throttle_tx_thresh=1460,
+                 throttle_tx_thresh=1520,
                  auto_record_on_throttle=True,
                  verbose = False
                  ):
@@ -123,13 +123,13 @@ class TxController(object):
         while self.running:
             throttle_tx, steering_tx, freq_tx = self.tx.poll()
             if throttle_tx > self.throttle_tx_thresh:
-                throttle = map_range(throttle_tx, 900, 2110, 0, 1)
+                self.throttle = map_range(throttle_tx, 900, 2110, 0, 1)
             else:
-                throttle = 0
+                self.throttle = 0
             self.on_throttle_changes()
-            angle = map_range(steering_tx, 800, 2000, -1, 1)
-            print("throttle_tx : "+str(throttle_tx)+" -> throttle : "+str(throttle))            
-            print("steering_tx : "+str(steering_tx)+" -> angle : "+str(angle))
+            self.angle = map_range(steering_tx, 800, 2000, -1, 1)
+            print("throttle_tx : "+str(throttle_tx)+" -> throttle : "+str(self.throttle))            
+            print("steering_tx : "+str(steering_tx)+" -> angle : "+str(self.angle))
             time.sleep(self.poll_delay)
 
     def run_threaded(self, img_arr=None):
