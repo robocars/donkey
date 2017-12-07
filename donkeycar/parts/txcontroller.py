@@ -109,7 +109,7 @@ class TxController(object):
 
         while self.running:
             throttle_tx, steering_tx, freq_tx = self.tx.poll()
-            if throttle_tx > throttle_tx_thresh:
+            if throttle_tx > self.throttle_tx_thresh:
                 throttle = dk.utils.map_range(throttle_tx, 900, 2110, 0, 1)
             else:
                 throttle = 0
