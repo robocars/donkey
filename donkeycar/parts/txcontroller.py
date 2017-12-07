@@ -16,23 +16,21 @@ import array
 import time
 import struct
 from threading import Thread
+import donkeycar as dk
 import serial
-
-#import for syntactical ease
-from donkeycar.parts.web_controller.web import LocalWebController
 
 class Txserial():
     '''
     An interface to a Tx through serial link
     '''
     def __init__(self):
-        self.ser = null
+        self.ser = None
 
     def init(self):
         # Open serial link
-        seld.ser = serial.Serial(
+        self.ser = serial.Serial(
               
-               port='/dev/ttyAMA0',
+               port='/dev/serial0',
                baudrate = 115200,
                parity=serial.PARITY_NONE,
                stopbits=serial.STOPBITS_ONE,
@@ -49,24 +47,12 @@ class Txserial():
         pressed, or released. axis_val will be a float from -1 to +1. button and axis will 
         be the string label determined by the axis map in init.
         '''
-        throttle_tx, steering_tx, freq_tx = map(int,self.ser.readline().split(','));
-
-        '''
-        TODO par line to extract throttle, steering and freq
-        format is <throttle_pwm>,<steering_pwm>,<freq_pwm>
-        throttle_pwm and steering_pwm are in us
-        freq_pwm is in Hz.
-        Should we normalize here ?
-        (1/freq_pwm)*1000000 -> pwm_period
-        throttle = ((throttle_pwm-(pwm_period/2))/(pwm_period/2)
-        steering = ((steering_pwm-(pwm_period/2))/(pwm_period/2)
-        for sure, filtering is needed for throttle (we know that reverse throttle is not usefull, we can implement a simple threshold)
-        '''
+        throttle_tx, steering_tx, freq_tx = map(int,self.ser.readline().decode('utf-8').split(','))
 
         return throttle_tx, steering_tx, freq_tx
 
 
-class TXController(object):
+class TxController(object):
     '''
     Tx client using access to local serial input
     '''
@@ -75,6 +61,7 @@ class TXController(object):
                  max_throttle=1.0,
                  steering_scale=1.0,
                  throttle_scale=1.0,
+                 throttle_tx_thresh=1460,
                  auto_record_on_throttle=True,
                  verbose = False
                  ):
@@ -121,12 +108,13 @@ class TXController(object):
 
         while self.running:
             throttle_tx, steering_tx, freq_tx = self.tx.poll()
-            print("Throttle: "+str(throttle_tx)+" Steering: "+str(steering_tx))
-            '''
-            TODO : map throttle and steering which are PWM data into ratio.
-            then update self.steering and self.throttle.
-            If throttle change, call on_throttle_changes
-            '''
+            if (throttle_tx > throttle_tx_thresh) {
+                throttle = dk.utils.map_range(throttle_tx, 900, 2110, 0, 1)
+            } else {
+                throttle = 0;
+            }
+            self.on_throttle_changes()
+            angle = dk.utils.map_range(steering_tx, 800, 2000, -1, 1)
 
             time.sleep(self.poll_delay)
 

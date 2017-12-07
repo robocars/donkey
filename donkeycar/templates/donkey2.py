@@ -25,7 +25,7 @@ from donkeycar.parts.datastore import TubHandler, TubGroup
 from donkeycar.parts.controller import LocalWebController, JoystickController, TxController
 
 
-def drive(cfg, model_path=None, use_joystick=False):
+def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
     '''
     Start the drive loop
     Each part runs as a job in the Vehicle loop, calling either
@@ -188,7 +188,7 @@ if __name__ == '__main__':
     cfg = dk.load_config()
 
     if args['drive']:
-        drive(cfg, model_path=args['--model'], use_joystick=args['--js'])
+        drive(cfg, model_path=args['--model'], use_joystick=args['--js'], use_tx=args['--tx'])
 
     elif args['train']:
         tub = args['--tub']
