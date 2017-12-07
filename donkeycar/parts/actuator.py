@@ -48,7 +48,7 @@ class PWMSteering:
         pulse = dk.utils.map_range(angle,
                                 self.LEFT_ANGLE, self.RIGHT_ANGLE,
                                 self.left_pulse, self.right_pulse)
-        printf ("PWMSteering pulse="+str(pulse))
+        print ("PWMSteering pulse="+str(pulse))
         self.controller.set_pulse(pulse)
 
     def shutdown(self):
