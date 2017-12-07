@@ -19,6 +19,19 @@ from threading import Thread
 import donkeycar as dk
 import serial
 
+
+def map_range(x, X_min, X_max, Y_min, Y_max):
+    ''' 
+    Linear mapping between two ranges of values 
+    '''
+    X_range = X_max - X_min
+    Y_range = Y_max - Y_min
+    XY_ratio = X_range/Y_range
+
+    y = ((x-X_min) / XY_ratio + Y_min)
+
+    return y
+
 class Txserial():
     '''
     An interface to a Tx through serial link
@@ -110,11 +123,11 @@ class TxController(object):
         while self.running:
             throttle_tx, steering_tx, freq_tx = self.tx.poll()
             if throttle_tx > self.throttle_tx_thresh:
-                throttle = dk.utils.map_range(throttle_tx, 900, 2110, 0, 1)
+                throttle = map_range(throttle_tx, 900, 2110, 0, 1)
             else:
                 throttle = 0
             self.on_throttle_changes()
-            angle = dk.utils.map_range(steering_tx, 800, 2000, -1, 1)
+            angle = map_range(steering_tx, 800, 2000, -1, 1)
 
             time.sleep(self.poll_delay)
 
