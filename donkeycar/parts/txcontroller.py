@@ -33,15 +33,13 @@ class Txserial():
         seld.ser = serial.Serial(
               
                port='/dev/ttyAMA0',
-               baudrate = 9600,
+               baudrate = 115200,
                parity=serial.PARITY_NONE,
                stopbits=serial.STOPBITS_ONE,
                bytesize=serial.EIGHTBITS,
                timeout=1
         )
-        '''
-        Add a check on received values 
-        '''
+    
         return True
 
     def poll(self):
@@ -51,11 +49,7 @@ class Txserial():
         pressed, or released. axis_val will be a float from -1 to +1. button and axis will 
         be the string label determined by the axis map in init.
         '''
-        throttle_tx = None
-        steering_tx = None
-        freq_tx = None
-
-        x=self.ser.readline()
+        throttle_tx, steering_tx, freq_tx = map(int,self.ser.readline().split(','));
 
         '''
         TODO par line to extract throttle, steering and freq
@@ -127,7 +121,7 @@ class TXController(object):
 
         while self.running:
             throttle_tx, steering_tx, freq_tx = self.tx.poll()
-
+            print("Throttle: "+str(throttle_tx)+" Steering: "+str(steering_tx))
             '''
             TODO : map throttle and steering which are PWM data into ratio.
             then update self.steering and self.throttle.
