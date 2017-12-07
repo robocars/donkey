@@ -84,11 +84,12 @@ class PWMThrottle:
             pulse = dk.utils.map_range(throttle,
                                     0, self.MAX_THROTTLE, 
                                     self.zero_pulse, self.max_pulse)
-            print("PWMThrottle pulse="+str(pulse))
+            print("PWMThrottle > pulse="+str(pulse))
         else:
             pulse = dk.utils.map_range(throttle,
                                     self.MIN_THROTTLE, 0, 
                                     self.min_pulse, self.zero_pulse)
+            print("PWMThrottle < pulse="+str(pulse))
 
         self.controller.set_pulse(pulse)
         
