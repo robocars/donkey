@@ -71,9 +71,10 @@ class TxController(object):
     '''
 
     def __init__(self, poll_delay=0.0,
-                 max_throttle=1.0,
-                 steering_scale=1.0,
-                 throttle_scale=1.0,
+                 throttle_tx_min=900,
+                 throttle_tx_max=2110,
+                 steering_tx_min=800,
+                 steering_tx_max=2000,
                  throttle_tx_thresh=1520,
                  auto_record_on_throttle=True,
                  verbose = False
@@ -84,8 +85,12 @@ class TxController(object):
         self.mode = 'user'
         self.poll_delay = poll_delay
         self.running = True
-        self.max_throttle = max_throttle
         self.throttle_tx_thresh = throttle_tx_thresh
+        self.throttle_tx_min = throttle_tx_min
+        self.throttle_tx_max = throttle_tx_max
+        self.steering_tx_min = steering_tx_min
+        self.steering_tx_max = steering_tx_max
+        
         self.recording = False
         self.auto_record_on_throttle = auto_record_on_throttle
         self.tx = None
@@ -123,13 +128,13 @@ class TxController(object):
         while self.running:
             throttle_tx, steering_tx, freq_tx = self.tx.poll()
             if throttle_tx > self.throttle_tx_thresh:
-                self.throttle = map_range(throttle_tx, 900, 2110, 0, 1)
+                self.throttle = map_range(throttle_tx, self.throttle_tx_min, self.throttle_tx_max, 0, 1)
             else:
                 self.throttle = 0
             self.on_throttle_changes()
-            self.angle = map_range(steering_tx, 800, 2000, -1, 1)
-            print("throttle_tx : "+str(throttle_tx)+" -> throttle : "+str(self.throttle))            
-            print("steering_tx : "+str(steering_tx)+" -> angle : "+str(self.angle))
+            self.angle = map_range(steering_tx, self.steering_tx_min, self.steering_tx_max, -1, 1)
+            if self.verbose:
+                print("throttle_tx : "+str(throttle_tx)+" -> throttle : "+str(self.throttle)+"steering_tx : "+str(steering_tx)+" -> angle : "+str(self.angle))
             time.sleep(self.poll_delay)
 
     def run_threaded(self, img_arr=None):

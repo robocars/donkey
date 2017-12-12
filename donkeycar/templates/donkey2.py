@@ -3,7 +3,7 @@
 Scripts to drive a donkey 2 car and train a model for it. 
 
 Usage:
-    manage.py (drive) [--model=<model>] [--js]
+    manage.py (drive) [--model=<model>] [--js|--rx]
     manage.py (train) [--tub=<tub1,tub2,..tubn>]  (--model=<model>) [--base_model=<base_model>] [--no_cache]
 
 Options:
@@ -60,8 +60,14 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
                                  btn_toggle_const_throttle = cfg.JOYSTICK_TOGGLE_CONSTANT_THROTTLE_BUTTON,
                                  verbose = cfg.JOYSTICK_VERBOSE
                                  )
-    elif use_tx or cfg.USE_TX:
-        ctr = TxController()
+    elif use_tx or cfg.USE_TX_AS_DEFAULT:
+        ctr = TxController(throttle_tx_min = cfg.TX_THROTTLE_MIN,
+                           throttle_tx_max = cfg.TX_THROTTLE_MAX,
+                           steering_tx_min = cfg.TX_STEERING_MIN,
+                           steering_tx_max = cfg.TX_STEERING_MAX,
+                           throttle_tx_thresh = cfg.TX_THROTTLE_TRESH,
+                           verbose = cfg.TX_VERBOSE
+                           )
     else:        
         #This web controller will create a web server that is capable
         #of managing steering, throttle, and modes, and more.
