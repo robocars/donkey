@@ -7,7 +7,7 @@ Created on Wen Dec 06 15:29:44 2017
 
 txwcontroller.py
 
- 
+
 """
 
 
@@ -17,12 +17,12 @@ import time
 import struct
 from threading import Thread
 import donkeycar as dk
-import serial
+#import serial
 
 
 def map_range(x, X_min, X_max, Y_min, Y_max):
-    ''' 
-    Linear mapping between two ranges of values 
+    '''
+    Linear mapping between two ranges of values
     '''
     X_range = X_max - X_min
     Y_range = Y_max - Y_min
@@ -42,7 +42,7 @@ class Txserial():
     def init(self):
         # Open serial link
         self.ser = serial.Serial(
-              
+
                port='/dev/serial0',
                baudrate = 115200,
                parity=serial.PARITY_NONE,
@@ -50,14 +50,14 @@ class Txserial():
                bytesize=serial.EIGHTBITS,
                timeout=1
         )
-    
+
         return True
 
     def poll(self):
         '''
         query the state of the joystick, returns button which was pressed, if any,
-        and axis which was moved, if any. button_state will be None, 1, or 0 if no changes, 
-        pressed, or released. axis_val will be a float from -1 to +1. button and axis will 
+        and axis which was moved, if any. button_state will be None, 1, or 0 if no changes,
+        pressed, or released. axis_val will be a float from -1 to +1. button and axis will
         be the string label determined by the axis map in init.
         '''
         steering_tx, throttle_tx, freq_tx = map(int,self.ser.readline().decode('utf-8').split(','))
@@ -90,7 +90,7 @@ class TxController(object):
         self.throttle_tx_max = throttle_tx_max
         self.steering_tx_min = steering_tx_min
         self.steering_tx_max = steering_tx_max
-        
+
         self.recording = False
         self.auto_record_on_throttle = auto_record_on_throttle
         self.tx = None
