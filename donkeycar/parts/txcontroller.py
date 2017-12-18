@@ -17,13 +17,18 @@ import time
 import struct
 from threading import Thread
 import donkeycar as dk
-import serial
-
+from sys import platform
+if platform != "darwin":
+    import serial
 
 def map_range(x, X_min, X_max, Y_min, Y_max):
     '''
     Linear mapping between two ranges of values
     '''
+    if (x<X_min):
+        x=X_min
+    if (x>X_max):
+        x=X_max
     X_range = X_max - X_min
     Y_range = Y_max - Y_min
     XY_ratio = X_range/Y_range
@@ -49,8 +54,7 @@ class Txserial():
                stopbits=serial.STOPBITS_ONE,
                bytesize=serial.EIGHTBITS,
                timeout=1
-        )
-
+        )        
         return True
 
     def poll(self):
@@ -62,6 +66,8 @@ class Txserial():
         '''
 
         steering_tx, throttle_tx, freq_tx = map(int,self.ser.readline().decode('utf-8').split(','))
+        if (steering_tx == -1):
+            return 0,384,60
 
         if self.ser.in_waiting > 24:
             print("Serial buffer overrun "+str(self.ser.in_waiting)+" ... flushing")

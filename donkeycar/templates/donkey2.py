@@ -25,6 +25,8 @@ from donkeycar.parts.datastore import TubHandler, TubGroup
 from donkeycar.parts.controller import LocalWebController, FPVWebController, JoystickController, TxController
 from donkeycar.parts.emergency import EmergencyController
 
+from sys import platform
+
 def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
     '''
     Start the drive loop
@@ -38,8 +40,10 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
 
     # Initialize car
     V = dk.vehicle.Vehicle()
-    cam = PiCamera(resolution=cfg.CAMERA_RESOLUTION)
-    V.add(cam, outputs=['cam/image_array'], threaded=True)
+
+    if platform != "darwin":
+        cam = PiCamera(resolution=cfg.CAMERA_RESOLUTION)
+        V.add(cam, outputs=['cam/image_array'], threaded=True)
 
     if use_joystick or cfg.USE_JOYSTICK_AS_DEFAULT:
         # modify max_throttle closer to 1.0 to have more power
