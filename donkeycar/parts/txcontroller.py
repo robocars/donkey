@@ -60,6 +60,10 @@ class Txserial():
         pressed, or released. axis_val will be a float from -1 to +1. button and axis will
         be the string label determined by the axis map in init.
         '''
+        if self.ser.in_waiting > 30:
+            print("Serial buffer overrun "+str(self.ser.in_waiting)+" ... flushing")
+            self.ser.reset_input_buffer()
+
         steering_tx, throttle_tx, freq_tx = map(int,self.ser.readline().decode('utf-8').split(','))
 
         return throttle_tx, steering_tx, freq_tx
