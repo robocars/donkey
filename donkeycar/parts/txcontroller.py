@@ -67,6 +67,7 @@ class Txserial():
 
         steering_tx, throttle_tx, freq_tx = map(int,self.ser.readline().decode('utf-8').split(','))
         if (steering_tx == -1):
+            print("No RTx signal , forcing idle position")
             return 0,384,60
 
         if self.ser.in_waiting > 24:
@@ -82,10 +83,10 @@ class TxController(object):
     '''
 
     def __init__(self, poll_delay=0.0,
-                 throttle_tx_min=900,
-                 throttle_tx_max=2110,
-                 steering_tx_min=800,
-                 steering_tx_max=2000,
+                 throttle_tx_min=913,
+                 throttle_tx_max=2111,
+                 steering_tx_min=955,
+                 steering_tx_max=2085,
                  throttle_tx_thresh=1520,
                  auto_record_on_throttle=True,
                  verbose = False

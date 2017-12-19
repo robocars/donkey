@@ -142,10 +142,10 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
     throttle = PWMThrottle(controller=throttle_controller,
                            max_pulse=cfg.THROTTLE_FORWARD_PWM,
                            zero_pulse=cfg.THROTTLE_STOPPED_PWM,
-                           min_pulse=cfg.THROTTLE_REVERSE_PWM, mode=['user/mode'])
+                           min_pulse=cfg.THROTTLE_REVERSE_PWM)
 
     V.add(steering, inputs=['angle'])
-    V.add(throttle, inputs=['throttle'])
+    V.add(throttle, inputs=['throttle', 'user/mode'])
 
     # add tub to save data
     inputs = ['cam/image_array', 'user/angle', 'user/throttle', 'user/mode']
