@@ -18,6 +18,7 @@ import struct
 from threading import Thread
 import donkeycar as dk
 from sys import platform
+
 if platform != "darwin":
     import serial
 
@@ -64,15 +65,21 @@ class Txserial():
         pressed, or released. axis_val will be a float from -1 to +1. button and axis will
         be the string label determined by the axis map in init.
         '''
+        steering_tx = 1500
+        throttle_tx = 0
+        freq_tx = 60
+        msg=self.ser.readline().decode('utf-8')
+        try:
+            steering_tx, throttle_tx, freq_tx = map(int,msg.split(','))
+            if (steering_tx == -1):
+                print("No RTx signal , forcing idle position")
+                return 0,1500,60
 
-        steering_tx, throttle_tx, freq_tx = map(int,self.ser.readline().decode('utf-8').split(','))
-        if (steering_tx == -1):
-            print("No RTx signal , forcing idle position")
-            return 0,384,60
-
-        if self.ser.in_waiting > 24:
-            print("Serial buffer overrun "+str(self.ser.in_waiting)+" ... flushing")
-            self.ser.reset_input_buffer()
+            if self.ser.in_waiting > 24:
+                print("Serial buffer overrun "+str(self.ser.in_waiting)+" ... flushing")
+                self.ser.reset_input_buffer()
+        except:
+            print("Exception parsing "+str(msg))
 
         return throttle_tx, steering_tx, freq_tx
 
