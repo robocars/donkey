@@ -74,7 +74,8 @@ class PWMThrottle:
         self.max_pulse = max_pulse
         self.min_pulse = min_pulse
         self.zero_pulse = zero_pulse
-        
+        self.mode = mode
+        self.kick = [410,410,410,410,410,410,410,410,410,410,410,410,410,410,410,410,410,410]
         #send zero pulse to calibrate ESC
         self.controller.set_pulse(self.zero_pulse)
         time.sleep(1)
@@ -85,16 +86,19 @@ class PWMThrottle:
             pulse = dk.utils.map_range(throttle,
                                     0, self.MAX_THROTTLE, 
                                     self.zero_pulse, self.max_pulse)
- #           print("PWMThrottle > pulse="+str(pulse))
+# Motor cann not start a too low throttle, kick it for the first cycles             
+            if len(self.kick)>0:
+                pulse = self.kick.pop()
+
+# Ensure thottle order would not go below a limit (risk of motor shutdown)
+            if self.mode != "user" and pulse < 395:
+                pulse = 395
         else:
             pulse = dk.utils.map_range(throttle,
                                     self.MIN_THROTTLE, 0, 
                                     self.min_pulse, self.zero_pulse)
-#           print("PWMThrottle < pulse="+str(pulse))
 
-        if (mode != "user" and pulse < 395):
-            pulse = 395
-
+#        print("PWMThrottle pulse="+str(pulse))
         self.controller.set_pulse(pulse)
         
     def shutdown(self):
