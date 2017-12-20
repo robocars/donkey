@@ -19,6 +19,9 @@ from threading import Thread
 import donkeycar as dk
 from sys import platform
 
+import logging
+logger = logging.getLogger('donkey.txctrl')
+
 if platform != "darwin":
     import serial
 
@@ -55,7 +58,8 @@ class Txserial():
                stopbits=serial.STOPBITS_ONE,
                bytesize=serial.EIGHTBITS,
                timeout=1
-        )        
+        )
+        logger.info('/dev/serial0 initialized')        
         return True
 
     def poll(self):
@@ -68,18 +72,20 @@ class Txserial():
         steering_tx = 1500
         throttle_tx = 0
         freq_tx = 60
-        msg=self.ser.readline().decode('utf-8')
         try:
+            msg=self.ser.readline().decode('utf-8')
+            logger.info('Polling serial : {} {}'.format(msg.strip(),len(msg)))
             steering_tx, throttle_tx, freq_tx = map(int,msg.split(','))
+            logger.info('steering_tx= {:05.0f} throttle_tx= {:05.0f} freq_tx= {:02.0f}'.format(steering_tx, throttle_tx, freq_tx))
             if (steering_tx == -1):
-                print("No RTx signal , forcing idle position")
+                logger.info('No Rx signal , forcing idle position')
                 return 0,1500,60
 
             if self.ser.in_waiting > 24:
-                print("Serial buffer overrun "+str(self.ser.in_waiting)+" ... flushing")
+                logger.info('Serial buffer overrun {} ... flushing'.format(str(self.ser.in_waiting)))
                 self.ser.reset_input_buffer()
         except:
-            print("Exception parsing "+str(msg))
+            logger.info('Exception while parsing msg')
 
         return throttle_tx, steering_tx, freq_tx
 
@@ -147,13 +153,12 @@ class TxController(object):
         while self.running:
             throttle_tx, steering_tx, freq_tx = self.tx.poll()
             if throttle_tx > self.throttle_tx_thresh:
-                self.throttle = map_range(throttle_tx, self.throttle_tx_min, self.throttle_tx_max, 0, 1)
+                self.throttle = map_range(throttle_tx, self.throttle_tx_min, self.throttle_tx_max, -1, 1)
             else:
                 self.throttle = 0
             self.on_throttle_changes()
             self.angle = map_range(steering_tx, self.steering_tx_min, self.steering_tx_max, -1, 1)
-            if self.verbose:
-                print("throttle_tx : "+str(throttle_tx)+" -> throttle : "+str(self.throttle)+"steering_tx : "+str(steering_tx)+" -> angle : "+str(self.angle))
+            logger.info('angle= {:01.2f} throttle= {:01.2f}'.format (self.angle, self.throttle))
             time.sleep(self.poll_delay)
 
     def run_threaded(self, img_arr=None):

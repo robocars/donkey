@@ -8,7 +8,9 @@ import time
 
 import donkeycar as dk
 
-        
+import logging
+logger = logging.getLogger('donkey.actuator')
+
 class PCA9685:
     ''' 
     PWM motor controler using PCA9685 boards. 
@@ -42,13 +44,14 @@ class PWMSteering:
         self.left_pulse = left_pulse
         self.right_pulse = right_pulse
 
-
     def run(self, angle):
         #map absolute angle to angle that vehicle can implement.
+        logger.info('Output angle order= {:01.2f}'.format(angle))
         pulse = dk.utils.map_range(angle,
                                 self.LEFT_ANGLE, self.RIGHT_ANGLE,
                                 self.left_pulse, self.right_pulse)
 #        print ("PWMSteering pulse="+str(pulse))
+        logger.info('Output angle pulse= {:03.0f}'.format(pulse))
         self.controller.set_pulse(pulse)
 
     def shutdown(self):
@@ -81,29 +84,32 @@ class PWMThrottle:
 
     def reloadKick(self):
         self.kick = [410,410,410,410]
-        
+        logger.info('Kicker reloaded')
+
     def run(self, throttle, mode):
         if self.mode == "user" and mode != "user":
             self.reloadKick()
         self.mode = mode
 
+        logger.info('Output throttle order= {:01.2f}'.format(throttle))
         if throttle > 0:
             pulse = dk.utils.map_range(throttle,
                                     0, self.MAX_THROTTLE, 
                                     self.zero_pulse, self.max_pulse)
 # Motor cann not start a too low throttle, kick it for the first cycles             
             if len(self.kick)>0:
+                logger.info('Kicker active')
                 pulse = self.kick.pop()
 
 # Ensure thottle order would not go below a limit (risk of motor shutdown)
             if self.mode != "user" and pulse < 395:
-                print("PWMThrottle order too low "+str(pulse))
+                logger.info('PWMThrottle order too low')
                 pulse = 395
         else:
             pulse = dk.utils.map_range(throttle,
                                     self.MIN_THROTTLE, 0, 
                                     self.min_pulse, self.zero_pulse)
-
+        logger.info('Output throttle pulse= {:03.0f}'.format(pulse))
 #        print("PWMThrottle pulse="+str(pulse))
         self.controller.set_pulse(pulse)
         
