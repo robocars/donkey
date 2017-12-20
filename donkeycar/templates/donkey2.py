@@ -12,6 +12,23 @@ Options:
     --js             Use physical joystick.
 """
 import os
+import logging
+# set up logging to file - see previous section for more details
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s.%(msecs)03d %(name)-12s %(levelname)-8s %(message)s',
+                    datefmt='%m-%d %H:%M:%S',
+                    filename='/tmp/donkey.log',
+                    filemode='w')
+# define a Handler which writes INFO messages or higher to the sys.stderr
+console = logging.StreamHandler()
+console.setLevel(logging.ERROR)
+# set a format which is simpler for console use
+formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
+# tell the handler to use this format
+console.setFormatter(formatter)
+# add the handler to the root logger
+logging.getLogger('').addHandler(console)
+
 from docopt import docopt
 
 import donkeycar as dk
@@ -134,6 +151,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
           outputs=['angle', 'throttle'])
 
     steering_controller = PCA9685(cfg.STEERING_CHANNEL)
+
     steering = PWMSteering(controller=steering_controller,
                            left_pulse=cfg.STEERING_LEFT_PWM,
                            right_pulse=cfg.STEERING_RIGHT_PWM)
