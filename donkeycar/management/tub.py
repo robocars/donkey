@@ -73,10 +73,12 @@ class TubApi(tornado.web.RequestHandler):
         self.data_path = data_path
 
     def image_path(self, tub_path, frame_id):
-        return os.path.join(tub_path, str(frame_id) + "_cam-image_array_.jpg")
+        #return os.path.join(tub_path, str(frame_id) + "_cam-image_array_.jpg")
+        return os.path.join(tub_path, '{:08d}_cam-image_array_.jpg'.format(frame_id))
 
     def record_path(self, tub_path, frame_id):
-        return os.path.join(tub_path, "record_" + frame_id + ".json")
+        #return os.path.join(tub_path, "record_" + frame_id + ".json")
+        return os.path.join(tub_path, 'record_{:08d}'.format(frame_id))
 
     def clips_of_tub(self, tub_path):
         seqs = [ int(f.split("_")[0]) for f in os.listdir(tub_path) if f.endswith('.jpg') ]

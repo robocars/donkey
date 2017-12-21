@@ -157,7 +157,7 @@ class TxController(object):
             else:
                 self.throttle = 0
             self.on_throttle_changes()
-            self.angle = map_range(steering_tx, self.steering_tx_min, self.steering_tx_max, -1, 1)
+            self.angle = 0-map_range(steering_tx, self.steering_tx_min, self.steering_tx_max, -1, 1)
             logger.info('angle= {:01.2f} throttle= {:01.2f}'.format (self.angle, self.throttle))
             time.sleep(self.poll_delay)
 
