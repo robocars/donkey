@@ -20,6 +20,8 @@ import requests
 import tornado.ioloop
 import tornado.web
 import tornado.gen
+import logging
+logger = logging.getLogger('donkey.webctrl')
 
 from ... import utils
 
@@ -95,7 +97,8 @@ class RemoteWebServer():
         throttle = float(data['throttle'])
         drive_mode = str(data['drive_mode'])
         recording = bool(data['recording'])
-        
+        logger.info('RemoteWebServer : drive_mode set to {}'.format(drive_mode))
+
         return angle, throttle, drive_mode, recording
     
     
@@ -142,6 +145,8 @@ class LocalWebController(tornado.web.Application):
         
     def run(self, img_arr=None):
         self.img_arr = img_arr
+        #logger.info('LocalWebServer : drive_mode set to {}'.format(self.mode))
+
         return self.angle, self.throttle, self.mode, self.recording
 
 
@@ -162,6 +167,7 @@ class DriveAPI(tornado.web.RequestHandler):
         self.application.throttle = data['throttle']
         self.application.mode = data['drive_mode']
         self.application.recording = data['recording']
+        logger.info('DriveAPI : drive_mode set to {}'.format(self.application.mode))
 
 
 class VideoAPI(tornado.web.RequestHandler):

@@ -17,7 +17,7 @@ import logging
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s.%(msecs)03d %(name)-12s %(levelname)-8s %(message)s',
                     datefmt='%m-%d %H:%M:%S',
-                    filename='/tmp/donkey.log',
+                    filename='data/donkey.log',
                     filemode='w')
 # define a Handler which writes INFO messages or higher to the sys.stderr
 console = logging.StreamHandler()
@@ -92,8 +92,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
         fpv = FPVWebController()
         V.add(fpv,
                 inputs=['cam/image_array'],
-                threaded=True)
-        
+                threaded=True)        
     else:        
         #This web controller will create a web server that is capable
         #of managing steering, throttle, and modes, and more.
