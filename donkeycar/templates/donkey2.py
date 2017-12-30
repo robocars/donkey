@@ -106,7 +106,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
     emergencyCtrl = EmergencyController()
 
     V.add(emergencyCtrl,
-          inputs=['cam/image_array', 'user/mode'],
+          inputs=['user/mode'],
           outputs=['user/mode'],
           threaded=True)
     # See if we should even run the pilot module.
@@ -165,8 +165,8 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
     V.add(throttle, inputs=['throttle', 'user/mode'])
 
     # add tub to save data
-    inputs = ['cam/image_array', 'user/angle', 'user/throttle', 'user/mode']
-    types = ['image_array', 'float', 'float', 'str']
+    inputs = ['cam/image_array', 'user/angle', 'user/throttle', 'user/mode', 'pilot/angle', 'pilot/throttle']
+    types = ['image_array', 'float', 'float', 'str', 'numpy.float32', 'numpy.float32']
 
     th = TubHandler(path=cfg.DATA_PATH)
     tub = th.new_tub_writer(inputs=inputs, types=types)

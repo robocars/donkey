@@ -32,6 +32,7 @@ class EmergencyController(object):
         self.socket = None
         self.running = True
         self.user_mode = "user"
+        self.emergencystop = False
         self.poll_delay = poll_delay
 
     def init_socket(self):
@@ -60,15 +61,16 @@ class EmergencyController(object):
                 break
             if ('STOP'==text):
                 print ("Get emergency signal :"+text)
-                if(self.requested_user_mode != "user"):
-                    print("STOP the vehicule !")
-                    self.user_mode="user"
+                print("STOP the vehicule !")
+                self.emergencystop = True
             time.sleep(self.poll_delay)
 
-    def run_threaded(self, img_arr=None, user_mode=None):
-        self.img_arr = img_arr
-        self.requested_user_mode = user_mode
-        return self.user_mode
+    def run_threaded(self, user_mode=None):
+        self.user_mode = user_mode
+        if (self.emergencystop == False):
+            return self.user_mode
+        else:
+            return "user"
 
     def run(self, img_arr=None, user_mode=None):
         raise Exception("We expect for this part to be run with the threaded=True argument.")
