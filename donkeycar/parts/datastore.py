@@ -18,6 +18,8 @@ import pandas as pd
 from PIL import Image
 from donkeycar import utils
 
+import logging
+logger = logging.getLogger('donkey.datastore')
 
 class OriginalWriter:
     """
@@ -238,7 +240,7 @@ class Tub(object):
                 json.dump(json_data, fp)
                 #print('wrote record:', json_data)
         except TypeError:
-            print('troubles with record:', json_data)
+            print('troubles with record:', path, json_data)
         except FileNotFoundError:
             raise
         except:
@@ -310,6 +312,9 @@ class Tub(object):
             if typ in ['str', 'float', 'int', 'boolean']:
                 json_data[key] = val
 
+            elif typ == 'numpy.float32':
+                json_data[key] = val.item()
+
             elif typ is 'image':
                 path = self.make_file_path(key)
                 val.save(path)
@@ -321,10 +326,15 @@ class Tub(object):
                 img.save(os.path.join(self.path, name))
                 json_data[key]=name
 
+            elif typ == None:
+                # Do nothing
+                continue
+
             else:
                 msg = 'Tub does not know what to do with this type {}'.format(typ)
                 raise TypeError(msg)
 
+        logger.info('write record ix {} '.format(str(self.current_ix)))
         self.write_json_record(json_data)
         return self.current_ix
 

@@ -47,6 +47,8 @@ class Txserial():
     '''
     def __init__(self):
         self.ser = None
+        self.lastLocalTs = 0
+        self.lastDistTs = 0;
 
     def init(self):
         # Open serial link
@@ -72,20 +74,28 @@ class Txserial():
         steering_tx = 1500
         throttle_tx = 0
         freq_tx = 60
+        ts = 0
         try:
-            msg=self.ser.readline().decode('utf-8')
-            logger.info('Polling serial : {} {}'.format(msg.strip(),len(msg)))
-            steering_tx, throttle_tx, freq_tx = map(int,msg.split(','))
-            logger.info('steering_tx= {:05.0f} throttle_tx= {:05.0f} freq_tx= {:02.0f}'.format(steering_tx, throttle_tx, freq_tx))
-            if (steering_tx == -1):
-                logger.info('No Rx signal , forcing idle position')
-                return 0,1500,60
-
-            if self.ser.in_waiting > 24:
-                logger.info('Serial buffer overrun {} ... flushing'.format(str(self.ser.in_waiting)))
+            if self.ser.in_waiting > 50:
+                logger.info('poll: Serial buffer overrun {} ... flushing'.format(str(self.ser.in_waiting)))
                 self.ser.reset_input_buffer()
+            msg=self.ser.readline().decode('utf-8')
+            ts, steering_tx, throttle_tx, freq_tx = map(int,msg.split(','))
+
         except:
-            logger.info('Exception while parsing msg')
+            logger.info('poll: Exception while parsing msg')
+
+        now=time.clock()*1000
+        logger.info('poll: {} {}'.format(msg.strip(),len(msg)))
+        if (steering_tx == -1):
+            logger.info('poll: No Rx signal , forcing idle position')
+            return 0,1500,60
+        if (ts-self.lastDistTs < 2*(now-self.lastLocalTs)):
+            logger.info('poll: underun dist {} local {}'.format(ts-self.lastDistTs, now-self.lastLocalTs))
+        self.lastLocalTs = now
+        self.lastDistTs = ts
+        logger.info('poll: ts {} steering_tx= {:05.0f} throttle_tx= {:05.0f} freq_tx= {:02.0f}'.format(ts, steering_tx, throttle_tx, freq_tx))
+
 
         return throttle_tx, steering_tx, freq_tx
 
