@@ -313,7 +313,10 @@ class Tub(object):
                 json_data[key] = val
 
             elif typ == 'numpy.float32':
-                json_data[key] = val.item()
+                if (val is not None):
+                    json_data[key] = val.item()
+                else:
+                    json_data[key] = 0
 
             elif typ is 'image':
                 path = self.make_file_path(key)
