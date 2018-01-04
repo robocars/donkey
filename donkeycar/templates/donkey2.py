@@ -36,7 +36,7 @@ import donkeycar as dk
 # import parts
 from donkeycar.parts.camera import PiCamera
 from donkeycar.parts.transform import Lambda
-from donkeycar.parts.keras import KerasCategorical
+from donkeycar.parts.keras import KerasCategorical, KerasLinear
 from donkeycar.parts.actuator import PCA9685, PWMSteering, PWMThrottle
 from donkeycar.parts.datastore import TubHandler, TubGroup
 from donkeycar.parts.controller import LocalWebController, FPVWebController, JoystickController, TxController
@@ -122,7 +122,8 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
 
     if not use_tx:
         # Run the pilot if the mode is not user and not Tx.
-        kl = KerasCategorical()
+        #kl = KerasCategorical()
+        kl = KerasLinear()
         if model_path:
             kl.load(model_path)
 
@@ -191,7 +192,8 @@ def train(cfg, tub_names, model_name, base_model=None):
         record['user/angle'] = dk.utils.linear_bin(record['user/angle'])
         return record
 
-    kl = KerasCategorical()
+    #kl = KerasCategorical()
+    kl = KerasLineart()
     print(base_model)
     if base_model is not None:
         base_model = os.path.expanduser(base_model)
