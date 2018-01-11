@@ -75,6 +75,7 @@ class Txserial():
         throttle_tx = 0
         freq_tx = 60
         ts = 0
+        msg=""
         try:
             if self.ser.in_waiting > 50:
                 logger.info('poll: Serial buffer overrun {} ... flushing'.format(str(self.ser.in_waiting)))
