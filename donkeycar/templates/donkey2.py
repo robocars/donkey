@@ -193,7 +193,7 @@ def train(cfg, tub_names, model_name, base_model=None):
         return record
 
     #kl = KerasCategorical()
-    kl = KerasLineart()
+    kl = KerasLinear()
     print(base_model)
     if base_model is not None:
         base_model = os.path.expanduser(base_model)
