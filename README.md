@@ -27,7 +27,7 @@ After building a Donkey2, here are the steps to start driving.
 
 install donkey
 ```
-git clone https://github.com/wroscoe/donkey donkeycar
+git clone https://github.com/robocars/donkey donkeycar
 pip install -e donkeycar
 ```
 
