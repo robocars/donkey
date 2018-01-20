@@ -13,3 +13,5 @@ site/*
 build
 .idea
 .vscode
+donkeyadmin/api/node_modules/*
+donkeyadmin/app/node_modules/*
