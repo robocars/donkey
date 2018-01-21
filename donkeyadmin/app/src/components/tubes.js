@@ -6,14 +6,22 @@ class Tubes extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tubes: []
+            tubes: [],
+            apiBaseUrl: ''
         }
     }
-    async componentWillMount() {
-        const tubes = await getTubes();
+    async loadTubes(baseUrl) {
+        const tubes = await getTubes(baseUrl);
         this.setState({
-            tubes
+            tubes,
+            apiBaseUrl: baseUrl
         });
+    }
+    async componentWillMount() {
+        await this.loadTubes(this.props.apiBaseUrl);
+    }
+    async componentWillReceiveProps(nextProps) {
+        await this.loadTubes(nextProps.apiBaseUrl);
     }
     render() {
         return (
@@ -21,7 +29,7 @@ class Tubes extends Component {
             <h1>Tubes</h1>
             <ul className="list-group">
             {(this.state.tubes || []).map((tub) => {
-                return <li className="list-group-item"><a href={`${config.apiBaseUrl}${tub.url}`}>{tub.name}</a></li>
+                return <li className="list-group-item"><a href={`${this.state.apiBaseUrl}${tub.url}`}>{tub.name}</a></li>
             })}
             </ul>
             </div>

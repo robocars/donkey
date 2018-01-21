@@ -1,8 +1,7 @@
-import config from '../config';
 const request = require('superagent');
 
-export const getTubes = async () => {
-    const resp = await request.get(`${config.apiBaseUrl}/tubes`);
+export const getTubes = async (baseUrl) => {
+    const resp = await request.get(`${baseUrl}/tubes`);
     return (resp || {}).body || [];
 }
 
