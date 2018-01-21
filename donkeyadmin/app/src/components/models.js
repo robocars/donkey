@@ -7,7 +7,8 @@ class Models extends Component {
         super(props);
         this.state = {
             models: [],
-            apiBaseUrl: ''
+            apiBaseUrl: '',
+            filename: 'Choose file'
         }
     }
     async loadModels(baseUrl) {
@@ -23,16 +24,38 @@ class Models extends Component {
     async componentWillReceiveProps(nextProps) {
         await this.loadModels(nextProps.apiBaseUrl);
     }
+    onFileChange() {
+        const self = this;
+        return (e) => {
+            self.setState({
+                filename: e.target.value
+            })
+        }
+    }
     render() {
         return (
             <div>
                 <h1>Models</h1>
-                <form action={`${this.state.apiBaseUrl}/models`} method="post" enctype="multipart/form-data">
-                <input type="file" name="model" /><input type="submit"/>
+                <form action={`${this.state.apiBaseUrl}/models`} method="post" encType="multipart/form-data" target="_blank">
+                    <div className="input-group mb-3">
+                        <div className="custom-file">
+                            <input type="file" className="custom-file-input" id="inputGroupFile02" name="model" onChange={this.onFileChange()}/>
+                            <label className="custom-file-label">{this.state.filename}</label>
+                        </div>
+                        <div className="input-group-append">
+                        <input type="submit" value="Upload" className="input-group-text"/>
+                        </div>
+                    </div>                   
+                    
                 </form>
                 <ul className="list-group">
-                {(this.state.models || []).map((model) => {
-                    return <li className="list-group-item"><a href={`${this.state.apiBaseUrl}${model.url}`}>{model.name}</a></li>
+                {(this.state.models || []).map((model, idx) => {
+                    return <li className="list-group-item" key={idx}>
+                    <div className="row">
+                        <div className="col-md-10"><span>{model.name}</span></div>
+                        <div className="col-md-2"><button type="button" class="btn btn-outline-primary">Drive</button></div>
+                    </div>
+                    </li>
                 })}
                 </ul>
             </div>

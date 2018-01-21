@@ -5,7 +5,13 @@ const config = require('config');
 const {promisify} = require('util');
 const multer = require('multer');
 
-const model_upload = multer({ dest: config.get('models.root') })
+const model_upload = multer({ storage: multer.diskStorage({
+        destination: config.get('models.root'),
+        filename: function (req, file, cb) {
+            cb(null, file.originalname)
+        }
+    }) 
+})
 
 const readdir = promisify(fs.readdir);
 

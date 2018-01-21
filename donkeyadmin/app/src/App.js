@@ -33,7 +33,12 @@ class App extends Component {
       <div className="App">
         <div className="container">
           <div className="row">
-            <label>API base url :</label><input type="text" onChange={this.onApiBaseUrlChange()} value={this.state.tempBaseUrl} onBlur={this.validateApiUrl()} />
+          <div className="input-group mb-3">
+            <input type="text" className="form-control" placeholder="API url" onChange={this.onApiBaseUrlChange()} value={this.state.tempBaseUrl} onBlur={this.validateApiUrl()} />
+            <div className="input-group-append">
+              <button type="button" className="btn btn-outline-primary" id="basic-addon2" onClick={this.validateApiUrl()}>Refresh</button>
+            </div>          
+            </div>
           </div>
           <div className="row">
             <div className="col-md-6">

@@ -28,8 +28,8 @@ class Tubes extends Component {
             <div>
             <h1>Tubes</h1>
             <ul className="list-group">
-            {(this.state.tubes || []).map((tub) => {
-                return <li className="list-group-item"><a href={`${this.state.apiBaseUrl}${tub.url}`}>{tub.name}</a></li>
+            {(this.state.tubes || []).map((tub, idx) => {
+                return <li className="list-group-item" key={idx}><a href={`${this.state.apiBaseUrl}${tub.url}`}>{tub.name}</a></li>
             })}
             </ul>
             </div>
