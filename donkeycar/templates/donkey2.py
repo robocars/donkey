@@ -34,7 +34,7 @@ from docopt import docopt
 import donkeycar as dk
 
 # import parts
-from donkeycar.parts.camera import PiCamera
+from donkeycar.parts.camera import Webcam
 from donkeycar.parts.transform import Lambda
 from donkeycar.parts.keras import KerasCategorical, KerasLinear
 from donkeycar.parts.actuator import PCA9685, PWMSteering, PWMThrottle
@@ -60,7 +60,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
     V = dk.vehicle.Vehicle()
 
     if platform != "darwin":
-        cam = PiCamera(resolution=cfg.CAMERA_RESOLUTION)
+        cam = Webcam(resolution=cfg.CAMERA_RESOLUTION)
         V.add(cam, outputs=['cam/image_array'], threaded=True)
 
     if use_joystick or cfg.USE_JOYSTICK_AS_DEFAULT:
