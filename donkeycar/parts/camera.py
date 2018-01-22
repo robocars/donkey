@@ -3,6 +3,7 @@ import time
 import numpy as np
 from PIL import Image
 import glob
+import cv2
 
 class BaseCamera:
 
@@ -68,12 +69,8 @@ class Webcam(BaseCamera):
 
         super().__init__()
 
-        pygame.init()
-        pygame.camera.init()
-        l = pygame.camera.list_cameras()
-        self.cam = pygame.camera.Camera(l[0], resolution, "RGB")
+        self.cam = cv2.VideoCapture(0)
         self.resolution = resolution
-        self.cam.start()
         self.framerate = framerate
 
         # initialize variable used to indicate
@@ -87,23 +84,21 @@ class Webcam(BaseCamera):
 
     def update(self):
         from datetime import datetime, timedelta
-        import pygame.image
+
         while self.on:
             start = datetime.now()
 
-            if self.cam.query_image():
-                # snapshot = self.cam.get_image()
-                # self.frame = list(pygame.image.tostring(snapshot, "RGB", False))
-                snapshot = self.cam.get_image()
-                snapshot1 = pygame.transform.scale(snapshot, self.resolution)
-                self.frame = pygame.surfarray.pixels3d(pygame.transform.rotate(pygame.transform.flip(snapshot1, True, False), 90))
+        ret, snapshot = self.cam.read()
+        if ret:
+            snapshot1 = cv2.cvtColor(snapshot, cv2.COLOR_BGR2RGB)
+            self.frame = cv2.resize(snapshot1,(160,120), interpolation = cv2.INTER_AREA)
 
-            stop = datetime.now()
-            s = 1 / self.framerate - (stop - start).total_seconds()
-            if s > 0:
-                time.sleep(s)
+        stop = datetime.now()
+        s = 1 / self.framerate - (stop - start).total_seconds()
+        if s > 0:
+            time.sleep(s)
 
-        self.cam.stop()
+        self.cam.release()
 
     def run_threaded(self):
         return self.frame
