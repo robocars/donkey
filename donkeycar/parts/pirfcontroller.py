@@ -143,13 +143,16 @@ class PiRfController(object):
             throttle_tx = self._throttlePwm.timeHigh
             steering_tx = self._steeringPwm.timeHigh
             freq_tx = 60
-            if throttle_tx > self.throttle_tx_thresh:
-                self.throttle = map_range(throttle_tx, self.throttle_tx_min, self.throttle_tx_max, -1, 1)
-            else:
-                self.throttle = 0
+#            if throttle_tx > self.throttle_tx_thresh:
+#                self.throttle = map_range(throttle_tx, self.throttle_tx_min, self.throttle_tx_max, -1, 1)
+#            else:
+#                self.throttle = 0
+            self.throttle = map_range(throttle_tx, self.throttle_tx_min, self.throttle_tx_max, -1, 1)
             self.on_throttle_changes()
             self.angle = map_range(steering_tx, self.steering_tx_min, self.steering_tx_max, -1, 1)
-            logger.info('angle= {:01.2f} throttle= {:01.2f}'.format (self.angle, self.throttle))
+            logger.info('angle= {:01.2f} throttle= {:01.2f}'.format(self.angle, self.throttle))
+            if self.verbose:
+                print('angle= {:01.2f} throttle= {:01.2f}'.format(self.angle, self.throttle))
             time.sleep(self.poll_delay)
 
     def run_threaded(self, img_arr=None):
