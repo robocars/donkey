@@ -70,7 +70,7 @@ class ThrottleInLine(object):
         self.verbose = verbose
         self.throttle_boost = 1
         self.running = True
-
+        self.img_arr = None
         
     def update(self):
         '''
