@@ -78,43 +78,44 @@ class ThrottleInLine(object):
         logger.info(".update")
 
         while self.running:
-            gray_image = cv2.cvtColor(self.img_arr, cv2.COLOR_RGB2GRAY)
-            hsv_image = cv2.cvtColor(self.img_arr, cv2.COLOR_RGB2HSV)
-            ilower_yellow = np.array([20, 100, 100], dtype = "uint8")
-            upper_yellow = np.array([30, 255, 255], dtype="uint8")
-            mask_yellow = cv2.inRange(hsv_image, lower_yellow, upper_yellow)
-            mask_white = cv2.inRange(gray_image, 200, 255)
-            mask_yw = cv2.bitwise_or(mask_white, mask_yellow)
-            mask_yw_image = cv2.bitwise_and(gray_image, mask_yw)
+            if (self.img_arr is not None):
+                gray_image = cv2.cvtColor(self.img_arr, cv2.COLOR_RGB2GRAY)
+                hsv_image = cv2.cvtColor(self.img_arr, cv2.COLOR_RGB2HSV)
+                ilower_yellow = np.array([20, 100, 100], dtype = "uint8")
+                upper_yellow = np.array([30, 255, 255], dtype="uint8")
+                mask_yellow = cv2.inRange(hsv_image, lower_yellow, upper_yellow)
+                mask_white = cv2.inRange(gray_image, 200, 255)
+                mask_yw = cv2.bitwise_or(mask_white, mask_yellow)
+                mask_yw_image = cv2.bitwise_and(gray_image, mask_yw)
 
-            kernel_size = 5
-            gauss_gray = cv2.gaussian_blur(mask_yw_image,kernel_size)
+                kernel_size = 5
+                gauss_gray = cv2.gaussian_blur(mask_yw_image,kernel_size)
 
-            low_threshold = 50
-            high_threshold = 150
-            canny_edges = cv2.canny(gauss_gray,low_threshold,high_threshold)
+                low_threshold = 50
+                high_threshold = 150
+                canny_edges = cv2.canny(gauss_gray,low_threshold,high_threshold)
 
-            imshape = self.img_arr.shape
-            lower_left = [imshape[1]/9,imshape[0]]
-            lower_right = [imshape[1]-imshape[1]/9,imshape[0]]
-            top_left = [imshape[1]/2-imshape[1]/8,imshape[0]/2+imshape[0]/10]
-            top_right = [imshape[1]/2+imshape[1]/8,imshape[0]/2+imshape[0]/10]
-            vertices = [np.array([lower_left,top_left,top_right,lower_right],dtype=np.int32)]
-            
-            roi_image = region_of_interest(canny_edges, vertices)
-            #rho and theta are the distance and angular resolution of the grid in Hough space
-            #same values as quiz
-            rho = 4
-            theta = np.pi/180
-            #threshold is minimum number of intersections in a grid for candidate line to go to output
-            threshold = 30
-            min_line_len = 100
-            max_line_gap = 180
-            #my hough values started closer to the values in the quiz, but got bumped up considerably for the challenge video
-            lines = hough_lines(roi_image, rho, theta, threshold, min_line_len, max_line_gap)
+                imshape = self.img_arr.shape
+                lower_left = [imshape[1]/9,imshape[0]]
+                lower_right = [imshape[1]-imshape[1]/9,imshape[0]]
+                top_left = [imshape[1]/2-imshape[1]/8,imshape[0]/2+imshape[0]/10]
+                top_right = [imshape[1]/2+imshape[1]/8,imshape[0]/2+imshape[0]/10]
+                vertices = [np.array([lower_left,top_left,top_right,lower_right],dtype=np.int32)]
+                
+                roi_image = region_of_interest(canny_edges, vertices)
+                #rho and theta are the distance and angular resolution of the grid in Hough space
+                #same values as quiz
+                rho = 4
+                theta = np.pi/180
+                #threshold is minimum number of intersections in a grid for candidate line to go to output
+                threshold = 30
+                min_line_len = 100
+                max_line_gap = 180
+                #my hough values started closer to the values in the quiz, but got bumped up considerably for the challenge video
+                lines = hough_lines(roi_image, rho, theta, threshold, min_line_len, max_line_gap)
 
-            for rho,theta in lines[0]:
-                logger.info('rho= {:01.5f} theta= {:01.5f}'.format (rho, theta))
+                for rho,theta in lines[0]:
+                    logger.info('rho= {:01.5f} theta= {:01.5f}'.format (rho, theta))
             time.sleep(self.poll_delay)
 
 
