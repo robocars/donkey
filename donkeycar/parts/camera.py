@@ -88,15 +88,15 @@ class Webcam(BaseCamera):
         while self.on:
             start = datetime.now()
 
-        ret, snapshot = self.cam.read()
-        if ret:
-            snapshot1 = cv2.cvtColor(snapshot, cv2.COLOR_BGR2RGB)
-            self.frame = cv2.resize(snapshot1,(160,120), interpolation = cv2.INTER_AREA)
+            ret, snapshot = self.cam.read()
+            if ret:
+                snapshot1 = cv2.cvtColor(snapshot, cv2.COLOR_BGR2RGB)
+                self.frame = cv2.resize(snapshot1,(160,120), interpolation = cv2.INTER_AREA)
 
-        stop = datetime.now()
-        s = 1 / self.framerate - (stop - start).total_seconds()
-        if s > 0:
-            time.sleep(s)
+            stop = datetime.now()
+            s = 1 / self.framerate - (stop - start).total_seconds()
+            if s > 0:
+                time.sleep(s)
 
         self.cam.release()
 
