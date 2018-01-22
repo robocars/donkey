@@ -69,6 +69,8 @@ class ThrottleInLine(object):
         self.poll_delay = poll_delay
         self.verbose = verbose
         self.throttle_boost = 1
+        self.running = True
+
         
     def init_throttle_in_line(self):
         return True
