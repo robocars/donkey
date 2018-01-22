@@ -34,7 +34,7 @@ from docopt import docopt
 import donkeycar as dk
 
 # import parts
-from donkeycar.parts.camera import Webcam
+from donkeycar.parts.camera import Webcam, PiCamera
 from donkeycar.parts.transform import Lambda
 from donkeycar.parts.keras import KerasCategorical, KerasLinear
 from donkeycar.parts.actuator import PCA9685, PWMSteering, PWMThrottle
@@ -58,9 +58,12 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
     # Initialize car
     V = dk.vehicle.Vehicle()
 
-    if platform != "darwin":
+    if cfg.USE_WEB_CAMERA:
         cam = Webcam(resolution=cfg.CAMERA_RESOLUTION)
-        V.add(cam, outputs=['cam/image_array'], threaded=True)
+    else:
+        cam = PiCamera(resolution=cfg.CAMERA_RESOLUTION)
+        
+    V.add(cam, outputs=['cam/image_array'], threaded=True)
 
     if use_joystick or cfg.USE_JOYSTICK_AS_DEFAULT:
         # modify max_throttle closer to 1.0 to have more power
@@ -150,20 +153,21 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
                   'pilot/angle', 'pilot/throttle'],
           outputs=['angle', 'throttle'])
 
-    steering_controller = PCA9685(cfg.STEERING_CHANNEL)
+    if cfg.USE_PWM_ACTUATOR:
+        steering_controller = PCA9685(cfg.STEERING_CHANNEL)
 
-    steering = PWMSteering(controller=steering_controller,
-                           left_pulse=cfg.STEERING_LEFT_PWM,
-                           right_pulse=cfg.STEERING_RIGHT_PWM)
+        steering = PWMSteering(controller=steering_controller,
+                            left_pulse=cfg.STEERING_LEFT_PWM,
+                            right_pulse=cfg.STEERING_RIGHT_PWM)
 
-    throttle_controller = PCA9685(cfg.THROTTLE_CHANNEL)
-    throttle = PWMThrottle(controller=throttle_controller,
-                           max_pulse=cfg.THROTTLE_FORWARD_PWM,
-                           zero_pulse=cfg.THROTTLE_STOPPED_PWM,
-                           min_pulse=cfg.THROTTLE_REVERSE_PWM)
+        throttle_controller = PCA9685(cfg.THROTTLE_CHANNEL)
+        throttle = PWMThrottle(controller=throttle_controller,
+                            max_pulse=cfg.THROTTLE_FORWARD_PWM,
+                            zero_pulse=cfg.THROTTLE_STOPPED_PWM,
+                            min_pulse=cfg.THROTTLE_REVERSE_PWM)
 
-    V.add(steering, inputs=['angle'])
-    V.add(throttle, inputs=['throttle', 'user/mode'])
+        V.add(steering, inputs=['angle'])
+        V.add(throttle, inputs=['throttle', 'user/mode'])
 
     # add tub to save data
     inputs = ['cam/image_array', 'user/angle', 'user/throttle', 'user/mode', 'pilot/angle', 'pilot/throttle']
