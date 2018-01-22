@@ -107,7 +107,8 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
     throttleinline = ThrottleInLine()
     V.add(throttleinline,
               inputs=['cam/image_array'],
-              outputs=['pilot/throttle_boost'])
+              outputs=['pilot/throttle_boost'],
+              threaded=True)
     emergencyCtrl = EmergencyController()
 
     V.add(emergencyCtrl,
