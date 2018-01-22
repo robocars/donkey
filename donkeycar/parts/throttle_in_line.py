@@ -72,18 +72,10 @@ class ThrottleInLine(object):
         self.running = True
 
         
-    def init_throttle_in_line(self):
-        return True
-        '''
-        '''
-
-
     def update(self):
         '''
         '''
         logger.info(".update")
-        while self.running and not self.init_tx():
-            time.sleep(5)
 
         while self.running:
             gray_image = cv2.cvtColor(self.img_arr, cv2.COLOR_RGB2GRAY)
