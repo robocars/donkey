@@ -1,4 +1,4 @@
 tubes:
-  root: '../..'
+  root: '/home/pi/d2/data'
 models:
-  root: '../..'
+  root: '/home/pi/models'
