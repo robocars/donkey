@@ -29,6 +29,8 @@ console.setFormatter(formatter)
 # add the handler to the root logger
 logging.getLogger('').addHandler(console)
 
+logger = logging.getLogger('donkey.manage')
+
 from docopt import docopt
 
 import donkeycar as dk
@@ -103,15 +105,17 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
         ctr = LocalWebController()
 
     V.add(ctr,
-          inputs=['cam/image_array'],
+          inputs=['cam/image_array', 'pilot/annoted_img'],
           outputs=['user/angle', 'user/throttle', 'user/mode', 'recording'],
           threaded=True)
 
-    throttleinline = ThrottleInLine()
-    V.add(throttleinline,
-              inputs=['cam/image_array'],
-              outputs=['pilot/throttle_boost'],
-              threaded=True)
+    if cfg.USE_THROTTLEINLINE:
+        throttleinline = ThrottleInLine(cfg.THROTTLEINLINE_ANGLE_MIN, cfg.THROTTLEINLINE_ANGLE_MAX)
+        V.add(throttleinline,
+                inputs=['cam/image_array'],
+                outputs=['pilot/throttle_boost', 'pilot/annoted_img'],
+                threaded=True)
+
     emergencyCtrl = EmergencyController()
 
     V.add(emergencyCtrl,
@@ -143,20 +147,24 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
     # Choose what inputs should change the car.
     def drive_mode(mode,
                    user_angle, user_throttle,
-                   pilot_angle, pilot_throttle):
+                   pilot_angle, pilot_throttle, throttle_boost):
         if mode == 'user':
             return user_angle, user_throttle
 
-        elif mode == 'local_angle':
-            return pilot_angle, user_throttle
-
         else:
-            return pilot_angle, pilot_throttle
+            if throttle_boost:
+                pilot_throttle = pilot_throttle*cfg.THROTTLEINLINE_BOOST_FACTOR
+                logger.info("Apply Boost")
+            if mode == 'drive_mode: local_angle':
+                return pilot_angle, user_throttle
+            else:
+                logger.info('drive_mode: Pilot return angle={:01.2f} throttle={:01.2f}'.format(pilot_angle, pilot_throttle))
+                return pilot_angle, pilot_throttle
 
     drive_mode_part = Lambda(drive_mode)
     V.add(drive_mode_part,
           inputs=['user/mode', 'user/angle', 'user/throttle',
-                  'pilot/angle', 'pilot/throttle'],
+                  'pilot/angle', 'pilot/throttle', 'pilot/throttle_boost'],
           outputs=['angle', 'throttle'])
 
     if cfg.USE_PWM_ACTUATOR:

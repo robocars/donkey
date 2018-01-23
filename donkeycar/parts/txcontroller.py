@@ -172,11 +172,11 @@ class TxController(object):
             logger.info('angle= {:01.2f} throttle= {:01.2f}'.format (self.angle, self.throttle))
             time.sleep(self.poll_delay)
 
-    def run_threaded(self, img_arr=None):
+    def run_threaded(self, img_arr=None, img_annoted=None):
         self.img_arr = img_arr
         return self.angle, self.throttle, self.mode, self.recording
 
-    def run(self, img_arr=None):
+    def run(self, img_arr=None, img_annoted=None):
         raise Exception("We expect for this part to be run with the threaded=True argument.")
         return False
 

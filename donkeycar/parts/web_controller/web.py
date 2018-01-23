@@ -139,12 +139,18 @@ class LocalWebController(tornado.web.Application):
         tornado.ioloop.IOLoop.instance().start()
 
 
-    def run_threaded(self, img_arr=None):
-        self.img_arr = img_arr
+    def run_threaded(self, img_arr=None, img_annoted=None):
+        if (img_annoted is not None):
+            self.img_arr = img_annoted
+        else:
+            self.img_arr = img_arr
         return self.angle, self.throttle, self.mode, self.recording
         
-    def run(self, img_arr=None):
-        self.img_arr = img_arr
+    def run(self, img_arr=None, img_annoted=None):
+        if (img_annoted is not None):
+            self.img_arr = img_annoted
+        else:
+            self.img_arr = img_arr
         #logger.info('LocalWebServer : drive_mode set to {}'.format(self.mode))
 
         return self.angle, self.throttle, self.mode, self.recording
