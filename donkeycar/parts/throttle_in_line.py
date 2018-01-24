@@ -124,23 +124,26 @@ def detectBoostCondition(img, angle_min, angle_max):
     canny_edges = canny(gauss_gray,low_threshold,high_threshold)
 
     imshape = img2.shape
-    lower_left = [0,90]
-    lower_right = [160,90]
+    lower_left = [0,110]
+    lower_right = [160,110]
     top_left = [0,20]
     top_right = [160,20]
-    vertices = [np.array([lower_left,top_left,top_right,lower_right],dtype=np.int32)]
+    top_top_left = [60,5]
+    top_top_right = [120,5]    
+    vertices = np.array([lower_left,top_left,top_top_left, top_top_right, top_right,lower_right],dtype=np.int32)
 
-    roi_image = region_of_interest(canny_edges, vertices)
+    roi_image = region_of_interest(canny_edges, [vertices])
     #rho and theta are the distance and angular resolution of the grid in Hough space
     #same values as quiz
     rho = 1
     theta = np.pi/45
     #threshold is minimum number of intersections in a grid for candidate line to go to output
-    threshold = 30
-    min_line_len = 40
+    threshold = 35
+    min_line_len = 50
     max_line_gap = 180
     #my hough values started closer to the values in the quiz, but got bumped up considerably for the challenge video
     lines = cv2.HoughLinesP(roi_image, rho, theta, threshold, np.array([]), minLineLength=min_line_len, maxLineGap=max_line_gap)
+    img2 = cv2.polylines(img2,[vertices.reshape((-1,1,2))],True,(0,255,255))
     if lines is not None:
         line_img = np.zeros((img2.shape[0], img2.shape[1], 3), dtype=np.uint8)
         draw_lines(line_img, lines)
@@ -149,6 +152,7 @@ def detectBoostCondition(img, angle_min, angle_max):
         angle2=False
         for idx, line in enumerate(lines):
             angle = GetAngleOfLineBetweenTwoPoints(line[0][0],line[0][1],line[0][2],line[0][3])
+            logger.info("Angle detected : {}".format(angle))
             #print(d[4]+" "+str(idx)+" "+str(angle))
             if (angle < angle_max and angle > angle_min):
                 angle1=True
@@ -160,6 +164,7 @@ def detectBoostCondition(img, angle_min, angle_max):
             if (angle > angle_max or angle < -angle_max):
                 angle1=False
                 angle2=False                
+        logger.info("Decision : {}".format(angle1 and angle2))
         return angle1 and angle2, annoted_img
     return False, annoted_img
 
