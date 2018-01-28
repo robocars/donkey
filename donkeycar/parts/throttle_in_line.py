@@ -19,12 +19,15 @@ import struct
 import numpy as np
 import cv2
 import math
+import copy
 
 from threading import Thread
 import donkeycar as dk
 from sys import platform
 import logging
 logger = logging.getLogger('donkey.tinline')
+
+print("OpenCV Version :"+str(cv2.__version__))
 
 def region_of_interest(img, vertices):
     """
@@ -104,7 +107,10 @@ def GetAngleOfLineBetweenTwoPoints(x1, y1,x2,y2):
 
 def detectBoostCondition(img, angle_min, angle_max):
 
-    annoted_img = img
+    #First, let's copy the picture to build an annoted one for viz purpose
+    annoted_img = copy.copy(img)
+
+    # Work colours and apply mask to ease extraction of lines
     img2=np.uint8(img)
     gray_image = cv2.cvtColor(img2, cv2.COLOR_RGB2GRAY)
     hsv_image = cv2.cvtColor(img2, cv2.COLOR_RGB2HSV)
@@ -115,14 +121,16 @@ def detectBoostCondition(img, angle_min, angle_max):
     mask_yw = cv2.bitwise_or(mask_white, mask_yellow)
     mask_yw_image = cv2.bitwise_and(gray_image, gray_image, mask_yw)
 
-
+    # Apply blur
     kernel_size = 5
     gauss_gray = gaussian_blur(mask_yw_image,kernel_size)
 
+    # Find edges
     low_threshold = 50
     high_threshold = 150
     canny_edges = canny(gauss_gray,low_threshold,high_threshold)
 
+    # Define region of interrest 
     imshape = img2.shape
     lower_left = [0,110]
     lower_right = [160,110]
@@ -131,23 +139,27 @@ def detectBoostCondition(img, angle_min, angle_max):
     top_top_left = [60,5]
     top_top_right = [120,5]    
     vertices = np.array([lower_left,top_left,top_top_left, top_top_right, top_right,lower_right],dtype=np.int32)
+    # For viz purpose, draw region of interrest on picture copy 
+    annoted_img = cv2.polylines(annoted_img,[vertices.reshape((-1,1,2))],True,(0,255,255))
 
     roi_image = region_of_interest(canny_edges, [vertices])
     #rho and theta are the distance and angular resolution of the grid in Hough space
-    #same values as quiz
     rho = 1
     theta = np.pi/45
     #threshold is minimum number of intersections in a grid for candidate line to go to output
     threshold = 35
     min_line_len = 50
     max_line_gap = 180
-    #my hough values started closer to the values in the quiz, but got bumped up considerably for the challenge video
+    #find lines with Probabilistic Hough 
     lines = cv2.HoughLinesP(roi_image, rho, theta, threshold, np.array([]), minLineLength=min_line_len, maxLineGap=max_line_gap)
-    img2 = cv2.polylines(img2,[vertices.reshape((-1,1,2))],True,(0,255,255))
+    
     if lines is not None:
-        line_img = np.zeros((img2.shape[0], img2.shape[1], 3), dtype=np.uint8)
+        #If at least on line is found, for viz purpose, draw those lines in red on picture copy
+        line_img = np.zeros((annoted_img.shape[0], annoted_img.shape[1], 3), dtype=np.uint8)
         draw_lines(line_img, lines)
-        annoted_img = weighted_img(line_img, img2, α=0.8, β=1., λ=0.)
+        annoted_img = weighted_img(line_img, annoted_img, α=0.8, β=1., λ=0.)
+
+        #Then analyse angles to find something like straight lines (like : "/ \" )
         angle1=False
         angle2=False
         for idx, line in enumerate(lines):
@@ -165,7 +177,9 @@ def detectBoostCondition(img, angle_min, angle_max):
                 angle1=False
                 angle2=False                
         logger.info("Decision : {}".format(angle1 and angle2))
+        # Return decision (2 well positionned angles detected) and annoted picture
         return angle1 and angle2, annoted_img
+    # No data for line decision, just return False and annoted picture
     return False, annoted_img
 
 class ThrottleInLine(object):

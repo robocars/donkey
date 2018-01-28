@@ -57,13 +57,19 @@ class FPVWebController(tornado.web.Application):
         tornado.ioloop.IOLoop.instance().start()
 
 
-    def run_threaded(self, img_arr=None):
-        self.img_arr = img_arr
+    def run_threaded(self, img_arr=None, annoted_img=None):
+        if (annoted_img is not None):
+            self.img_arr = annoted_img
+        else:
+            self.img_arr = img_arr
         return 
         
-    def run(self, img_arr=None):
-        self.img_arr = img_arr
-        return 
+    def run(self, img_arr=None, annoted_img=None):
+        if (annoted_img is not None):s
+            self.img_arr = annoted_img
+        else:
+            self.img_arr = img_arr
+        return
 
 class Home(tornado.web.RequestHandler):
 

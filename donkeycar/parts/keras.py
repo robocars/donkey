@@ -17,7 +17,9 @@ import numpy as np
 import keras
 
 import donkeycar as dk
+import tensorflow as tf
 
+print("TensorFlow version "+str(tf.__version__))
 
 class KerasPilot():
  

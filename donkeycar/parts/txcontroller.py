@@ -3,7 +3,7 @@
 """
 Created on Wen Dec 06 15:29:44 2017
 
-@author: bznoit.trinite
+@author: benoit.trinite
 
 txwcontroller.py
 
@@ -172,8 +172,11 @@ class TxController(object):
             logger.info('angle= {:01.2f} throttle= {:01.2f}'.format (self.angle, self.throttle))
             time.sleep(self.poll_delay)
 
-    def run_threaded(self, img_arr=None, img_annoted=None):
-        self.img_arr = img_arr
+    def run_threaded(self, img_arr=None, annoted_img=None):
+        if (annoted_img is not None):
+            self.img_arr = annoted_img
+        else:
+            self.img_arr = img_arr
         return self.angle, self.throttle, self.mode, self.recording
 
     def run(self, img_arr=None, img_annoted=None):

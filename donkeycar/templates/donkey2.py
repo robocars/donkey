@@ -96,7 +96,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
                            )
         fpv = FPVWebController()
         V.add(fpv,
-                inputs=['cam/image_array'],
+                inputs=['cam/image_array', 'pilot/annoted_img'],
                 threaded=True)        
     else:        
         #This web controller will create a web server that is capable
@@ -134,8 +134,8 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
 
     if not use_tx:
         # Run the pilot if the mode is not user and not Tx.
-        #kl = KerasCategorical()
-        kl = KerasLinear()
+        kl = KerasCategorical()
+        #kl = KerasLinear()
         if model_path:
             kl.load(model_path)
 
@@ -151,9 +151,10 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
             return user_angle, user_throttle
 
         else:
-            if throttle_boost:
-                pilot_throttle = pilot_throttle*cfg.THROTTLEINLINE_BOOST_FACTOR
-                logger.info("Apply Boost")
+            if cfg.USE_THROTTLEINLINE:
+                if throttle_boost:
+                    pilot_throttle = pilot_throttle*cfg.THROTTLEINLINE_BOOST_FACTOR
+                    logger.info("Apply Boost")
             if mode == 'drive_mode: local_angle':
                 return pilot_angle, user_throttle
             else:
@@ -209,8 +210,8 @@ def train(cfg, tub_names, model_name, base_model=None):
         record['user/angle'] = dk.utils.linear_bin(record['user/angle'])
         return record
 
-    #kl = KerasCategorical()
-    kl = KerasLinear()
+    kl = KerasCategorical()
+    #kl = KerasLinear()
     print(base_model)
     if base_model is not None:
         base_model = os.path.expanduser(base_model)
