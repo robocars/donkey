@@ -43,7 +43,8 @@ from donkeycar.parts.actuator import PCA9685, PWMSteering, PWMThrottle
 from donkeycar.parts.datastore import TubHandler, TubGroup
 from donkeycar.parts.controller import LocalWebController, FPVWebController, JoystickController, TxController
 from donkeycar.parts.emergency import EmergencyController
-
+from donkeycar.parts.emergency import EmergencyController
+from donkeycar.parts.throttle_in_line import ThrottleInLine
 from sys import platform
 
 def drive(cfg, model_path=None, use_joystick=False, use_tx=False):

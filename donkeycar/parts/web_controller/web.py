@@ -147,7 +147,7 @@ class LocalWebController(tornado.web.Application):
         return self.angle, self.throttle, self.mode, self.recording
         
     def run(self, img_arr=None, annoted_img=None):
-        if (annoted_img is not None):s
+        if (annoted_img is not None):
             self.img_arr = annoted_img
         else:
             self.img_arr = img_arr
