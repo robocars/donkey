@@ -68,6 +68,10 @@ class Webcam(BaseCamera):
         super().__init__()
 
         self.cam = cv2.VideoCapture(0)
+
+        self.cam.set(cv2.CAP_PROP_FRAME_WIDTH,resolution[1])
+        self.cam.set(cv2.CAP_PROP_FRAME_HEIGHT,resolution[0])
+
         self.resolution = resolution
         self.framerate = framerate
 
@@ -88,8 +92,9 @@ class Webcam(BaseCamera):
 
             ret, snapshot = self.cam.read()
             if ret:
-                snapshot1 = cv2.cvtColor(snapshot, cv2.COLOR_BGR2RGB)
-                self.frame = cv2.resize(snapshot1,(160,120), interpolation = cv2.INTER_AREA)
+                self.frame = cv2.cvtColor(snapshot, cv2.COLOR_BGR2RGB)
+                # We don't need anymore this resizing, we configure the right resolution in the WebCam
+                #self.frame = cv2.resize(snapshot1,(160,120), interpolation = cv2.INTER_AREA)
 
             stop = datetime.now()
             s = 1 / self.framerate - (stop - start).total_seconds()
