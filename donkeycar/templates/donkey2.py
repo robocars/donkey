@@ -208,7 +208,7 @@ def train(cfg, tub_names, model_name, base_model=None):
 
     #kl = KerasCategorical()
     kl = KerasLinear()
-     print(base_model)
+    print(base_model)
     if base_model is not None:
         base_model = os.path.expanduser(base_model)
         kl.load(base_model)
