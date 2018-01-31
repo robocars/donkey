@@ -125,8 +125,8 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
 
     if not use_tx:
         # Run the pilot if the mode is not user and not Tx.
-        #kl = KerasCategorical()
-        kl = KerasLinear()
+        kl = KerasCategorical()
+        #kl = KerasLinear()
         if model_path:
             kl.load(model_path)
 
@@ -196,8 +196,8 @@ def train(cfg, tub_names, model_name, base_model=None):
         record['user/angle'] = dk.utils.linear_bin(record['user/angle'])
         return record
 
-    #kl = KerasCategorical()
-    kl = KerasLinear()
+    kl = KerasCategorical()
+    #kl = KerasLinear()
     print(base_model)
     if base_model is not None:
         base_model = os.path.expanduser(base_model)
