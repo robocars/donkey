@@ -206,8 +206,8 @@ def train(cfg, tub_names, model_name, base_model=None):
         record['user/angle'] = dk.utils.linear_bin(record['user/angle'])
         return record
 
-    #kl = KerasCategorical()
-    kl = KerasLinear()
+    kl = KerasCategorical()
+    #kl = KerasLinear()
     print(base_model)
     if base_model is not None:
         base_model = os.path.expanduser(base_model)
