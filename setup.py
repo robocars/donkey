@@ -49,6 +49,7 @@ setup(name='donkeycar',
                     'pi': [
                         'picamera',
                         'Adafruit_PCA9685',
+                        'pyserial',
                         ]
                     },
     package_data={
