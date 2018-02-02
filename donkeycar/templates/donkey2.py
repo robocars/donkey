@@ -136,8 +136,8 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False, use_pirf=False
 
     if not use_tx and not use_pirf:
         # Run the pilot if the mode is not user and not Tx.
-        #kl = KerasCategorical()
-        kl = KerasLinear()
+        kl = KerasCategorical()
+        #kl = KerasLinear()
         if model_path:
             kl.load(model_path)
 
