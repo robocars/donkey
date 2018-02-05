@@ -3,7 +3,7 @@
 Scripts to drive a donkey 2 car and train a model for it. 
 
 Usage:
-    manage.py (drive) [--model=<model>] [--js|--tx|--pirf]
+    manage.py (drive) [--model=<model>] [--js|--tx|--pirf] [--sonar]
     manage.py (train) [--tub=<tub1,tub2,..tubn>]  (--model=<model>) [--base_model=<base_model>] [--no_cache]
 
 Options:
@@ -39,12 +39,12 @@ from donkeycar.parts.transform import Lambda
 from donkeycar.parts.keras import KerasCategorical, KerasLinear
 from donkeycar.parts.actuator import PCA9685, PWMSteering, PWMThrottle
 from donkeycar.parts.datastore import TubHandler, TubGroup
-from donkeycar.parts.controller import LocalWebController, FPVWebController, JoystickController, TxController, PiRfController
+from donkeycar.parts.controller import LocalWebController, FPVWebController, JoystickController, TxController, PiRfController, SonarController
 from donkeycar.parts.emergency import EmergencyController
 
 from sys import platform
 
-def drive(cfg, model_path=None, use_joystick=False, use_tx=False, use_pirf=False):
+def drive(cfg, model_path=None, use_joystick=False, use_tx=False, use_pirf=False, use_sonar=False):
     '''
     Start the drive loop
     Each part runs as a job in the Vehicle loop, calling either
@@ -163,6 +163,17 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False, use_pirf=False
           inputs=['user/mode', 'user/angle', 'user/throttle',
                   'pilot/angle', 'pilot/throttle'],
           outputs=['angle', 'throttle'])
+    
+    if use_sonar:
+        sonar = SonarController(trigger_pin=cfg.SON_TRIGGER_PIN,
+                            echo_pin=cfg.SON_ECHO_PIN,
+                            slowdown_limit=cfg.SON_SLOWDONW,
+                            break_limit=cfg.SON_BREAK,
+                            verbose = cfg.SON_VERBOSE
+                            )
+        V.add(sonar,
+            inputs=['throttle'],
+            outputs=['throttle'])
 
     steering_controller = PCA9685(cfg.STEERING_CHANNEL)
 
@@ -243,7 +254,7 @@ if __name__ == '__main__':
     cfg = dk.load_config()
 
     if args['drive']:
-        drive(cfg, model_path=args['--model'], use_joystick=args['--js'], use_tx=args['--tx'], use_pirf=args['--pirf'])
+        drive(cfg, model_path=args['--model'], use_joystick=args['--js'], use_tx=args['--tx'], use_pirf=args['--pirf'], use_sonar=args['--sonar'])
 
     elif args['train']:
         tub = args['--tub']
