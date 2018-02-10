@@ -28,7 +28,7 @@ class SonarReader():
     def __init__(self, pi, pinTrig, pinEcho):
         self._pi = pi
         self._trig = pinTrig
-        self._echo = pinEdge
+        self._echo = pinEcho
 
         self._ping = False
         self._high = None
@@ -36,7 +36,7 @@ class SonarReader():
 
         self._triggered = False
         
-        self._pin_mode = pi.get_mode(self._pin)
+        #self._pin_mode = pi.get_mode(self._pin)
         pi.set_mode(self._trig, pigpio.OUTPUT)
         pi.set_mode(self._echo, pigpio.INPUT)
         self._cb = pi.callback(self._trig, pigpio.EITHER_EDGE, self._cbf)
@@ -134,13 +134,16 @@ class SonarController(object):
             time.sleep(self.poll_delay)
 
     def run_threaded(self, throttle):
+        if throttle < 0.1:
+            return throttle
+        #print('throttle={:01.2f}', throttle)
         if self.distance == None:
             return throttle
         if self.distance <= self._slowdown_limit:
             if self.distance <= self._break_limit:
                 return -1
             else:
-                return (self.distance - self._break_limit)/(self._slowdown_limit - self._break_limit)
+                return (self.distance * (1 - self._break_limit))/(self._slowdown_limit - self._break_limit)
         return throttle
 
     def run(self, img_arr=None):
