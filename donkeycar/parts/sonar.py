@@ -143,7 +143,7 @@ class SonarController(object):
             if self.distance <= self._break_limit:
                 return -1
             else:
-                return (self.distance * (1 - self._break_limit))/(self._slowdown_limit - self._break_limit)
+                return (throttle * (self.distance - self._break_limit))/(self._slowdown_limit - self._break_limit)
         return throttle
 
     def run(self, img_arr=None):
