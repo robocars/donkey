@@ -140,7 +140,7 @@ class SonarController(object):
         if self.distance == None:
             return throttle
         if self.distance <= self._slowdown_limit:
-            if self.distance <= self._break_limit:
+            if self.distance <= self._break_limit+500:
                 return -1
             else:
                 return (throttle * (self.distance - self._break_limit))/(self._slowdown_limit - self._break_limit)
