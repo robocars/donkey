@@ -161,8 +161,9 @@ class PiRfController(object):
             if change_mode_tx == None or change_mode_tx < 1500:
                 self._ready_change_mode = True
             else:
+                if self._ready_change_mode:
+                    self.next_mode()
                 self._ready_change_mode = False
-                self.next_mode()
             freq_tx = 60
 #            if throttle_tx > self.throttle_tx_thresh:
 #                self.throttle = map_range(throttle_tx, self.throttle_tx_min, self.throttle_tx_max, -1, 1)
