@@ -41,6 +41,7 @@ from donkeycar.parts.actuator import PCA9685, PWMSteering, PWMThrottle
 from donkeycar.parts.datastore import TubHandler, TubGroup
 from donkeycar.parts.controller import LocalWebController, FPVWebController, JoystickController, TxController, PiRfController, SonarController
 from donkeycar.parts.emergency import EmergencyController
+from donkeycar.parts.led_display import LedDisplay
 
 from sys import platform
 
@@ -134,16 +135,14 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False, use_pirf=False
     pilot_condition_part = Lambda(pilot_condition)
     V.add(pilot_condition_part, inputs=['user/mode'], outputs=['run_pilot'])
 
-    if not use_tx and not use_pirf:
-        # Run the pilot if the mode is not user and not Tx.
-        kl = KerasCategorical()
-        #kl = KerasLinear()
+    if not use_tx:
         if model_path:
+            kl = KerasCategorical()
             kl.load(model_path)
 
-        V.add(kl, inputs=['cam/image_array'],
-            outputs=['pilot/angle', 'pilot/throttle'],
-            run_condition='run_pilot')
+            V.add(kl, inputs=['cam/image_array'],
+                outputs=['pilot/angle', 'pilot/throttle'],
+                run_condition='run_pilot')
 
     # Choose what inputs should change the car.
     def drive_mode(mode,
@@ -174,6 +173,9 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False, use_pirf=False
         V.add(sonar,
             inputs=['throttle'],
             outputs=['throttle'])
+
+    led_display = LedDisplay()
+    V.add(led_display, inputs=['user/mode', 'throttle'])
 
     steering_controller = PCA9685(cfg.STEERING_CHANNEL)
 
