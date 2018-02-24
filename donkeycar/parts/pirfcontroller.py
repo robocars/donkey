@@ -55,6 +55,7 @@ class PWMReader():
         
         self._pin_mode = pi.get_mode(self._pin)
         pi.set_mode(self._pin, pigpio.INPUT)
+        pi.set_pull_up_down(self._pin, pigpio.PUD_UP)
         self._cb = pi.callback(self._pin, pigpio.EITHER_EDGE, self._cbf)
 
         self._inited = True
