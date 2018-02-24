@@ -166,11 +166,17 @@ class PiRfController(object):
                     self.next_mode()
                 self._ready_change_mode = False
             freq_tx = 60
-#            if throttle_tx > self.throttle_tx_thresh:
-#                self.throttle = map_range(throttle_tx, self.throttle_tx_min, self.throttle_tx_max, -1, 1)
-#            else:
-#                self.throttle = 0
-            self.throttle = map_range(throttle_tx, self.throttle_tx_min, self.throttle_tx_max, -1, 1)
+            # compensate floating zero point
+            comp_throttle = throttle_tx-self.throttle_tx_thresh
+            comp_max = self.throttle_tx_max-self.throttle_tx_thresh
+            comp_min = self.throttle_tx_min-self.throttle_tx_thresh
+            if comp_throttle > 50:
+                self.throttle = map_range(comp_throttle, 0, comp_max, 0, 1)
+            elif comp_throttle > -50:
+                self.throttle = 0
+            else:
+                self.throttle = map_range(comp_throttle, comp_min, 0, -1, 0)
+            #self.throttle = map_range(throttle_tx, self.throttle_tx_min, self.throttle_tx_max, -1, 1)
             self.on_throttle_changes()
             self.angle = map_range(steering_tx, self.steering_tx_min, self.steering_tx_max, -1, 1)
             logger.info('angle= {:01.2f} throttle= {:01.2f}'.format(self.angle, self.throttle))
