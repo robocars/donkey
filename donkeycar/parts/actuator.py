@@ -33,8 +33,8 @@ class PWMSteering:
     """
     Wrapper over a PWM motor cotnroller to convert angles to PWM pulses.
     """
-    LEFT_ANGLE = 1 
-    RIGHT_ANGLE = -1
+    LEFT_ANGLE = -1 
+    RIGHT_ANGLE = 1
 
     def __init__(self, controller=None,
                        left_pulse=290,
