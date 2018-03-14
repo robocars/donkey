@@ -66,18 +66,16 @@ if __name__ == "__main__":
 
     pwm1 = test_remote.PWMReader(pi, 18);
     pwm2 = test_remote.PWMReader(pi, 23);
-    pwm3 = test_remote.PWMReader(pi, 22);
 
     r = 1
     end = time.time() + 600;
     while time.time() < end:
 
-        print("{} {} {} {} {} {} {}".format(r, pwm1.timeHigh, pwm1.timeLow, pwm2.timeHigh, pwm2.timeLow, pwm3.timeHigh, pwm3.timeLow))
+        print("{} {} {} {} {}".format(r, pwm1.timeHigh, pwm1.timeLow, pwm2.timeHigh, pwm2.timeLow))
         r += 1
-        time.sleep(0.1)
+        time.sleep(0.03)
 
     pwm1.cancel()
     pwm2.cancel()
-    pwm3.cancel()
 
     pi.stop()
