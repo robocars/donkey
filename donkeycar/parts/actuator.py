@@ -91,6 +91,8 @@ class PWMThrottle:
             self.reloadKick()
         self.mode = mode
 
+        if throttle > 1:
+            throttle = 1
         logger.info('Output throttle order= {:01.2f}'.format(throttle))
         if throttle > 0:
             pulse = dk.utils.map_range(throttle,
