@@ -25,6 +25,7 @@ DRIVE_LOOP_HZ = 20
 MAX_LOOPS = 100000
 
 #CAMERA
+USE_WEB_CAMERA = False
 CAMERA_RESOLUTION = (120, 160) #(height, width)
 CAMERA_FRAMERATE = DRIVE_LOOP_HZ
 
@@ -47,6 +48,9 @@ PI_RF_THROTTLE_TRESH = 1470
 PI_RF_STEERING_PIN = 18
 PI_RF_THROTTLE_PIN = 23
 PI_RF_VERBOSE  = False
+
+# Set the following to false to deactivate PCA9685 driver (usefull to run donkey on laptop)
+USE_PWM_ACTUATOR = True
 
 #STEERING
 STEERING_CHANNEL = 1
