@@ -9,6 +9,7 @@ from threading import Thread
 from donkeycar.parts.web_controller.web import LocalWebController
 from donkeycar.parts.web_fpv.web import FPVWebController
 from donkeycar.parts.txcontroller import TxController
+from donkeycar.parts.pirfcontroller import PiRfController
 
 class Joystick():
     '''

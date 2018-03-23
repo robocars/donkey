@@ -3,7 +3,7 @@
 Scripts to drive a donkey 2 car and train a model for it. 
 
 Usage:
-    manage.py (drive) [--model=<model>] [--js|--tx]
+    manage.py (drive) [--model=<model>] [--js|--tx|--pirf]
     manage.py (train) [--tub=<tub1,tub2,..tubn>]  (--model=<model>) [--base_model=<base_model>] [--no_cache]
 
 Options:
@@ -39,12 +39,12 @@ from donkeycar.parts.transform import Lambda
 from donkeycar.parts.keras import KerasCategorical, KerasLinear
 from donkeycar.parts.actuator import PCA9685, PWMSteering, PWMThrottle
 from donkeycar.parts.datastore import TubHandler, TubGroup
-from donkeycar.parts.controller import LocalWebController, FPVWebController, JoystickController, TxController
+from donkeycar.parts.controller import LocalWebController, FPVWebController, JoystickController, TxController, PiRfController
 from donkeycar.parts.emergency import EmergencyController
 
 from sys import platform
 
-def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
+def drive(cfg, model_path=None, use_joystick=False, use_tx=False, use_pirf=False):
     '''
     Start the drive loop
     Each part runs as a job in the Vehicle loop, calling either
@@ -96,6 +96,20 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
         V.add(fpv,
                 inputs=['cam/image_array'],
                 threaded=True)        
+    elif use_pirf or cfg.USE_PI_RF_AS_DEFAULT:
+        ctr = PiRfController(throttle_tx_min = cfg.PI_RF_THROTTLE_MIN,
+                           throttle_tx_max = cfg.PI_RF_THROTTLE_MAX,
+                           steering_tx_min = cfg.PI_RF_STEERING_MIN,
+                           steering_tx_max = cfg.PI_RF_STEERING_MAX,
+                           throttle_tx_thresh = cfg.PI_RF_THROTTLE_TRESH,
+                           steering_pin = cfg.PI_RF_STEERING_PIN,
+                           throttle_pin = cfg.PI_RF_THROTTLE_PIN,
+                           verbose = cfg.PI_RF_VERBOSE
+                           )
+        fpv = FPVWebController()
+        V.add(fpv,
+                inputs=['cam/image_array'],
+                threaded=True)        
     else:        
         #This web controller will create a web server that is capable
         #of managing steering, throttle, and modes, and more.
@@ -123,7 +137,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
     pilot_condition_part = Lambda(pilot_condition)
     V.add(pilot_condition_part, inputs=['user/mode'], outputs=['run_pilot'])
 
-    if not use_tx:
+    if not use_tx and not use_pirf:
         # Run the pilot if the mode is not user and not Tx.
         kl = KerasCategorical()
         #kl = KerasLinear()
@@ -233,7 +247,7 @@ if __name__ == '__main__':
     cfg = dk.load_config()
 
     if args['drive']:
-        drive(cfg, model_path=args['--model'], use_joystick=args['--js'], use_tx=args['--tx'])
+        drive(cfg, model_path=args['--model'], use_joystick=args['--js'], use_tx=args['--tx'], use_pirf=args['--pirf'])
 
     elif args['train']:
         tub = args['--tub']
