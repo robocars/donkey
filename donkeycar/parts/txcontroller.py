@@ -73,32 +73,34 @@ class Txserial():
         '''
         steering_tx = 1500
         throttle_tx = 0
+        ch5_tx = 0
+        ch6_tx = 0
         freq_tx = 60
         ts = 0
         msg=""
         try:
             if self.ser.in_waiting > 50:
-                logger.info('poll: Serial buffer overrun {} ... flushing'.format(str(self.ser.in_waiting)))
+                logger.debug('poll: Serial buffer overrun {} ... flushing'.format(str(self.ser.in_waiting)))
                 self.ser.reset_input_buffer()
             msg=self.ser.readline().decode('utf-8')
-            ts, steering_tx, throttle_tx, freq_tx = map(int,msg.split(','))
+            ts, steering_tx, throttle_tx, ch5_tx, ch6_tx, freq_tx = map(int,msg.split(','))
 
         except:
-            logger.info('poll: Exception while parsing msg')
+            logger.debug('poll: Exception while parsing msg')
 
         now=time.clock()*1000
-        logger.info('poll: {} {}'.format(msg.strip(),len(msg)))
+        logger.debug('poll: {} {}'.format(msg.strip(),len(msg)))
         if (steering_tx == -1):
-            logger.info('poll: No Rx signal , forcing idle position')
+            logger.debug('poll: No Rx signal , forcing idle position')
             return 0,1500,60
         if (ts-self.lastDistTs < 2*(now-self.lastLocalTs)):
-            logger.info('poll: underun dist {} local {}'.format(ts-self.lastDistTs, now-self.lastLocalTs))
+            logger.debug('poll: underun dist {} local {}'.format(ts-self.lastDistTs, now-self.lastLocalTs))
         self.lastLocalTs = now
         self.lastDistTs = ts
-        logger.info('poll: ts {} steering_tx= {:05.0f} throttle_tx= {:05.0f} freq_tx= {:02.0f}'.format(ts, steering_tx, throttle_tx, freq_tx))
+        logger.debug('poll: ts {} steering_tx= {:05.0f} throttle_tx= {:05.0f} freq_tx= {:02.0f}'.format(ts, steering_tx, throttle_tx, freq_tx))
 
 
-        return throttle_tx, steering_tx, freq_tx
+        return throttle_tx, steering_tx, ch5_tx, ch6_tx, freq_tx
 
 
 class TxController(object):
@@ -112,6 +114,7 @@ class TxController(object):
                  steering_tx_min=955,
                  steering_tx_max=2085,
                  throttle_tx_thresh=1520,
+                 ch_aux_tx_thresh=1500,
                  auto_record_on_throttle=True,
                  verbose = False
                  ):
@@ -127,6 +130,8 @@ class TxController(object):
         self.steering_tx_min = steering_tx_min
         self.steering_tx_max = steering_tx_max
 
+        self.ch5 = False
+        self.ch6 = False
         self.recording = False
         self.auto_record_on_throttle = auto_record_on_throttle
         self.tx = None
@@ -162,14 +167,32 @@ class TxController(object):
             time.sleep(5)
 
         while self.running:
-            throttle_tx, steering_tx, freq_tx = self.tx.poll()
+            throttle_tx, steering_tx, ch5_tx, ch6_tx, freq_tx = self.tx.poll()
             if throttle_tx > self.throttle_tx_thresh:
                 self.throttle = map_range(throttle_tx, self.throttle_tx_min, self.throttle_tx_max, -1, 1)
             else:
                 self.throttle = 0
             self.on_throttle_changes()
             self.angle = 0-map_range(steering_tx, self.steering_tx_min, self.steering_tx_max, -1, 1)
-            logger.info('angle= {:01.2f} throttle= {:01.2f}'.format (self.angle, self.throttle))
+
+            if (ch5_tx > ch_aux_tx_thresh+100):
+                self.ch5 = True
+                logger.info('Ch5 - Switch to local mode')
+                self.mode = 'local'
+            if (ch5_tx < ch_aux_tx_thresh-100):
+                self.ch5 = False
+                logger.info('Ch5 - Switch to user mode')
+                self.mode = 'user'
+
+            if (ch6_tx > ch_aux_tx_thresh+100):
+                self.ch6 = True
+                logger.info('Ch6 - Exit')
+                sys.exit(0)
+
+            if (ch6_tx < ch_aux_tx_thresh-100):
+                self.ch6 = False
+
+            logger.debug('angle= {:01.2f} throttle= {:01.2f}'.format (self.angle, self.throttle))
             time.sleep(self.poll_delay)
 
     def run_threaded(self, img_arr=None, annoted_img=None):

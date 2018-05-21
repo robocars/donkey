@@ -84,32 +84,32 @@ class PWMThrottle:
 
     def reloadKick(self):
         self.kick = [410,410,410,410]
-        logger.info('Kicker reloaded')
+        logger.debug('Kicker reloaded')
 
     def run(self, throttle, mode):
         if self.mode == "user" and mode != "user":
             self.reloadKick()
         self.mode = mode
 
-        logger.info('Output throttle order= {:01.2f}'.format(throttle))
+        logger.debug('Output throttle order= {:01.2f}'.format(throttle))
         if throttle > 0:
             pulse = dk.utils.map_range(throttle,
                                     0, self.MAX_THROTTLE, 
                                     self.zero_pulse, self.max_pulse)
 # Motor cann not start a too low throttle, kick it for the first cycles             
             if len(self.kick)>0:
-                logger.info('Kicker active')
+                logger.debug('Kicker active')
                 pulse = self.kick.pop()
 
 # Ensure thottle order would not go below a limit (risk of motor shutdown)
             if self.mode != "user" and pulse < 395:
-                logger.info('PWMThrottle order too low')
+                logger.debug('PWMThrottle order too low')
                 pulse = 395
         else:
             pulse = dk.utils.map_range(throttle,
                                     self.MIN_THROTTLE, 0, 
                                     self.min_pulse, self.zero_pulse)
-        logger.info('Output throttle pulse= {:03.0f}'.format(pulse))
+        logger.debug('Output throttle pulse= {:03.0f}'.format(pulse))
 #        print("PWMThrottle pulse="+str(pulse))
         self.controller.set_pulse(pulse)
         

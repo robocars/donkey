@@ -93,6 +93,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
                            steering_tx_min = cfg.TX_STEERING_MIN,
                            steering_tx_max = cfg.TX_STEERING_MAX,
                            throttle_tx_thresh = cfg.TX_THROTTLE_TRESH,
+                           ch_aux_tx_thresh = cfg.TX_CH_AUX_TRESH,
                            verbose = cfg.TX_VERBOSE
                            )
         fpv = FPVWebController()
@@ -155,11 +156,11 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
             if cfg.USE_THROTTLEINLINE:
                 if throttle_boost:
                     pilot_throttle = pilot_throttle*cfg.THROTTLEINLINE_BOOST_FACTOR
-                    logger.info("Apply Boost")
-            if mode == 'drive_mode: local_angle':
+                    logger.debug("Apply Boost")
+            if mode == 'local_angle':
                 return pilot_angle, user_throttle
             else:
-                logger.info('drive_mode: Pilot return angle={:01.2f} throttle={:01.2f}'.format(pilot_angle, pilot_throttle))
+                logger.debug('drive_mode: Pilot return angle={:01.2f} throttle={:01.2f}'.format(pilot_angle, pilot_throttle))
                 return pilot_angle, pilot_throttle
 
     drive_mode_part = Lambda(drive_mode)
