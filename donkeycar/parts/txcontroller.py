@@ -112,7 +112,7 @@ class Txserial():
 
         return throttle_tx, steering_tx, ch5_tx, ch6_tx, freq_tx
 
-    def ledStatus (status):
+    def ledStatus (self, status):
         status = status + "\n"
         self.ser.write(status.encode())    
    
