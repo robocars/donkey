@@ -46,6 +46,8 @@ class Txserial():
     '''
     An interface to a Tx through serial link
     '''
+    counter = 0
+
     def __init__(self):
         self.ser = None
         self.lastLocalTs = 0
@@ -66,7 +68,6 @@ class Txserial():
         self.ser.writelines("init")       
         return True
 
-    @static_var("counter", 0)
     def poll(self, mode):
         '''
         query the state of the joystick, returns button which was pressed, if any,
@@ -83,9 +84,9 @@ class Txserial():
         ts = 0
         msg=""
 
-        if (poll.counter%10 == 0):
+        if (Txserial.counter%10 == 0):
             self.ser.writelines(mode)       
-        poll.counter += 1
+        Txserial.counter += 1
 
         try:
             if self.ser.in_waiting > 50:
