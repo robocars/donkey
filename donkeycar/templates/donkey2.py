@@ -13,6 +13,7 @@ Options:
 """
 import os
 import logging
+import sys, multiprocessing
 # set up logging to file - see previous section for more details
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s.%(msecs)03d %(name)-12s %(levelname)-8s %(message)s',
@@ -47,6 +48,12 @@ from donkeycar.parts.emergency import EmergencyController
 from donkeycar.parts.throttle_in_line import ThrottleInLine
 from sys import platform
 
+
+import signal
+import time
+
+//ctr is global
+ctr = None
 
 def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
     '''
@@ -254,10 +261,34 @@ def train(cfg, tub_names, model_name, base_model=None):
              steps=steps_per_epoch,
              train_split=cfg.TRAIN_TEST_SPLIT)
 
+def softExit():
+        if (ctr  != None):
+            ctr.gracefull_shutdown()
+        time.sleep(0.2)
+        os._exit(1)        
+
+class GracefulKiller:
+    kill_now = False
+    def __init__(self):
+        signal.signal(signal.SIGINT, self.exit_gracefully)
+        signal.signal(signal.SIGTERM, self.exit_gracefully)
+
+    def exit_gracefully(self,signum, frame):
+        logger.info ('Got signal %s' % (args,))
+        softExit()
+        self.kill_now = True
+
+def log_exception(*args):
+    logger.info ('Got exception %s' % (args,))
+    softExit()
+
+sys.excepthook = log_exception
 
 if __name__ == '__main__':
     args = docopt(__doc__)
     cfg = dk.load_config()
+
+    killer = GracefulKiller()
 
     if args['drive']:
         logger.info("Start in drive mode")

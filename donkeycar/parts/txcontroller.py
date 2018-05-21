@@ -244,3 +244,6 @@ class TxController(object):
         self.running = False
         time.sleep(0.5)
 
+    def gracefull_shutdown(self):
+        self.tx.ledStatus('init')
+       
