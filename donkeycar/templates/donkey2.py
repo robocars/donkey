@@ -301,6 +301,12 @@ if __name__ == '__main__':
         base_model = args['--base_model']
         cache = not args['--no_cache']
         train(cfg, tub, model, base_model=base_model)
+    
+    while True:
+        time.sleep(1)
+        if killer.kill_now:
+            break
+
 
 
 
