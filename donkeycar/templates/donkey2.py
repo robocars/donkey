@@ -52,7 +52,7 @@ from sys import platform
 import signal
 import time
 
-//ctr is global
+#ctr is global
 ctr = None
 
 def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
