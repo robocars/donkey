@@ -65,7 +65,7 @@ class Txserial():
                timeout=1
         )
         logger.info('/dev/serial0 initialized') 
-        self.ser.write("init"+ "\n")       
+        self.ledStatus("init")       
         return True
 
     def poll(self, mode):
@@ -85,7 +85,7 @@ class Txserial():
         msg=""
 
         if (Txserial.counter%10 == 0):
-            self.ser.write(mode+ "\n")       
+            self.ledStatus(mode)       
         Txserial.counter += 1
 
         try:
@@ -113,7 +113,8 @@ class Txserial():
         return throttle_tx, steering_tx, ch5_tx, ch6_tx, freq_tx
 
     def ledStatus (status):
-        self.ser.write(status+ "\n")    
+        status = status + "\n"
+        self.ser.write(status.encode())    
    
 
 class TxController(object):
