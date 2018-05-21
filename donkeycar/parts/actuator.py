@@ -46,12 +46,12 @@ class PWMSteering:
 
     def run(self, angle):
         #map absolute angle to angle that vehicle can implement.
-        logger.info('Output angle order= {:01.2f}'.format(angle))
+        logger.debug('Output angle order= {:01.2f}'.format(angle))
         pulse = dk.utils.map_range(angle,
                                 self.LEFT_ANGLE, self.RIGHT_ANGLE,
                                 self.left_pulse, self.right_pulse)
 #        print ("PWMSteering pulse="+str(pulse))
-        logger.info('Output angle pulse= {:03.0f}'.format(pulse))
+        logger.debug('Output angle pulse= {:03.0f}'.format(pulse))
         self.controller.set_pulse(pulse)
 
     def shutdown(self):
