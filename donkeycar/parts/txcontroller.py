@@ -190,21 +190,21 @@ class TxController(object):
             if (ch6_tx < self.ch_aux_tx_thresh-100):
                 self.ch6 = False
     
-            if (ch5 != self.last_ch5):
-                if (ch5 == True):
+            if (self.ch5 != self.last_ch5):
+                if (self.ch5 == True):
                     logger.info('Ch5 - switch to On')
                     logger.info('ChAux : Switch drive mode to local')
                     self.mode = 'local'
-                if (ch5 == False):
+                if (self.ch5 == False):
                     logger.info('Ch5 - switch to Off')
                     logger.info('ChAux : Switch drive mode to user')
                     self.mode = 'user'
-            if (ch6 != self.last_ch6):
-                if (ch6 == True):
+            if (self.ch6 != self.last_ch6):
+                if (self.ch6 == True):
                     logger.info('Ch6 - switch to On')
                     logger.info('ChAux : exit()')
                     sys.exit(0)
-                if (ch6 == False):
+                if (self.ch6 == False):
                     logger.info('Ch6 - switch to Off')
                 
             self.last_ch5 = self.ch5
