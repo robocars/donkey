@@ -125,6 +125,7 @@ class TxController(object):
         self.poll_delay = poll_delay
         self.running = True
         self.throttle_tx_thresh = throttle_tx_thresh
+        self.ch_aux_tx_thresh = ch_aux_tx_thresh
         self.throttle_tx_min = throttle_tx_min
         self.throttle_tx_max = throttle_tx_max
         self.steering_tx_min = steering_tx_min
@@ -175,21 +176,21 @@ class TxController(object):
             self.on_throttle_changes()
             self.angle = 0-map_range(steering_tx, self.steering_tx_min, self.steering_tx_max, -1, 1)
 
-            if (ch5_tx > ch_aux_tx_thresh+100):
+            if (ch5_tx > self.ch_aux_tx_thresh+100):
                 self.ch5 = True
                 logger.info('Ch5 - Switch to local mode')
                 self.mode = 'local'
-            if (ch5_tx < ch_aux_tx_thresh-100):
+            if (ch5_tx < self.ch_aux_tx_thresh-100):
                 self.ch5 = False
                 logger.info('Ch5 - Switch to user mode')
                 self.mode = 'user'
 
-            if (ch6_tx > ch_aux_tx_thresh+100):
+            if (ch6_tx > self.ch_aux_tx_thresh+100):
                 self.ch6 = True
                 logger.info('Ch6 - Exit')
                 sys.exit(0)
 
-            if (ch6_tx < ch_aux_tx_thresh-100):
+            if (ch6_tx < self.ch_aux_tx_thresh-100):
                 self.ch6 = False
 
             logger.debug('angle= {:01.2f} throttle= {:01.2f}'.format (self.angle, self.throttle))
