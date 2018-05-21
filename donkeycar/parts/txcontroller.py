@@ -112,6 +112,9 @@ class Txserial():
 
         return throttle_tx, steering_tx, ch5_tx, ch6_tx, freq_tx
 
+    def ledStatus (status):
+        self.ser.writelines(status)    
+   
 
 class TxController(object):
     '''
@@ -213,6 +216,8 @@ class TxController(object):
                 if (self.ch6 == True):
                     logger.info('Ch6 - switch to On')
                     logger.info('ChAux : exit()')
+                    self.tx.ledStatus('init')
+                    time.sleep(0.2)
                     os._exit(1)
                 if (self.ch6 == False):
                     logger.info('Ch6 - switch to Off')
