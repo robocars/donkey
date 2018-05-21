@@ -59,8 +59,10 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
     '''
 
     # Initialize car
+    logger.info("Init Vehicle main object")
     V = dk.vehicle.Vehicle()
 
+    logger.info("Init Cam part")
     if cfg.USE_WEB_CAMERA:
         cam = Webcam(resolution=cfg.CAMERA_RESOLUTION)
     else:
@@ -68,6 +70,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
         
     V.add(cam, outputs=['cam/image_array'], threaded=True)
 
+    logger.info("Init Controller part")
     if use_joystick or cfg.USE_JOYSTICK_AS_DEFAULT:
         # modify max_throttle closer to 1.0 to have more power
         # modify steering_scale lower than 1.0 to have less responsive steering
@@ -111,12 +114,14 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
           threaded=True)
 
     if cfg.USE_THROTTLEINLINE:
+        logger.info("Init throttleInLine part")
         throttleinline = ThrottleInLine(cfg.THROTTLEINLINE_ANGLE_MIN, cfg.THROTTLEINLINE_ANGLE_MAX)
         V.add(throttleinline,
                 inputs=['cam/image_array'],
                 outputs=['pilot/throttle_boost', 'pilot/annoted_img'],
                 threaded=True)
 
+    logger.info("Init emergency part")
     emergencyCtrl = EmergencyController()
 
     V.add(emergencyCtrl,
@@ -131,19 +136,20 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
         else:
             return True
 
+    logger.info("Init pilot part")
     pilot_condition_part = Lambda(pilot_condition)
     V.add(pilot_condition_part, inputs=['user/mode'], outputs=['run_pilot'])
 
-    if not use_tx:
-        # Run the pilot if the mode is not user and not Tx.
-        kl = KerasCategorical()
-        #kl = KerasLinear()
-        if model_path:
-            kl.load(model_path)
+    logger.info("Init Model part")
+    # Run the pilot if the mode is not user and not Tx.
+    kl = KerasCategorical()
+    #kl = KerasLinear()
+    if model_path:
+        kl.load(model_path)
 
-        V.add(kl, inputs=['cam/image_array'],
-            outputs=['pilot/angle', 'pilot/throttle'],
-            run_condition='run_pilot')
+    V.add(kl, inputs=['cam/image_array'],
+        outputs=['pilot/angle', 'pilot/throttle'],
+        run_condition='run_pilot')
 
     # Choose what inputs should change the car.
     def drive_mode(mode,
@@ -170,6 +176,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
           outputs=['angle', 'throttle'])
 
     if cfg.USE_PWM_ACTUATOR:
+        logger.info("Init Actuator part")
         steering_controller = PCA9685(cfg.STEERING_CHANNEL)
 
         steering = PWMSteering(controller=steering_controller,
@@ -189,9 +196,12 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
     inputs = ['cam/image_array', 'user/angle', 'user/throttle', 'user/mode', 'pilot/angle', 'pilot/throttle']
     types = ['image_array', 'float', 'float', 'str', 'numpy.float32', 'numpy.float32']
 
+    logger.info("Init Tub Handler part")
     th = TubHandler(path=cfg.DATA_PATH)
     tub = th.new_tub_writer(inputs=inputs, types=types)
     V.add(tub, inputs=inputs, run_condition='recording')
+
+    logger.info("Start main loop")
 
     # run the vehicle for 20 seconds
     V.start(rate_hz=cfg.DRIVE_LOOP_HZ,
@@ -249,6 +259,7 @@ if __name__ == '__main__':
     cfg = dk.load_config()
 
     if args['drive']:
+        logger.info("Start in drive mode")
         drive(cfg, model_path=args['--model'], use_joystick=args['--js'], use_tx=args['--tx'])
 
     elif args['train']:
