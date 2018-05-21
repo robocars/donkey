@@ -133,6 +133,8 @@ class TxController(object):
 
         self.ch5 = False
         self.ch6 = False
+        self.last_ch5_tx = -1
+        self.last_ch6_tx = -1
         self.recording = False
         self.auto_record_on_throttle = auto_record_on_throttle
         self.tx = None
@@ -178,20 +180,35 @@ class TxController(object):
 
             if (ch5_tx > self.ch_aux_tx_thresh+100):
                 self.ch5 = True
-                logger.info('Ch5 - Switch to local mode')
-                self.mode = 'local'
+
             if (ch5_tx < self.ch_aux_tx_thresh-100):
                 self.ch5 = False
-                logger.info('Ch5 - Switch to user mode')
-                self.mode = 'user'
 
             if (ch6_tx > self.ch_aux_tx_thresh+100):
                 self.ch6 = True
-                logger.info('Ch6 - Exit')
-                sys.exit(0)
 
             if (ch6_tx < self.ch_aux_tx_thresh-100):
                 self.ch6 = False
+    
+            if (ch5 != self.last_ch5):
+                if (ch5 == True):
+                    logger.info('Ch5 - switch to On')
+                    logger.info('ChAux : Switch drive mode to local')
+                    self.mode = 'local'
+                if (ch5 == False):
+                    logger.info('Ch5 - switch to Off')
+                    logger.info('ChAux : Switch drive mode to user')
+                    self.mode = 'user'
+            if (ch6 != self.last_ch6):
+                if (ch6 == True):
+                    logger.info('Ch6 - switch to On')
+                    logger.info('ChAux : exit()')
+                    sys.exit(0)
+                if (ch6 == False):
+                    logger.info('Ch6 - switch to Off')
+                
+            self.last_ch5 = self.ch5
+            self.last_ch6 = self.ch6
 
             logger.debug('angle= {:01.2f} throttle= {:01.2f}'.format (self.angle, self.throttle))
             time.sleep(self.poll_delay)
