@@ -15,6 +15,7 @@ txwcontroller.py
 import array
 import time
 import struct
+import sys
 from threading import Thread
 import donkeycar as dk
 from sys import platform
