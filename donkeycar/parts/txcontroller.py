@@ -133,8 +133,8 @@ class TxController(object):
 
         self.ch5 = False
         self.ch6 = False
-        self.last_ch5_tx = -1
-        self.last_ch6_tx = -1
+        self.last_ch5 = False
+        self.last_ch6 = False
         self.recording = False
         self.auto_record_on_throttle = auto_record_on_throttle
         self.tx = None
