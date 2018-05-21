@@ -262,7 +262,6 @@ def train(cfg, tub_names, model_name, base_model=None):
              train_split=cfg.TRAIN_TEST_SPLIT)
 
 def softExit():
-        logger.info ('Soft Exit')
         if (ctr  != None):
             ctr.gracefull_shutdown()
         time.sleep(0.2)
@@ -276,7 +275,6 @@ class GracefulKiller:
 
     def exit_gracefully(self,signum, frame):
         softExit()
-        logger.info ('Got signal ')
         self.kill_now = True
 
 def log_exception(*args):
