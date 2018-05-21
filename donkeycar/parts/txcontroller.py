@@ -62,16 +62,19 @@ class Txserial():
                bytesize=serial.EIGHTBITS,
                timeout=1
         )
-        logger.info('/dev/serial0 initialized')        
+        logger.info('/dev/serial0 initialized') 
+        self.ser.writelines("init")       
         return True
 
-    def poll(self):
+    @static_var("counter", 0)
+    def poll(self, mode):
         '''
         query the state of the joystick, returns button which was pressed, if any,
         and axis which was moved, if any. button_state will be None, 1, or 0 if no changes,
         pressed, or released. axis_val will be a float from -1 to +1. button and axis will
         be the string label determined by the axis map in init.
         '''
+         
         steering_tx = 1500
         throttle_tx = 0
         ch5_tx = 0
@@ -79,6 +82,11 @@ class Txserial():
         freq_tx = 60
         ts = 0
         msg=""
+
+        if (poll.counter%10 == 0):
+            self.ser.writelines(mode)       
+        poll.counter += 1
+
         try:
             if self.ser.in_waiting > 50:
                 logger.debug('poll: Serial buffer overrun {} ... flushing'.format(str(self.ser.in_waiting)))
@@ -171,7 +179,7 @@ class TxController(object):
             time.sleep(5)
 
         while self.running:
-            throttle_tx, steering_tx, ch5_tx, ch6_tx, freq_tx = self.tx.poll()
+            throttle_tx, steering_tx, ch5_tx, ch6_tx, freq_tx = self.tx.poll(self.mode)
             if throttle_tx > self.throttle_tx_thresh:
                 self.throttle = map_range(throttle_tx, self.throttle_tx_min, self.throttle_tx_max, -1, 1)
             else:
