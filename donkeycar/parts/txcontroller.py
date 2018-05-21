@@ -113,7 +113,7 @@ class Txserial():
         return throttle_tx, steering_tx, ch5_tx, ch6_tx, freq_tx
 
     def ledStatus (status):
-        self.ser.writelines(status)    
+        self.ser.write(status+ "\n")    
    
 
 class TxController(object):
