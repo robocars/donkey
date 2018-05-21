@@ -15,7 +15,7 @@ txwcontroller.py
 import array
 import time
 import struct
-import sys
+import os
 from threading import Thread
 import donkeycar as dk
 from sys import platform
@@ -204,7 +204,7 @@ class TxController(object):
                 if (self.ch6 == True):
                     logger.info('Ch6 - switch to On')
                     logger.info('ChAux : exit()')
-                    sys.exit(0)
+                    os._exit(1)
                 if (self.ch6 == False):
                     logger.info('Ch6 - switch to Off')
                 
