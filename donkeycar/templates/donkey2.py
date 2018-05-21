@@ -274,13 +274,13 @@ class GracefulKiller:
         signal.signal(signal.SIGTERM, self.exit_gracefully)
 
     def exit_gracefully(self,signum, frame):
-        logger.info ('Got signal %s' % (args,))
         softExit()
+        logger.info ('Got signal ')
         self.kill_now = True
 
 def log_exception(*args):
-    logger.info ('Got exception %s' % (args,))
     softExit()
+    logger.info ('Got exception %s' % (args,))
 
 sys.excepthook = log_exception
 
