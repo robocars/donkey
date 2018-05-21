@@ -65,7 +65,7 @@ class Txserial():
                timeout=1
         )
         logger.info('/dev/serial0 initialized') 
-        self.ser.writelines("init")       
+        self.ser.write("init"+ "\n")       
         return True
 
     def poll(self, mode):
@@ -85,7 +85,7 @@ class Txserial():
         msg=""
 
         if (Txserial.counter%10 == 0):
-            self.ser.writelines(mode)       
+            self.ser.write(mode+ "\n")       
         Txserial.counter += 1
 
         try:
