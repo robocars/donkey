@@ -337,7 +337,8 @@ class Tub(object):
                 msg = 'Tub does not know what to do with this type {}'.format(typ)
                 raise TypeError(msg)
 
-        logger.info('write record ix {} '.format(str(self.current_ix)))
+        if (current_ix%100 == 0):
+            logger.info('write record ix {} '.format(str(self.current_ix)))
         self.write_json_record(json_data)
         return self.current_ix
 

@@ -265,6 +265,7 @@ def softExit():
         if (ctr  != None):
             ctr.gracefull_shutdown()
         time.sleep(0.2)
+        logger.info ('Exit')
         os._exit(1)        
 
 class GracefulKiller:
@@ -274,20 +275,20 @@ class GracefulKiller:
         signal.signal(signal.SIGTERM, self.exit_gracefully)
 
     def exit_gracefully(self,signum, frame):
-        softExit()
         self.kill_now = True
+        softExit()
 
 def log_exception(*args):
-    softExit()
     logger.info ('Got exception %s' % (args,))
+    softExit()
 
-sys.excepthook = log_exception
+#sys.excepthook = log_exception
 
 if __name__ == '__main__':
     args = docopt(__doc__)
     cfg = dk.load_config()
 
-    killer = GracefulKiller()
+#    killer = GracefulKiller()
 
     if args['drive']:
         logger.info("Start in drive mode")
@@ -300,10 +301,10 @@ if __name__ == '__main__':
         cache = not args['--no_cache']
         train(cfg, tub, model, base_model=base_model)
     
-    while True:
-        time.sleep(1)
-        if killer.kill_now:
-            break
+#    while True:
+#        time.sleep(1)
+#        if killer.kill_now:
+#            break
 
 
 
