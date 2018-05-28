@@ -107,10 +107,6 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
                            ch_aux_tx_thresh = cfg.TX_CH_AUX_TRESH,
                            verbose = cfg.TX_VERBOSE
                            )
-        fpv = FPVWebController()
-        V.add(fpv,
-                inputs=['cam/image_array', 'pilot/annoted_img'],
-                threaded=True)        
     else:        
         #This web controller will create a web server that is capable
         #of managing steering, throttle, and modes, and more.
@@ -199,6 +195,12 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
 
         V.add(steering, inputs=['angle'])
         V.add(throttle, inputs=['throttle', 'user/mode'])
+
+    if use_tx or cfg.USE_TX_AS_DEFAULT:
+        fpv = FPVWebController()
+        V.add(fpv,
+                inputs=['cam/image_array', 'pilot/annoted_img', 'user/angle', 'user/throttle', 'user/mode', 'pilot/angle', 'pilot/throttle'],
+                threaded=True)        
 
     # add tub to save data
     inputs = ['cam/image_array', 'user/angle', 'user/throttle', 'user/mode', 'pilot/angle', 'pilot/throttle']

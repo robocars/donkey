@@ -56,19 +56,25 @@ class FPVWebController(tornado.web.Application):
         self.listen(self.port)
         tornado.ioloop.IOLoop.instance().start()
 
-
-    def run_threaded(self, img_arr=None, annoted_img=None):
+    def _run (self, img_arr=None, annoted_img=None, user_angle=None, user_throttle=None, user_mode=None, pilot_angle=None, pilot_throttle=None, throttle_boost=None):
         if (annoted_img is not None):
             self.img_arr = annoted_img
         else:
             self.img_arr = img_arr
+        self.user_angle = user_angle
+        self.user_throttle = user_throttle
+        self.user_mode = user_mode
+        self.pilot_angle = pilot_angle
+        self.pilot_throttle = pilot_throttle
+        self.throttle_boost = throttle_boost
+
+
+    def run_threaded(self, img_arr=None, annoted_img=None, user_angle=None, user_throttle=None, user_mode=None, pilot_angle=None, pilot_throttle=None, throttle_boost=None):
+        _run (img_arr, annoted_img, user_angle, user_throttle, user_mode, pilot_angle, pilot_throttle, throttle_boost)
         return 
         
-    def run(self, img_arr=None, annoted_img=None):
-        if (annoted_img is not None):
-            self.img_arr = annoted_img
-        else:
-            self.img_arr = img_arr
+    def run(self, img_arr=None, annoted_img=None, user_angle=None, user_throttle=None, user_mode=None, pilot_angle=None, pilot_throttle=None, throttle_boost=None):
+        _run (img_arr, annoted_img, user_angle, user_throttle, user_mode, pilot_angle, pilot_throttle, throttle_boost)
         return
 
 class Home(tornado.web.RequestHandler):

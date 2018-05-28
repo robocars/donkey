@@ -133,9 +133,9 @@ def detectBoostCondition(img, angle_min, angle_max):
     # Define region of interrest 
     imshape = img2.shape
     lower_left = [0,110]
-    lower_right = [160,110]
+    lower_right = [159,110]
     top_left = [0,20]
-    top_right = [160,20]
+    top_right = [159,20]
     top_top_left = [60,5]
     top_top_right = [120,5]    
     vertices = np.array([lower_left,top_left,top_top_left, top_top_right, top_right,lower_right],dtype=np.int32)
