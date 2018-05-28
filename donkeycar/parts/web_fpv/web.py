@@ -70,11 +70,11 @@ class FPVWebController(tornado.web.Application):
 
 
     def run_threaded(self, img_arr=None, annoted_img=None, user_angle=None, user_throttle=None, user_mode=None, pilot_angle=None, pilot_throttle=None, throttle_boost=None):
-        _run (img_arr, annoted_img, user_angle, user_throttle, user_mode, pilot_angle, pilot_throttle, throttle_boost)
+        self._run (img_arr, annoted_img, user_angle, user_throttle, user_mode, pilot_angle, pilot_throttle, throttle_boost)
         return 
         
     def run(self, img_arr=None, annoted_img=None, user_angle=None, user_throttle=None, user_mode=None, pilot_angle=None, pilot_throttle=None, throttle_boost=None):
-        _run (img_arr, annoted_img, user_angle, user_throttle, user_mode, pilot_angle, pilot_throttle, throttle_boost)
+        self._run (img_arr, annoted_img, user_angle, user_throttle, user_mode, pilot_angle, pilot_throttle, throttle_boost)
         return
 
 class Home(tornado.web.RequestHandler):
