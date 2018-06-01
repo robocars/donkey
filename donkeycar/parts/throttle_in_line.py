@@ -164,7 +164,7 @@ def detectBoostCondition(img, angle_min, angle_max):
         angle2=False
         for idx, line in enumerate(lines):
             angle = GetAngleOfLineBetweenTwoPoints(line[0][0],line[0][1],line[0][2],line[0][3])
-            logger.info("Angle detected : {}".format(angle))
+            logger.debug("Angle detected : {}".format(angle))
             #print(d[4]+" "+str(idx)+" "+str(angle))
             if (angle < angle_max and angle > angle_min):
                 angle1=True
@@ -176,7 +176,7 @@ def detectBoostCondition(img, angle_min, angle_max):
             if (angle > angle_max or angle < -angle_max):
                 angle1=False
                 angle2=False                
-        logger.info("Decision : {}".format(angle1 and angle2))
+        logger.debug("Decision : {}".format(angle1 and angle2))
         # Return decision (2 well positionned angles detected) and annoted picture
         return angle1 and angle2, annoted_img
     # No data for line decision, just return False and annoted picture
