@@ -23,8 +23,8 @@ from sys import platform
 import logging
 logger = logging.getLogger('donkey.txctrl')
 
-if platform != "darwin":
-    import serial
+#if platform != "darwin":
+import serial
 
 def map_range(x, X_min, X_max, Y_min, Y_max):
     '''
@@ -55,17 +55,22 @@ class Txserial():
 
     def init(self):
         # Open serial link
-        self.ser = serial.Serial(
+        try:
+            self.ser = serial.Serial(
 
-               port='/dev/serial0',
-               baudrate = 115200,
-               parity=serial.PARITY_NONE,
-               stopbits=serial.STOPBITS_ONE,
-               bytesize=serial.EIGHTBITS,
-               timeout=1
-        )
-        logger.info('/dev/serial0 initialized') 
-        self.ledStatus("init")       
+                port='/dev/serial0',
+                baudrate = 115200,
+                parity=serial.PARITY_NONE,
+                stopbits=serial.STOPBITS_ONE,
+                bytesize=serial.EIGHTBITS,
+                timeout=1
+            )
+            logger.info('/dev/serial0 initialized') 
+            self.ledStatus("init")       
+
+        except:
+            logger.info('Serial port not initialized')
+
         return True
 
     def poll(self, mode):
@@ -114,7 +119,8 @@ class Txserial():
 
     def ledStatus (self, status):
         status = status + "\n"
-        self.ser.write(status.encode())    
+        if (self.ser != None):
+            self.ser.write(status.encode())    
    
 
 class TxController(object):

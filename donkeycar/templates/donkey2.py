@@ -196,12 +196,6 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
         V.add(steering, inputs=['angle'])
         V.add(throttle, inputs=['throttle', 'user/mode'])
 
-    if use_tx or cfg.USE_TX_AS_DEFAULT:
-        fpv = FPVWebController()
-        V.add(fpv,
-                inputs=['cam/image_array', 'pilot/annoted_img', 'user/angle', 'user/throttle', 'user/mode', 'pilot/angle', 'pilot/throttle'],
-                threaded=True)        
-
     # add tub to save data
     inputs = ['cam/image_array', 'user/angle', 'user/throttle', 'user/mode', 'pilot/angle', 'pilot/throttle']
     types = ['image_array', 'float', 'float', 'str', 'numpy.float32', 'numpy.float32']
@@ -210,6 +204,12 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
     th = TubHandler(path=cfg.DATA_PATH)
     tub = th.new_tub_writer(inputs=inputs, types=types)
     V.add(tub, inputs=inputs, run_condition='recording')
+
+    if use_tx or cfg.USE_TX_AS_DEFAULT:
+        fpv = FPVWebController()
+        V.add(fpv,
+                inputs=['cam/image_array', 'pilot/annoted_img', 'user/angle', 'user/throttle', 'user/mode', 'pilot/angle', 'pilot/throttle', 'pilot/throttle_boost'],
+                threaded=True)        
 
     logger.info("Start main loop")
 

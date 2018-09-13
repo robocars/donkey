@@ -21,10 +21,15 @@ import tornado.ioloop
 import tornado.web
 import tornado.gen
 
+import asyncio
+
 from ... import utils
 
-    
-    
+import logging
+logger = logging.getLogger('donkey.web')
+
+
+
 class FPVWebController(tornado.web.Application):
 
     def __init__(self):
@@ -42,20 +47,21 @@ class FPVWebController(tornado.web.Application):
             (r"/", tornado.web.RedirectHandler, dict(url="/home")),
             (r"/home",Home),            
             (r"/video",VideoAPI),
+            (r"/tele",TelemetrySource),
             (r"/static/(.*)", tornado.web.StaticFileHandler, {"path": self.static_file_path}),
             ]
 
         settings = {'debug': True}
-
         super().__init__(handlers, **settings)
 
     def update(self, port=8887):
         ''' Start the tornado webserver. '''
         print(port)
+        asyncio.set_event_loop(asyncio.new_event_loop())
         self.port = int(port)
         self.listen(self.port)
         tornado.ioloop.IOLoop.instance().start()
-
+    
     def _run (self, img_arr=None, annoted_img=None, user_angle=None, user_throttle=None, user_mode=None, pilot_angle=None, pilot_throttle=None, throttle_boost=None):
         if (annoted_img is not None):
             self.img_arr = annoted_img
@@ -72,11 +78,12 @@ class FPVWebController(tornado.web.Application):
     def run_threaded(self, img_arr=None, annoted_img=None, user_angle=None, user_throttle=None, user_mode=None, pilot_angle=None, pilot_throttle=None, throttle_boost=None):
         self._run (img_arr, annoted_img, user_angle, user_throttle, user_mode, pilot_angle, pilot_throttle, throttle_boost)
         return 
-        
+
     def run(self, img_arr=None, annoted_img=None, user_angle=None, user_throttle=None, user_mode=None, pilot_angle=None, pilot_throttle=None, throttle_boost=None):
         self._run (img_arr, annoted_img, user_angle, user_throttle, user_mode, pilot_angle, pilot_throttle, throttle_boost)
         return
 
+        
 class Home(tornado.web.RequestHandler):
 
     def get(self):
@@ -113,3 +120,41 @@ class VideoAPI(tornado.web.RequestHandler):
                 yield tornado.gen.Task(self.flush)
             else:
                 yield tornado.gen.Task(ioloop.add_timeout, ioloop.time() + interval)
+
+class TelemetrySource(tornado.web.RequestHandler):
+    """Basic handler for server-sent events."""
+    def initialize(self):
+        """The ``source`` parameter is a string that is updated with
+        new data. The :class:`EventSouce` instance will continuously
+        check if it is updated and publish to clients when it is.
+        """
+        self.data = None
+        self._last = None
+        self.set_header('content-type', 'text/event-stream')
+        self.set_header('cache-control', 'no-cache')
+
+    @tornado.gen.coroutine
+    def publish(self, data):
+        """Pushes data to a listener."""
+        try:
+            self.write('data: {}\n\n'.format(data))
+            yield self.flush()
+        except StreamClosedError:
+            pass
+
+    @tornado.gen.coroutine
+    def get(self):
+        while True:
+            self.data = {}
+            self.data['user_angle'] = self.user_angle
+            self.data['user_throttle'] = self.user_throttle
+            self.data['user_mode'] = self.user_mode
+            self.data['pilot_angle'] = self.pilot_angle
+            self.data['pilot_throttle'] = self.pilot_throttle
+            self.data['throttle_boost'] = self.throttle_boost
+            if self.data != self._last:
+                yield self.publish(json.dumps(self.data, ensure_ascii=False))
+                self._last = self.data
+            else:
+                yield gen.sleep(0.005)
+

@@ -46,7 +46,7 @@ class Vehicle():
         entry['run_condition'] = run_condition
 
         if threaded:
-            t = Thread(target=part.update, args=())
+            t = Thread(name=part.__class__.__name__, target=part.update, args=())
             t.daemon = True
             entry['thread'] = t
 
