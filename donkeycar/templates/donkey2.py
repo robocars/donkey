@@ -191,7 +191,9 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
         throttle = PWMThrottle(controller=throttle_controller,
                             max_pulse=cfg.THROTTLE_FORWARD_PWM,
                             zero_pulse=cfg.THROTTLE_STOPPED_PWM,
-                            min_pulse=cfg.THROTTLE_REVERSE_PWM)
+                            min_pulse=cfg.THROTTLE_REVERSE_PWM,
+                            kick_pulse=cfg.THROTTLE_KICK_PULSE,
+                            min_spd_pulse=cfg.THROTTLE_MIN_SPD_PULSE)
 
         V.add(steering, inputs=['angle'])
         V.add(throttle, inputs=['throttle', 'user/mode'])

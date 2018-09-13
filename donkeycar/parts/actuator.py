@@ -70,12 +70,16 @@ class PWMThrottle:
     def __init__(self, controller=None,
                        max_pulse=300,
                        min_pulse=490,
-                       zero_pulse=350):
+                       zero_pulse=350,
+                       min_spd_pulse = 395,
+                       kick_pulse=410):
 
         self.controller = controller
         self.max_pulse = max_pulse
         self.min_pulse = min_pulse
         self.zero_pulse = zero_pulse
+        self.kick_pulse = kick_pulse
+        self.min_spd_pulse = min_spd_pulse
         self.mode = "user"
         self.kick = []
         #send zero pulse to calibrate ESC
@@ -83,16 +87,17 @@ class PWMThrottle:
         time.sleep(1)
 
     def reloadKick(self):
-        self.kick = [410,410,410,410]
+        self.kick = [self.kick_pulse,self.kick_pulse,self.kick_pulse,self.kick_pulse]
         logger.debug('Kicker reloaded')
 
     def run(self, throttle, mode):
         if self.mode == "user" and mode != "user":
             self.reloadKick()
+
         self.mode = mode
 
         logger.debug('Output throttle order= {:01.2f}'.format(throttle))
-        if throttle > 0:
+        if ((throttle > 0) or (self.mode != "user")):
             pulse = dk.utils.map_range(throttle,
                                     0, self.MAX_THROTTLE, 
                                     self.zero_pulse, self.max_pulse)
@@ -102,9 +107,9 @@ class PWMThrottle:
                 pulse = self.kick.pop()
 
 # Ensure thottle order would not go below a limit (risk of motor shutdown)
-            if self.mode != "user" and pulse < 395:
+            if self.mode != "user" and pulse < self.min_spd_pulse:
                 logger.debug('PWMThrottle order too low')
-                pulse = 395
+                pulse = self.min_spd_pulse
         else:
             pulse = dk.utils.map_range(throttle,
                                     self.MIN_THROTTLE, 0, 
