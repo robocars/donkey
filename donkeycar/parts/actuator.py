@@ -72,7 +72,8 @@ class PWMThrottle:
                        min_pulse=490,
                        zero_pulse=350,
                        min_spd_pulse = 395,
-                       kick_pulse=410):
+                       kick_pulse=410, 
+                       constant_mode=0):
 
         self.controller = controller
         self.max_pulse = max_pulse
@@ -80,6 +81,7 @@ class PWMThrottle:
         self.zero_pulse = zero_pulse
         self.kick_pulse = kick_pulse
         self.min_spd_pulse = min_spd_pulse
+        self.constant_mode = constant_mode
         self.mode = "user"
         self.kick = []
         #send zero pulse to calibrate ESC
@@ -101,6 +103,9 @@ class PWMThrottle:
             pulse = dk.utils.map_range(throttle,
                                     0, self.MAX_THROTTLE, 
                                     self.zero_pulse, self.max_pulse)
+            # If constant mode, just apply always kick value 
+            if (self.constant_mode == 1):
+                pulse = self.kick_pulse
 # Motor cann not start a too low throttle, kick it for the first cycles             
             if len(self.kick)>0:
                 logger.debug('Kicker active')

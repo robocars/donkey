@@ -149,7 +149,17 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
     kl = KerasCategorical()
     #kl = KerasLinear()
     if model_path:
-        kl.load(model_path)
+        if (os.path.exists(model_path)):
+            logger.info("IA : Load integrated model")
+            kl.load(model_path)
+        else:
+            # Model reconstruction from JSON file
+            logger.info("IA : Load Weights + Model Architecture model")
+            with open(model_path+'.json', 'r') as f:
+                model = model_from_json(f.read())
+
+            # Load weights into the new model
+            model.load_weights(model_path+'.h5')
 
     V.add(kl, inputs=['cam/image_array'],
         outputs=['pilot/angle', 'pilot/throttle'],
@@ -193,7 +203,8 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
                             zero_pulse=cfg.THROTTLE_STOPPED_PWM,
                             min_pulse=cfg.THROTTLE_REVERSE_PWM,
                             kick_pulse=cfg.THROTTLE_KICK_PULSE,
-                            min_spd_pulse=cfg.THROTTLE_MIN_SPD_PULSE)
+                            min_spd_pulse=cfg.THROTTLE_MIN_SPD_PULSE,
+                            constant_mode==cfg.THROTTLE_CONSTANT_MODE)
 
         V.add(steering, inputs=['angle'])
         V.add(throttle, inputs=['throttle', 'user/mode'])
