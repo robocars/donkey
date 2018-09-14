@@ -40,6 +40,7 @@ import donkeycar as dk
 from donkeycar.parts.camera import Webcam, PiCamera
 from donkeycar.parts.transform import Lambda
 from donkeycar.parts.keras import KerasCategorical, KerasLinear
+
 from donkeycar.parts.actuator import PCA9685, PWMSteering, PWMThrottle
 from donkeycar.parts.datastore import TubHandler, TubGroup
 from donkeycar.parts.controller import LocalWebController, FPVWebController, JoystickController, TxController
@@ -155,11 +156,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
         else:
             # Model reconstruction from JSON file
             logger.info("IA : Load Weights + Model Architecture model")
-            with open(model_path+'.json', 'r') as f:
-                model = model_from_json(f.read())
-
-            # Load weights into the new model
-            model.load_weights(model_path+'.h5')
+            kl.load2(model_path)
 
     V.add(kl, inputs=['cam/image_array'],
         outputs=['pilot/angle', 'pilot/throttle'],

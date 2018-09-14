@@ -15,6 +15,8 @@ models to help direct the vehicles motion.
 import os
 import numpy as np
 import keras
+import keras.models
+
 
 import donkeycar as dk
 import tensorflow as tf
@@ -25,6 +27,13 @@ class KerasPilot():
  
     def load(self, model_path):
         self.model = keras.models.load_model(model_path)
+
+    def load2(self, model_path):
+        with open(model_path+'.json', 'r') as f:
+            self.model = model_from_json(f.read())
+
+        # Load weights into the new model
+        self.model.load_weights(model_path+'.h5')
 
     
     def shutdown(self):
