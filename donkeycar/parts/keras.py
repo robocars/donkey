@@ -15,7 +15,7 @@ models to help direct the vehicles motion.
 import os
 import numpy as np
 import keras
-import keras.models
+from keras.models import model_from_json
 
 
 import donkeycar as dk
