@@ -209,7 +209,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
 
     if cfg.BATTERY_USE_MONITOR:
         logger.info("Init Battery Monitor part")
-        battery_controller = BatteryController (nbCells=BATTERY_NCELLS)
+        battery_controller = BatteryController (nbCells=cfg.BATTERY_NCELLS)
         V.add(battery_controller, outputs = ['battery'], threaded=True)
 
     # add tub to save data
