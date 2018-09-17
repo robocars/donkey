@@ -4,7 +4,7 @@ import donkeycar as dk
 # Import the ADS1x15 module.
 import Adafruit_ADS1x15
 
-GAIN = 1
+GAIN = 2/3
 CELLS_DEFAULT_VOLTAGE = 3.7
 CELLS_THRESH_VOLTAGE = 3
 
