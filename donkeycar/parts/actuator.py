@@ -104,7 +104,7 @@ class PWMThrottle:
                                     0, self.MAX_THROTTLE, 
                                     self.zero_pulse, self.max_pulse)
             # If constant mode, just apply always kick value 
-            if (self.constant_mode == 1):
+            if (self.mode != "user" and self.constant_mode == 1):
                 pulse = self.kick_pulse
 # Motor cann not start a too low throttle, kick it for the first cycles             
             if len(self.kick)>0:
