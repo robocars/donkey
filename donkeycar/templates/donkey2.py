@@ -208,6 +208,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
         V.add(throttle, inputs=['throttle', 'user/mode'])
 
     if cfg.BATTERY_USE_MONITOR:
+        logger.info("Init Battery Monitor part")
         battery_controller = BatteryController (nbCells=BATTERY_NCELLS)
         V.add(battery_controller, outputs = ['battery'], threaded=True)
 

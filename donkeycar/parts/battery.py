@@ -16,8 +16,8 @@ class BatteryController(object):
     Battery Ctrl
     '''
 
-    def __init__(self, poll_delay=0.0,
-                 verbose = False, nbCells
+    def __init__(self,
+                 verbose = False, nbCells = 2
                  ):
 
         self.verbose = verbose
