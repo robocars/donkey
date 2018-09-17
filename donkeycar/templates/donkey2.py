@@ -46,7 +46,7 @@ from donkeycar.parts.datastore import TubHandler, TubGroup
 from donkeycar.parts.controller import LocalWebController, FPVWebController, JoystickController, TxController
 from donkeycar.parts.emergency import EmergencyController
 from donkeycar.parts.throttle_in_line import ThrottleInLine
-from donkeycar.parts.battery import Battery
+from donkeycar.parts.battery import BatteryController
 
 from sys import platform
 
