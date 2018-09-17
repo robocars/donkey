@@ -35,7 +35,7 @@ class BatteryController(object):
             values = [0]*4
             for i in range(CELLS):
                 self.batteryLevel[i] = self.adc.read_adc(i, gain=GAIN)
-                logger.debug('Battery Cell {} Voltage {:01.2f}'.format(i, self.batteryLevel[i]))
+                logger.debug('Cell {} Voltage {:01.2f}'.format(i, self.batteryLevel[i]))
 
 
 
