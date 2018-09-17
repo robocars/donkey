@@ -24,7 +24,7 @@ class BatteryController(object):
         self.running = True
         self.nbCells = nbCells
         self.adc = Adafruit_ADS1x15.ADS1115()
-        self.batteryLevel = [CELLS_DEFULT_VOLTAGE] * self.nbCells
+        self.batteryLevel = [CELLS_DEFAULT_VOLTAGE] * self.nbCells
 
     def update(self):
         '''
