@@ -45,8 +45,9 @@ from donkeycar.parts.actuator import PCA9685, PWMSteering, PWMThrottle
 from donkeycar.parts.datastore import TubHandler, TubGroup
 from donkeycar.parts.controller import LocalWebController, FPVWebController, JoystickController, TxController
 from donkeycar.parts.emergency import EmergencyController
-from donkeycar.parts.emergency import EmergencyController
 from donkeycar.parts.throttle_in_line import ThrottleInLine
+from donkeycar.parts.battery import Battery
+
 from sys import platform
 
 
@@ -205,6 +206,10 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
 
         V.add(steering, inputs=['angle'])
         V.add(throttle, inputs=['throttle', 'user/mode'])
+
+    if cfg.BATTERY_USE_MONITOR:
+        battery_controller = BatteryController (nbCells=BATTERY_NCELLS)
+        V.add(battery_controller, outputs = ['battery'], threaded=True)
 
     # add tub to save data
     inputs = ['cam/image_array', 'user/angle', 'user/throttle', 'user/mode', 'pilot/angle', 'pilot/throttle']
