@@ -4,7 +4,7 @@ import donkeycar as dk
 import logging
 logger = logging.getLogger('donkey.txmenu')
 
-class TxActionController(object):
+class TxAuxCh(object):
     '''
     Battery Ctrl
     '''
