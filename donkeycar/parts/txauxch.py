@@ -29,15 +29,15 @@ class TxAuxCh(object):
             if (ch6 == True):
                 logger.info('Ch6 - switch to On')
                 logger.info('ChAux : Switch drive mode to local')
-                self.mode = 'local'
+                self.user_mode = 'local'
             if (ch6 == False):
                 logger.info('Ch6 - switch to Off')
                 logger.info('ChAux : Switch drive mode to user')
-                self.mode = 'user'
+                self.user_mode = 'user'
         if (ch5 != self.ch5):
                 if (ch5 == True):
                     logger.info('Ch5 - switch to On')
-                    if (self.mode == 'user'):
+                    if (user_mode == 'user'):
                         logger.info('ChAux : exit()')
                         self.tx.ledStatus('init')
                         time.sleep(0.2)
@@ -46,7 +46,7 @@ class TxAuxCh(object):
                         self.flag = "MK1"
                 if (ch5 == False):
                     logger.info('Ch5 - switch to Off')
-                    if (self.mode == 'user'):
+                    if (user_mode == 'user'):
                         logger.info('No Aux action for that !')
                     else:
                         self.flag = ""
