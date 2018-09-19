@@ -14,20 +14,16 @@ class TxAuxCh(object):
                  ):
 
         self.verbose = verbose
-        self.running = True
         self.user_mode = 'user'
         self.ch5 = False
         self.ch6 = False
         self.flag = ""
 
-    def update(self):
-        '''
-        poll for emergency events
-        '''
+    def run_threaded(self):
+        raise Exception("We expect for this part to be run with the threaded=False argument.")
+        return False
 
-        while self.running:
-
-    def run_threaded(self, user_mode, ch5, ch6):
+    def run(self, user_mode, ch5, ch6):
         #ch6 is used to switch manual/autonomous driving
         if (ch6 != self.ch6):
             if (ch6 == True):
@@ -56,12 +52,8 @@ class TxAuxCh(object):
 
         self.ch5 = ch5
         self.ch6 = ch6
-        return self.user_mode, self.flag
-
-    def run(self):
-        raise Exception("We expect for this part to be run with the threaded=True argument.")
-        return False
-
+        return self.user_mode, self.flag):
+    
     def shutdown(self):
         self.running = False
         time.sleep(0.5)

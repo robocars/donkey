@@ -126,7 +126,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
         V.add(actionctr,
           inputs=['user/mode', 'ch5', 'ch6'],
           outputs=['user/mode', 'flag'],
-          threaded=True)
+          threaded=False)
 
     if cfg.USE_THROTTLEINLINE:
         logger.info("Init throttleInLine part")
