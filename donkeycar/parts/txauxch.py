@@ -45,8 +45,9 @@ class TxAuxCh(object):
                     else:
                         self.flag = "MK1"
                 if (ch5 == False):
-                    logger.info('Ch6 - switch to Off')
+                    logger.info('Ch5 - switch to Off')
                     if (self.mode == 'user'):
+                        logger.info('No Aux action for that !')
                     else:
                         self.flag = ""
 
