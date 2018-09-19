@@ -110,6 +110,8 @@ class OriginalWriter:
                 elif typ is 'str':
                     if key == 'user/mode':
                         self.out['extra']['mode'] = val
+                    elif key == 'flag':
+                        self.out['extra']['flag'] = val
                 elif typ == 'image_array':
                     img = Image.fromarray(np.uint8(val))
                 elif typ == 'boolean':

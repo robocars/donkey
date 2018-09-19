@@ -43,7 +43,7 @@ from donkeycar.parts.keras import KerasCategorical, KerasLinear
 
 from donkeycar.parts.actuator import PCA9685, PWMSteering, PWMThrottle
 from donkeycar.parts.datastore import TubHandler, TubGroup
-from donkeycar.parts.controller import LocalWebController, FPVWebController, JoystickController, TxController
+from donkeycar.parts.controller import LocalWebController, FPVWebController, JoystickController, TxController, TxActionController
 from donkeycar.parts.emergency import EmergencyController
 from donkeycar.parts.throttle_in_line import ThrottleInLine
 from donkeycar.parts.battery import BatteryController
@@ -116,7 +116,15 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
 
     V.add(ctr,
           inputs=['cam/image_array', 'pilot/annoted_img'],
-          outputs=['user/angle', 'user/throttle', 'user/mode', 'recording'],
+          outputs=['user/angle', 'user/throttle', 'user/mode', 'recording', 'ch5', 'ch6'],
+          threaded=True)
+
+
+    if use_tx or cfg.USE_TX_AS_DEFAULT:
+        actionctr = TxActionController()
+        V.add(actionctr,
+          inputs=['user/mode', 'ch5', 'ch6'],
+          outputs=['user/mode', 'flag'],
           threaded=True)
 
     if cfg.USE_THROTTLEINLINE:
@@ -213,8 +221,8 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
         V.add(battery_controller, outputs = ['battery'], threaded=True)
 
     # add tub to save data
-    inputs = ['cam/image_array', 'user/angle', 'user/throttle', 'user/mode', 'pilot/angle', 'pilot/throttle']
-    types = ['image_array', 'float', 'float', 'str', 'numpy.float32', 'numpy.float32']
+    inputs = ['cam/image_array', 'user/angle', 'user/throttle', 'user/mode', 'pilot/angle', 'pilot/throttle', 'flag']
+    types = ['image_array', 'float', 'float', 'str', 'numpy.float32', 'numpy.float32', 'str']
 
     logger.info("Init Tub Handler part")
     th = TubHandler(path=cfg.DATA_PATH)

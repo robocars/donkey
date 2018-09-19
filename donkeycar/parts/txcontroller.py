@@ -153,8 +153,6 @@ class TxController(object):
 
         self.ch5 = False
         self.ch6 = False
-        self.last_ch5 = False
-        self.last_ch6 = False
         self.recording = False
         self.auto_record_on_throttle = auto_record_on_throttle
         self.tx = None
@@ -209,28 +207,6 @@ class TxController(object):
 
             if (ch6_tx < self.ch_aux_tx_thresh-100):
                 self.ch6 = False
-    
-            if (self.ch5 != self.last_ch5):
-                if (self.ch5 == True):
-                    logger.info('Ch5 - switch to On')
-                    logger.info('ChAux : Switch drive mode to local')
-                    self.mode = 'local'
-                if (self.ch5 == False):
-                    logger.info('Ch5 - switch to Off')
-                    logger.info('ChAux : Switch drive mode to user')
-                    self.mode = 'user'
-            if (self.ch6 != self.last_ch6):
-                if (self.ch6 == True):
-                    logger.info('Ch6 - switch to On')
-                    logger.info('ChAux : exit()')
-                    self.tx.ledStatus('init')
-                    time.sleep(0.2)
-                    os._exit(1)
-                if (self.ch6 == False):
-                    logger.info('Ch6 - switch to Off')
-                
-            self.last_ch5 = self.ch5
-            self.last_ch6 = self.ch6
 
             logger.debug('angle= {:01.2f} throttle= {:01.2f}'.format (self.angle, self.throttle))
             time.sleep(self.poll_delay)
@@ -240,7 +216,7 @@ class TxController(object):
             self.img_arr = annoted_img
         else:
             self.img_arr = img_arr
-        return self.angle, self.throttle, self.mode, self.recording
+        return self.angle, self.throttle, self.mode, self.recording, self.ch5, self.ch6
 
     def run(self, img_arr=None, img_annoted=None):
         raise Exception("We expect for this part to be run with the threaded=True argument.")
