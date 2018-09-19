@@ -43,7 +43,7 @@ from donkeycar.parts.keras import KerasCategorical, KerasLinear
 
 from donkeycar.parts.actuator import PCA9685, PWMSteering, PWMThrottle
 from donkeycar.parts.datastore import TubHandler, TubGroup
-from donkeycar.parts.controller import LocalWebController, FPVWebController, JoystickController, TxController, TxActionController
+from donkeycar.parts.controller import LocalWebController, FPVWebController, JoystickController, TxController, TxAuxCh
 from donkeycar.parts.emergency import EmergencyController
 from donkeycar.parts.throttle_in_line import ThrottleInLine
 from donkeycar.parts.battery import BatteryController
@@ -121,7 +121,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
 
 
     if use_tx or cfg.USE_TX_AS_DEFAULT:
-        actionctr = TxActionController()
+        actionctr = TxAuxCh()
         V.add(actionctr,
           inputs=['user/mode', 'ch5', 'ch6'],
           outputs=['user/mode', 'flag'],
