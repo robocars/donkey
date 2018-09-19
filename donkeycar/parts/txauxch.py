@@ -53,7 +53,7 @@ class TxAuxCh(object):
 
         self.ch5 = ch5
         self.ch6 = ch6
-        return self.user_mode, self.flag):
+        return self.user_mode, self.flag
     
     def shutdown(self):
         self.running = False
