@@ -169,13 +169,13 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
             kl.load2(model_path)
 
     V.add(kl, inputs=['cam/image_array'],
-        outputs=['pilot/angle', 'pilot/throttle'],
+        outputs=['pilot/angle', 'pilot/throttle', 'pilot/fullspeed', 'pilot/brake'],
         run_condition='run_pilot')
 
     # Choose what inputs should change the car.
     def drive_mode(mode,
                    user_angle, user_throttle,
-                   pilot_angle, pilot_throttle, throttle_boost):
+                   pilot_angle, pilot_throttle, throttle_boost, fullspeed):
         if mode == 'user':
             return user_angle, user_throttle
 
@@ -184,6 +184,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
                 if throttle_boost:
                     pilot_throttle = pilot_throttle*cfg.THROTTLEINLINE_BOOST_FACTOR
                     logger.debug("Apply Boost")
+            logger.debug('fullspeed :', fullspeed)
             if mode == 'local_angle':
                 return pilot_angle, user_throttle
             else:
@@ -193,7 +194,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
     drive_mode_part = Lambda(drive_mode)
     V.add(drive_mode_part,
           inputs=['user/mode', 'user/angle', 'user/throttle',
-                  'pilot/angle', 'pilot/throttle', 'pilot/throttle_boost'],
+                  'pilot/angle', 'pilot/throttle', 'pilot/throttle_boost', 'pilot/fullspeed'],
           outputs=['angle', 'throttle'])
 
     if cfg.USE_PWM_ACTUATOR:

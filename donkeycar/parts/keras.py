@@ -89,11 +89,13 @@ class KerasCategorical(KerasPilot):
         
     def run(self, img_arr):
         img_arr = img_arr.reshape((1,) + img_arr.shape)
-        angle_binned, throttle = self.model.predict(img_arr)
+        angle_binned, throttle, fullspeed_binned, brake_binned = self.model.predict(img_arr)
         #print('throttle', throttle)
         #angle_certainty = max(angle_binned[0])
         angle_unbinned = dk.utils.linear_unbin(angle_binned)
-        return angle_unbinned, throttle[0][0]
+        fullspeed_unbinned = dk.utils.linear_unbin(fullspeed_binned)
+        brake_unbinned = dk.utils.linear_unbin(brake_binned)
+        return angle_unbinned, throttle[0][0], fullspeed_unbinned, brake_unbinned
     
     
     
@@ -183,11 +185,16 @@ def default_categorical():
     #continous output of throttle
     throttle_out = Dense(1, activation='relu', name='throttle_out')(x)      # Reduce to 1 number, Positive number only
     
+    fullspeed_out = Dense(15, activation='softmax', name='fullspeed_out')(x)        
+    brake_out = Dense(15, activation='softmax', name='brake_out')(x)
+
     model = Model(inputs=[img_in], outputs=[angle_out, throttle_out])
     model.compile(optimizer='adam',
                   loss={'angle_out': 'categorical_crossentropy', 
-                        'throttle_out': 'mean_absolute_error'},
-                  loss_weights={'angle_out': 0.9, 'throttle_out': .001})
+                        'throttle_out': 'mean_absolute_error', 
+                        'fullspeed_out': 'categorical_crossentropy',
+                        'brake_out' : 'categorical_crossentropy'},
+                  loss_weights={'angle_out': 0.9, 'throttle_out': .001, 'fullspeed_out': 0.9, 'brake_out': 0.9})
 
     return model
 
