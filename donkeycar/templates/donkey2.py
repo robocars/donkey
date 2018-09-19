@@ -43,7 +43,8 @@ from donkeycar.parts.keras import KerasCategorical, KerasLinear
 
 from donkeycar.parts.actuator import PCA9685, PWMSteering, PWMThrottle
 from donkeycar.parts.datastore import TubHandler, TubGroup
-from donkeycar.parts.controller import LocalWebController, FPVWebController, JoystickController, TxController, TxAuxCh
+from donkeycar.parts.controller import LocalWebController, FPVWebController, JoystickController, TxController
+from donkeycar.parts.txauxch import TxAuxCh
 from donkeycar.parts.emergency import EmergencyController
 from donkeycar.parts.throttle_in_line import ThrottleInLine
 from donkeycar.parts.battery import BatteryController

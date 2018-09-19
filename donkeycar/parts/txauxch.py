@@ -2,7 +2,7 @@ import time
 import donkeycar as dk
 
 import logging
-logger = logging.getLogger('donkey.txmenu')
+logger = logging.getLogger('donkey.txaux')
 
 class TxAuxCh(object):
     '''
