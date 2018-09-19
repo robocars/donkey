@@ -37,11 +37,11 @@ class TxAuxCh(object):
         if (ch5 != self.ch5):
                 if (ch5 == True):
                     logger.info('Ch5 - switch to On')
-                    if (user_mode != 'user'):
+                    if (user_mode == 'user'):
                         self.flag = "MK1"
                 if (ch5 == False):
                     logger.info('Ch5 - switch to Off')
-                    if (user_mode != 'user'):
+                    if (user_mode == 'user'):
                         self.flag = ""
 
         self.ch5 = ch5
