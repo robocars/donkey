@@ -188,7 +188,7 @@ def default_categorical():
     fullspeed_out = Dense(15, activation='softmax', name='fullspeed_out')(x)        
     brake_out = Dense(15, activation='softmax', name='brake_out')(x)
 
-    model = Model(inputs=[img_in], outputs=[angle_out, throttle_out])
+    model = Model(inputs=[img_in], outputs=[angle_out, throttle_out, fullspeed_out, brake_out])
     model.compile(optimizer='adam',
                   loss={'angle_out': 'categorical_crossentropy', 
                         'throttle_out': 'mean_absolute_error', 
