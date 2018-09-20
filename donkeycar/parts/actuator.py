@@ -72,7 +72,9 @@ class PWMThrottle:
                        min_pulse=490,
                        zero_pulse=350,
                        min_spd_pulse = 395,
-                       kick_pulse=410, 
+                       kick_pulse=410,
+                       fullspeed_pulse = 420,
+                       brake_pulse = 400, 
                        constant_mode=0):
 
         self.controller = controller
@@ -80,6 +82,8 @@ class PWMThrottle:
         self.min_pulse = min_pulse
         self.zero_pulse = zero_pulse
         self.kick_pulse = kick_pulse
+        self.fullspeed_pulse = fullspeed_pulse
+        self.brake_pulse = brake_pulse
         self.min_spd_pulse = min_spd_pulse
         self.constant_mode = constant_mode
         self.mode = "user"
@@ -92,7 +96,7 @@ class PWMThrottle:
         self.kick = [self.kick_pulse,self.kick_pulse,self.kick_pulse,self.kick_pulse]
         logger.debug('Kicker reloaded')
 
-    def run(self, throttle, mode):
+    def run(self, throttle, mode, fullspeed, brake):
         if self.mode == "user" and mode != "user":
             self.reloadKick()
 
@@ -105,7 +109,15 @@ class PWMThrottle:
                                     self.zero_pulse, self.max_pulse)
             # If constant mode, just apply always kick value 
             if (self.mode != "user" and self.constant_mode == 1):
-                pulse = self.kick_pulse
+                if (brake > 0.9):
+                    logger.debug('constant speed mode : brake')
+                    pulse = self.brake_pulse
+                elif (fullspeed > 0.9):
+                    logger.debug('constant speed mode : fullspeed')
+                    pulse = self.fullspeed_pulse
+                else:
+                    logger.debug('constant speed mode : regular speed')
+                    pulse = self.kick_pulse
 # Motor cann not start a too low throttle, kick it for the first cycles             
             if len(self.kick)>0:
                 logger.debug('Kicker active')

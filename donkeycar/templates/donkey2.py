@@ -124,8 +124,8 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
     if use_tx or cfg.USE_TX_AS_DEFAULT:
         actionctr = TxAuxCh()
         V.add(actionctr,
-          inputs=['user/mode', 'ch5', 'ch6'],
-          outputs=['user/mode', 'flag'],
+          inputs=['user/mode', 'ch5', 'ch6', 'recording'],
+          outputs=['user/mode', 'flag', 'recording'],
           threaded=False)
 
     if cfg.USE_THROTTLEINLINE:
@@ -175,7 +175,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
     # Choose what inputs should change the car.
     def drive_mode(mode,
                    user_angle, user_throttle,
-                   pilot_angle, pilot_throttle, throttle_boost, fullspeed):
+                   pilot_angle, pilot_throttle, throttle_boost):
         if mode == 'user':
             return user_angle, user_throttle
 
@@ -184,7 +184,6 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
                 if throttle_boost:
                     pilot_throttle = pilot_throttle*cfg.THROTTLEINLINE_BOOST_FACTOR
                     logger.debug("Apply Boost")
-            logger.debug('fullspeed :', fullspeed)
             if mode == 'local_angle':
                 return pilot_angle, user_throttle
             else:
@@ -194,7 +193,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
     drive_mode_part = Lambda(drive_mode)
     V.add(drive_mode_part,
           inputs=['user/mode', 'user/angle', 'user/throttle',
-                  'pilot/angle', 'pilot/throttle', 'pilot/throttle_boost', 'pilot/fullspeed'],
+                  'pilot/angle', 'pilot/throttle', 'pilot/throttle_boost'],
           outputs=['angle', 'throttle'])
 
     if cfg.USE_PWM_ACTUATOR:
@@ -211,11 +210,13 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
                             zero_pulse=cfg.THROTTLE_STOPPED_PWM,
                             min_pulse=cfg.THROTTLE_REVERSE_PWM,
                             kick_pulse=cfg.THROTTLE_KICK_PULSE,
+                            fullspeed_pulse=cfg.THROTTLE_FULLSPEED_PULSE,
+                            brake_pulse=cfg.THROTTLE_BRAKE_PULSE,
                             min_spd_pulse=cfg.THROTTLE_MIN_SPD_PULSE,
                             constant_mode=cfg.THROTTLE_CONSTANT_MODE)
 
         V.add(steering, inputs=['angle'])
-        V.add(throttle, inputs=['throttle', 'user/mode'])
+        V.add(throttle, inputs=['throttle', 'user/mode', 'pilot/fullspeed', 'pilot/brake'])
 
     if cfg.BATTERY_USE_MONITOR:
         logger.info("Init Battery Monitor part")

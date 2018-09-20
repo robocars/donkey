@@ -17,13 +17,16 @@ class TxAuxCh(object):
         self.user_mode = 'user'
         self.ch5 = False
         self.ch6 = False
+        self.recording = False
         self.flag = ""
 
     def run_threaded(self):
         raise Exception("We expect for this part to be run with the threaded=False argument.")
         return False
 
-    def run(self, user_mode, ch5, ch6):
+    def run(self, user_mode, ch5, ch6, recording):
+        self.recording = recording
+
         #ch6 is used to switch manual/autonomous driving
         if (ch6 != self.ch6):
             if (ch6 == True):
@@ -39,14 +42,16 @@ class TxAuxCh(object):
                     logger.info('Ch5 - switch to On')
                     if (user_mode == 'user'):
                         self.flag = "MK1"
+                    else:
+                        #enforce recording
+                        self.recording = True
                 if (ch5 == False):
                     logger.info('Ch5 - switch to Off')
                     if (user_mode == 'user'):
                         self.flag = ""
-
         self.ch5 = ch5
         self.ch6 = ch6
-        return self.user_mode, self.flag
+        return self.user_mode, self.flag, self.recording
     
     def shutdown(self):
         self.running = False
