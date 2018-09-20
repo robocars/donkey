@@ -25,7 +25,6 @@ class TxAuxCh(object):
         return False
 
     def run(self, user_mode, ch5, ch6, recording):
-        self.recording = recording
 
         #ch6 is used to switch manual/autonomous driving
         if (ch6 != self.ch6):
@@ -53,11 +52,11 @@ class TxAuxCh(object):
                         self.flag = ""
                     else:
                         logger.info('ChAux - switch recording to Off')
-                        self.recording = True
+                        self.recording = False
 
         self.ch5 = ch5
         self.ch6 = ch6
-        return self.user_mode, self.flag, self.recording
+        return self.user_mode, self.flag, self.recording or recording
     
     def shutdown(self):
         self.running = False
