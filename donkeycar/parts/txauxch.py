@@ -40,18 +40,21 @@ class TxAuxCh(object):
         if (ch5 != self.ch5):
                 if (ch5 == True):
                     logger.info('Ch5 - switch to On')
-                    if (user_mode == 'user'):
+                    if (self.user_mode == 'user'):
                         logger.info('ChAux - Switch Flag MK1 on')
                         self.flag = "MK1"
                     else:
-                        #enforce recording
                         logger.info('ChAux - switch recording to On')
                         self.recording = True
                 if (ch5 == False):
                     logger.info('Ch5 - switch to Off')
-                    if (user_mode == 'user'):
+                    if (self.user_mode == 'user'):
                         logger.info('ChAux - Switch Flag off')
                         self.flag = ""
+                    else:
+                        logger.info('ChAux - switch recording to Off')
+                        self.recording = True
+
         self.ch5 = ch5
         self.ch6 = ch6
         return self.user_mode, self.flag, self.recording
