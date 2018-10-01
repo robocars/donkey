@@ -123,11 +123,15 @@ class Vehicle():
                 #get inputs from memory
                 inputs = self.mem.get(entry['inputs'])
 
-                #run the part
-                if entry.get('thread'):
-                    outputs = p.run_threaded(*inputs)
-                else:
-                    outputs = p.run(*inputs)
+                try:
+                    #run the part
+                    if entry.get('thread'):
+                        outputs = p.run_threaded(*inputs)
+                    else:
+                        outputs = p.run(*inputs)
+                except Exception as e:
+                    print("Exception while calling parts "+p.__class__.__name__)
+                    print(e):                
 
                 #save the output to memory
                 if outputs is not None:
