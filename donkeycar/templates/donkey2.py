@@ -75,7 +75,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
 
     logger.info("Init Cam part")
     if cfg.USE_WEB_CAMERA:
-        cam = Webcam(resolution=cfg.CAMERA_RESOLUTION)
+        cam = Webcam(resolution=cfg.CAMERA_RESOLUTION, fps=cfg.CAMERA_FPS)
     else:
         cam = PiCamera(resolution=cfg.CAMERA_RESOLUTION)
         

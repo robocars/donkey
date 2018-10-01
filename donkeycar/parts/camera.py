@@ -63,7 +63,7 @@ class PiCamera(BaseCamera):
         self.camera.close()
 
 class Webcam(BaseCamera):
-    def __init__(self, resolution = (160, 120), framerate = 20):
+    def __init__(self, resolution = (160, 120), fps=60, framerate = 20):
 
         super().__init__()
 
@@ -71,9 +71,10 @@ class Webcam(BaseCamera):
 
         self.cam.set(cv2.CAP_PROP_FRAME_WIDTH,resolution[1])
         self.cam.set(cv2.CAP_PROP_FRAME_HEIGHT,resolution[0])
-
+        self.cam.set(cv2.CAP_PROP_FPS, fps)
         self.resolution = resolution
         self.framerate = framerate
+        self.fps = fps
 
         # initialize variable used to indicate
         # if the thread should be stopped
