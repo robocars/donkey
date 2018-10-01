@@ -149,9 +149,7 @@ class TelemetrySource(tornado.web.RequestHandler):
     @tornado.gen.coroutine
     def get(self):
         while True:
-            if self.source.teledata != self._last:
-                yield self.publish(json.dumps(self.source.teledata, ensure_ascii=False))
-                self._last = self.source.teledata
-            else:
-                yield tornado.gen.sleep(0.005)
+            yield self.publish(json.dumps(self.source.teledata, ensure_ascii=False))
+            self._last = self.source.teledata
+            yield tornado.gen.sleep(0.010)
 
