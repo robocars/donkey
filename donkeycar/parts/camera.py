@@ -92,7 +92,6 @@ class Webcam(BaseCamera):
         check_fps = self.cam.get(cv2.CAP_PROP_FPS)
         if (check_fps == 0):
             self.cam.release()
-            cv2.ReleaseCapture(0)
             logger.info('WebcamVideoStream loaded.. .Error, busy, retstarting')
             self.init_cam (resolution, fps)
             time.sleep(2)
