@@ -66,18 +66,20 @@ class PiCamera(BaseCamera):
         self.camera.close()
 
 class Webcam(BaseCamera):
-    def __init__(self, resolution = (160, 120), fps=60, framerate = 20):
-
-        super().__init__()
-
+    def init_cam (self, resolution = (160, 120), fps=60):
         self.cam = cv2.VideoCapture(0)
-
         self.cam.set(cv2.CAP_PROP_FRAME_WIDTH,resolution[1])
         self.cam.set(cv2.CAP_PROP_FRAME_HEIGHT,resolution[0])
         self.cam.set(cv2.CAP_PROP_FPS, fps)
         self.resolution = resolution
-        self.framerate = framerate
         self.fps = fps
+
+    def __init__(self, resolution = (160, 120), fps=60, framerate = 20):
+
+        super().__init__()
+
+        init_cam(resolution, fps)
+        self.framerate = framerate
 
         # initialize variable used to indicate
         # if the thread should be stopped
@@ -87,11 +89,19 @@ class Webcam(BaseCamera):
         logger.info('WebcamVideoStream loaded.. .warming camera')
 
         time.sleep(2)
+        check_fps = self.cam.get(cv2.CAP_PROP_FPS)
+        if (check_fps == 0):
+            self.cam.release()
+            cv2.ReleaseCapture(0)
+            logger.info('WebcamVideoStream loaded.. .Error, busy, retstarting')
+            init_cam (resolution, fps)
+            time.sleep(2)
+
+        check_fps = self.cam.get(cv2.CAP_PROP_FPS)
         logger.info("Camera read configuration:")
         logger.info("Camera Width :"+str(self.cam.get(cv2.CAP_PROP_FRAME_WIDTH)))
         logger.info("Camera Height :"+str(self.cam.get(cv2.CAP_PROP_FRAME_HEIGHT)))
-        logger.info("Camera FPS :"+str(self.cam.get(cv2.CAP_PROP_FPS)))
-
+        logger.info("Camera FPS :"+str(check_fps))
 
     def update(self):
         from datetime import datetime, timedelta
@@ -111,6 +121,7 @@ class Webcam(BaseCamera):
                 time.sleep(s)
 
         self.cam.release()
+        cv2.ReleaseCapture(0)
 
     def run_threaded(self):
         return self.frame
