@@ -84,6 +84,11 @@ class Webcam(BaseCamera):
         print('WebcamVideoStream loaded.. .warming camera')
 
         time.sleep(2)
+        print("Camera read configuration:")
+        print("Camera Width :"+str(self.cam.set(cv2.CAP_PROP_FRAME_WIDTH)))
+        print("Camera Height :"+str(self.cam.set(cv2.CAP_PROP_FRAME_HEIGHT)))
+        print("Camera FPS :"+str(self.cam.set(cv2.CAP_PROP_FPS, fps)))
+
 
     def update(self):
         from datetime import datetime, timedelta
