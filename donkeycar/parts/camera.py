@@ -78,7 +78,7 @@ class Webcam(BaseCamera):
 
         super().__init__()
 
-        init_cam(resolution, fps)
+        self.init_cam(resolution, fps)
         self.framerate = framerate
 
         # initialize variable used to indicate
@@ -94,7 +94,7 @@ class Webcam(BaseCamera):
             self.cam.release()
             cv2.ReleaseCapture(0)
             logger.info('WebcamVideoStream loaded.. .Error, busy, retstarting')
-            init_cam (resolution, fps)
+            self.init_cam (resolution, fps)
             time.sleep(2)
 
         check_fps = self.cam.get(cv2.CAP_PROP_FPS)
