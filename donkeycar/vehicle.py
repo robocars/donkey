@@ -131,7 +131,7 @@ class Vehicle():
                         outputs = p.run(*inputs)
                 except Exception as e:
                     print("Exception while calling parts "+p.__class__.__name__)
-                    print(e):                
+                    print(e)               
 
                 #save the output to memory
                 if outputs is not None:
