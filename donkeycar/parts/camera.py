@@ -87,7 +87,7 @@ class Webcam(BaseCamera):
         print("Camera read configuration:")
         print("Camera Width :"+str(self.cam.get(cv2.CAP_PROP_FRAME_WIDTH)))
         print("Camera Height :"+str(self.cam.get(cv2.CAP_PROP_FRAME_HEIGHT)))
-        print("Camera FPS :"+str(self.cam.get(cv2.CAP_PROP_FPS, fps)))
+        print("Camera FPS :"+str(self.cam.get(cv2.CAP_PROP_FPS)))
 
 
     def update(self):
