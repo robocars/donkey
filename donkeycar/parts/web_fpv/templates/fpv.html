@@ -18,6 +18,7 @@
         <div class="col-xs-12 col-sm-12 col-md-12">
             <canvas id="gauge_battery" width="100" height="100"></canvas>
             <canvas id="gauge_throttle" width="100" height="100"></canvas>
+            <canvas id="gauge_angle" width="100" height="100"></canvas>
         </div>
       </div>
     </div>
@@ -48,23 +49,31 @@
     };
     var target_battery = document.getElementById('gauge_battery'); // your canvas element
     var target_throttle = document.getElementById('gauge_throttle'); // your canvas element
+    var target_angle = document.getElementById('gauge_angle'); // your canvas element
     var gauge_battery = new Donut(target_battery).setOptions(opts); // create sexy gauge!
     var gauge_throttle = new Donut(target_throttle).setOptions(opts); // create sexy gauge!
-    gauge_battery.maxValue = 100; // set max gauge value
+    var gauge_angle = new Donut(target_throttle).setOptions(opts); // create sexy gauge!
+    gauge_battery.maxValue = 15; // set max gauge value
     gauge_battery.setMinValue(0);  // Prefer setter over gauge.minValue = 0
     gauge_battery.animationSpeed = 32; // set animation speed (32 is default value)
     gauge_throttle.maxValue = 100; // set max gauge value
     gauge_throttle.setMinValue(0);  // Prefer setter over gauge.minValue = 0
     gauge_throttle.animationSpeed = 32; // set animation speed (32 is default value)
+    gauge_angle.maxValue = 100; // set max gauge value
+    gauge_angle.setMinValue(0);  // Prefer setter over gauge.minValue = 0
+    gauge_angle.animationSpeed = 32; // set animation speed (32 is default value)
     gauge_battery.set(0); // set actual value  
     gauge_throttle.set(0); // set actual value  
+    gauge_angle.set(0); // set actual value  
 
     var source = new EventSource("tele");
     source.onmessage = function(event) {
       console.log (event.data);
       //document.getElementById("result").innerHTML += event.data + "<br>";
       data = JSON.parse(event.data)
-      gauge_throttle.set (data.throttle*100)
+      gauge_battery.set (50+data.battery)
+      gauge_throttle.set (50+data.user_throttle*50)
+      gauge_angle.set (50+data.user_angle*50)
     };
   });
 </script>
