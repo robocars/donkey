@@ -5,6 +5,9 @@ from PIL import Image
 import glob
 import cv2
 
+import logging
+logger = logging.getLogger('donkey.camera')
+
 class BaseCamera:
 
     def run_threaded(self):
@@ -31,7 +34,7 @@ class PiCamera(BaseCamera):
         self.frame = None
         self.on = True
 
-        print('PiCamera loaded.. .warming camera')
+        logger.info('PiCamera loaded.. .warming camera')
         time.sleep(2)
 
 
@@ -56,7 +59,7 @@ class PiCamera(BaseCamera):
     def shutdown(self):
         # indicate that the thread should be stopped
         self.on = False
-        print('stoping PiCamera')
+        logger.info('stoping PiCamera')
         time.sleep(.5)
         self.stream.close()
         self.rawCapture.close()
@@ -81,13 +84,13 @@ class Webcam(BaseCamera):
         self.frame = None
         self.on = True
 
-        print('WebcamVideoStream loaded.. .warming camera')
+        logger.info('WebcamVideoStream loaded.. .warming camera')
 
         time.sleep(2)
-        print("Camera read configuration:")
-        print("Camera Width :"+str(self.cam.get(cv2.CAP_PROP_FRAME_WIDTH)))
-        print("Camera Height :"+str(self.cam.get(cv2.CAP_PROP_FRAME_HEIGHT)))
-        print("Camera FPS :"+str(self.cam.get(cv2.CAP_PROP_FPS)))
+        logger.info("Camera read configuration:")
+        logger.info("Camera Width :"+str(self.cam.get(cv2.CAP_PROP_FRAME_WIDTH)))
+        logger.info("Camera Height :"+str(self.cam.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+        logger.info("Camera FPS :"+str(self.cam.get(cv2.CAP_PROP_FPS)))
 
 
     def update(self):
@@ -115,7 +118,7 @@ class Webcam(BaseCamera):
     def shutdown(self):
         # indicate that the thread should be stopped
         self.on = False
-        print('stoping Webcam')
+        logger.info('stoping Webcam')
         time.sleep(.5)
 
 class MockCamera(BaseCamera):
@@ -154,8 +157,8 @@ class ImageListCamera(BaseCamera):
         self.image_filenames.sort(key=get_image_index)
         #self.image_filenames.sort(key=os.path.getmtime)
         self.num_images = len(self.image_filenames)
-        print('%d images loaded.' % self.num_images)
-        print( self.image_filenames[:10])
+        logger.info('%d images loaded.' % self.num_images)
+        logger.info( self.image_filenames[:10])
         self.i_frame = 0
         self.frame = None
         self.update()
