@@ -52,7 +52,7 @@
     var target_angle = document.getElementById('gauge_angle'); // your canvas element
     var gauge_battery = new Donut(target_battery).setOptions(opts); // create sexy gauge!
     var gauge_throttle = new Donut(target_throttle).setOptions(opts); // create sexy gauge!
-    var gauge_angle = new Donut(target_throttle).setOptions(opts); // create sexy gauge!
+    var gauge_angle = new Donut(target_angle).setOptions(opts); // create sexy gauge!
     gauge_battery.maxValue = 15; // set max gauge value
     gauge_battery.setMinValue(0);  // Prefer setter over gauge.minValue = 0
     gauge_battery.animationSpeed = 32; // set animation speed (32 is default value)
