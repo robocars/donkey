@@ -121,7 +121,6 @@ class Webcam(BaseCamera):
                 time.sleep(s)
 
         self.cam.release()
-        cv2.ReleaseCapture(0)
 
     def run_threaded(self):
         return self.frame

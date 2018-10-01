@@ -20,6 +20,7 @@ import requests
 import tornado.ioloop
 import tornado.web
 import tornado.gen
+import tornado.iostream
 
 import asyncio
 
@@ -52,6 +53,7 @@ class FPVWebController(tornado.web.Application):
             ]
 
         settings = {'debug': True}
+        self.teledata = {}
         super().__init__(handlers, **settings)
 
     def update(self, port=8887):
@@ -73,6 +75,7 @@ class FPVWebController(tornado.web.Application):
         self.pilot_angle = pilot_angle
         self.pilot_throttle = pilot_throttle
         self.throttle_boost = throttle_boost
+        self.teledata["user_angle"]  = self.user_angle 
 
 
     def run_threaded(self, img_arr=None, annoted_img=None, user_angle=None, user_throttle=None, user_mode=None, pilot_angle=None, pilot_throttle=None, throttle_boost=None):
@@ -128,7 +131,7 @@ class TelemetrySource(tornado.web.RequestHandler):
         new data. The :class:`EventSouce` instance will continuously
         check if it is updated and publish to clients when it is.
         """
-        self.data = None
+        self.source= self.application
         self._last = None
         self.set_header('content-type', 'text/event-stream')
         self.set_header('cache-control', 'no-cache')
@@ -139,22 +142,16 @@ class TelemetrySource(tornado.web.RequestHandler):
         try:
             self.write('data: {}\n\n'.format(data))
             yield self.flush()
-        except StreamClosedError:
+        except tornado.iostream.StreamClosedError:
+            print('tornado.iostream.StreamClosedError')
             pass
 
     @tornado.gen.coroutine
     def get(self):
         while True:
-            self.data = {}
-            self.data['user_angle'] = self.user_angle
-            self.data['user_throttle'] = self.user_throttle
-            self.data['user_mode'] = self.user_mode
-            self.data['pilot_angle'] = self.pilot_angle
-            self.data['pilot_throttle'] = self.pilot_throttle
-            self.data['throttle_boost'] = self.throttle_boost
-            if self.data != self._last:
-                yield self.publish(json.dumps(self.data, ensure_ascii=False))
-                self._last = self.data
+            if self.source.teledata != self._last:
+                yield self.publish(json.dumps(self.source.teledata, ensure_ascii=False))
+                self._last = self.source.teledata
             else:
-                yield gen.sleep(0.005)
+                yield tornado.gen.sleep(0.005)
 

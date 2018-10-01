@@ -1,8 +1,10 @@
 import time
 import donkeycar as dk
+from sys import platform
 
-# Import the ADS1x15 module.
-import Adafruit_ADS1x15
+if platform != "darwin":
+    # Import the ADS1x15 module.
+    import Adafruit_ADS1x15
 
 GAIN = 2/3
 CELLS_DEFAULT_VOLTAGE = 3.7
@@ -23,7 +25,8 @@ class BatteryController(object):
         self.verbose = verbose
         self.running = True
         self.nbCells = nbCells
-        self.adc = Adafruit_ADS1x15.ADS1115()
+        if platform != "darwin":
+            self.adc = Adafruit_ADS1x15.ADS1115()
         self.batteryLevel = [CELLS_DEFAULT_VOLTAGE] * self.nbCells
 
     def update(self):
@@ -34,7 +37,10 @@ class BatteryController(object):
         while self.running:
             values = [0]*4
             for i in range(self.nbCells):
-                self.batteryLevel[i] = self.adc.read_adc(i, gain=GAIN)
+                if platform != "darwin":
+                    self.batteryLevel[i] = self.adc.read_adc(i, gain=GAIN)
+                else:
+                    self.batteryLevel[i] = CELLS_DEFAULT_VOLTAGE
                 logger.debug('Cell {} Voltage {:01.2f}'.format(i, self.batteryLevel[i]))
 
 
