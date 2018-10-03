@@ -101,6 +101,7 @@ class PWMThrottle:
             self.reloadKick()
 
         self.mode = mode
+        fullspeed_hysteresis = 0
 
         logger.debug('Output throttle order= {:01.2f}'.format(throttle))
         if ((throttle > 0) or (self.mode != "user")):
@@ -113,9 +114,12 @@ class PWMThrottle:
                 if (brake > 0.8):
                     logger.debug('constant speed mode : brake')
                     pulse = self.brake_pulse
-                elif (fullspeed > 0.8):
-                    logger.debug('constant speed mode : fullspeed')
+                elif (fullspeed > 0.8 or fullspeed_hysteresis>0):
+                    if (fullspeed_hysteresis == 0):
+                        fullspeed_hysteresis = 5
+                    logger.debug('constant speed mode : fullspeed (hyst='+str(fullspeed_hysteresis)+')')
                     pulse = self.fullspeed_pulse
+                    fullspeed_hysteresis -= fullspeed_hysteresis
                 else:
                     logger.debug('constant speed mode : regular speed')
                     pulse = self.kick_pulse
