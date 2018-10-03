@@ -109,7 +109,7 @@ class PWMThrottle:
                                     self.zero_pulse, self.max_pulse)
             # If constant mode, just apply always kick value 
             if (self.mode != "user" and self.constant_mode == 1):
-                print('constant speed mode : fullspeed prediction = '+str(fullspeed))
+                logger.debug('constant speed mode : fullspeed prediction = '+str(fullspeed))
                 if (brake > 0.8):
                     logger.debug('constant speed mode : brake')
                     pulse = self.brake_pulse
