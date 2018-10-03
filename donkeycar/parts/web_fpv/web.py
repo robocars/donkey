@@ -12,7 +12,7 @@ The client and web server needed to control a car remotely.
 
 
 import os
-import json
+import simplejson as json
 import time
 
 import requests
@@ -155,7 +155,7 @@ class TelemetrySource(tornado.web.RequestHandler):
     @tornado.gen.coroutine
     def get(self):
         while True:
-            yield self.publish(json.dumps(self.source.teledata, ensure_ascii=False))
+            yield self.publish(json.dumps(self.source.teledata, ensure_ascii=False, use_decimal=True))
             self._last = self.source.teledata
             yield tornado.gen.sleep(0.010)
 
