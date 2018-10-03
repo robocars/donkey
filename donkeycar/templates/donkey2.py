@@ -235,7 +235,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
     if use_tx or cfg.USE_TX_AS_DEFAULT:
         fpv = FPVWebController()
         V.add(fpv,
-                inputs=['cam/image_array', 'pilot/annoted_img', 'user/angle', 'user/throttle', 'user/mode', 'pilot/angle', 'pilot/throttle', 'pilot/throttle_boost'],
+                inputs=['cam/image_array', 'pilot/annoted_img', 'user/angle', 'user/throttle', 'user/mode', 'pilot/angle', 'pilot/throttle', 'pilot/throttle_boost', 'pilot/fullspeed'],
                 threaded=True)        
 
     logger.info("Start main loop")
