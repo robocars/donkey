@@ -48,6 +48,7 @@ from donkeycar.parts.txauxch import TxAuxCh
 from donkeycar.parts.emergency import EmergencyController
 from donkeycar.parts.throttle_in_line import ThrottleInLine
 from donkeycar.parts.battery import BatteryController
+from donkeycar.parts.configctrl import ConfigController, myConfig
 
 from sys import platform
 
@@ -59,6 +60,9 @@ import time
 ctr = None
 
 def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
+
+    global myConfig
+
     '''
     Start the drive loop
     Each part runs as a job in the Vehicle loop, calling either
@@ -73,6 +77,10 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
     logger.info("Init Vehicle main object")
     V = dk.vehicle.Vehicle()
 
+    configCtrl = ConfigController(cfg.CONFIG_PATH)
+
+    V.add(configCtrl, threaded=True)
+
     logger.info("Init Cam part")
     if cfg.USE_WEB_CAMERA:
         cam = Webcam(resolution=cfg.CAMERA_RESOLUTION, fps=cfg.CAMERA_FPS, framerate=cfg.CAMERA_FRAMERATE)
@@ -80,6 +88,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
         cam = PiCamera(resolution=cfg.CAMERA_RESOLUTION)
         
     V.add(cam, outputs=['cam/image_array'], threaded=True)
+
 
     logger.info("Init Controller part")
     if use_joystick or cfg.USE_JOYSTICK_AS_DEFAULT:
@@ -237,7 +246,6 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
         V.add(fpv,
                 inputs=['cam/image_array', 'pilot/annoted_img', 'user/angle', 'user/throttle', 'user/mode', 'pilot/angle', 'pilot/throttle', 'pilot/throttle_boost', 'pilot/fullspeed'],
                 threaded=True)        
-
     logger.info("Start main loop")
 
     # run the vehicle for 20 seconds

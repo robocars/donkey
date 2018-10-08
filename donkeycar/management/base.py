@@ -77,7 +77,7 @@ class CreateCar(BaseCommand):
         path = make_dir(path)
         
         print("Creating data & model folders.")
-        folders = ['models', 'data', 'logs']
+        folders = ['models', 'data', 'logs', 'config']
         folder_paths = [os.path.join(path, f) for f in folders]   
         for fp in folder_paths:
             make_dir(fp)
@@ -85,8 +85,10 @@ class CreateCar(BaseCommand):
         #add car application and config files if they don't exist
         app_template_path = os.path.join(TEMPLATES_PATH, template+'.py')
         config_template_path = os.path.join(TEMPLATES_PATH, 'config_defaults.py')
+        config_yaml_template_path = os.path.join(TEMPLATES_PATH, 'config_defaults.yaml')
         car_app_path = os.path.join(path, 'manage.py')
         car_config_path = os.path.join(path, 'config.py')
+        car_config_yaml_path = os.path.join(os.path.join(path, 'config'), 'config.yaml')
         
         if os.path.exists(car_app_path) and not overwrite:
             print('Car app already exists. Delete it and rerun createcar to replace.')
@@ -99,6 +101,12 @@ class CreateCar(BaseCommand):
         else:
             print("Copying car config defaults. Adjust these before starting your car.")
             shutil.copyfile(config_template_path, car_config_path)
+
+        if os.path.exists(car_config_yaml_path) and not overwrite:
+            print('Car config.yaml already exists. Delete it and rerun createcar to replace.')
+        else:
+            print("Copying car config.yaml defaults. Adjust these before starting your car.")
+            shutil.copyfile(config_yaml_template_path, car_config_yaml_path)
  
         print("Donkey setup complete.")
 
