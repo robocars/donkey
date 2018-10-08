@@ -74,6 +74,7 @@ class PWMThrottle:
         self.mode = "user"
         self.kick = []
         #send zero pulse to calibrate ESC
+        self.controller = controller
         self.controller.set_pulse(myConfig['ACTUATOR']['THROTTLE_STOPPED_PWM'])
         time.sleep(1)
 
