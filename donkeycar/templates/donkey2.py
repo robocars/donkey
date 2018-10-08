@@ -214,15 +214,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
                             right_pulse=cfg.STEERING_RIGHT_PWM)
 
         throttle_controller = PCA9685(cfg.THROTTLE_CHANNEL)
-        throttle = PWMThrottle(controller=throttle_controller,
-                            max_pulse=cfg.THROTTLE_FORWARD_PWM,
-                            zero_pulse=cfg.THROTTLE_STOPPED_PWM,
-                            min_pulse=cfg.THROTTLE_REVERSE_PWM,
-                            kick_pulse=cfg.THROTTLE_KICK_PULSE,
-                            fullspeed_pulse=cfg.THROTTLE_FULLSPEED_PULSE,
-                            brake_pulse=cfg.THROTTLE_BRAKE_PULSE,
-                            min_spd_pulse=cfg.THROTTLE_MIN_SPD_PULSE,
-                            constant_mode=cfg.THROTTLE_CONSTANT_MODE)
+        throttle = PWMThrottle(controller=throttle_controller)
 
         V.add(steering, inputs=['angle'])
         V.add(throttle, inputs=['throttle', 'user/mode', 'pilot/fullspeed', 'pilot/brake'])
