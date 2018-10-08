@@ -44,7 +44,7 @@ setup(name='donkeycar',
                       'moviepy',
                       'pandas',
                       'watchdog',
-                      'serial'
+                      'pyserial'
                      ],
 
     extras_require={
