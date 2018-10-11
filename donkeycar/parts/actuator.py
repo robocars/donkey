@@ -118,7 +118,7 @@ class PWMThrottle:
                 pulse = self.kick.pop()
 
 # Ensure thottle order would not go below a limit (risk of motor shutdown)
-            if self.mode != "user" and pulse < self.min_spd_pulse:
+            if self.mode != "user" and pulse < myConfig['ACTUATOR']['THROTTLE_MIN_SPD_PULSE']:
                 logger.debug('PWMThrottle order too low')
                 pulse = myConfig['ACTUATOR']['THROTTLE_MIN_SPD_PULSE']
         else:
