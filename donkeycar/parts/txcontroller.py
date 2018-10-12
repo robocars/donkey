@@ -20,6 +20,8 @@ from threading import Thread
 import donkeycar as dk
 from sys import platform
 
+from donkeycar.parts.configctrl import myConfig
+
 import logging
 logger = logging.getLogger('donkey.txctrl')
 
@@ -129,12 +131,6 @@ class TxController(object):
     '''
 
     def __init__(self, poll_delay=0.0,
-                 throttle_tx_min=913,
-                 throttle_tx_max=2111,
-                 steering_tx_min=955,
-                 steering_tx_max=2085,
-                 throttle_tx_thresh=1520,
-                 ch_aux_tx_thresh=1500,
                  auto_record_on_throttle=True,
                  verbose = False
                  ):
@@ -144,12 +140,6 @@ class TxController(object):
         self.mode = 'user'
         self.poll_delay = poll_delay
         self.running = True
-        self.throttle_tx_thresh = throttle_tx_thresh
-        self.ch_aux_tx_thresh = ch_aux_tx_thresh
-        self.throttle_tx_min = throttle_tx_min
-        self.throttle_tx_max = throttle_tx_max
-        self.steering_tx_min = steering_tx_min
-        self.steering_tx_max = steering_tx_max
 
         self.ch5 = False
         self.ch6 = False
@@ -189,23 +179,23 @@ class TxController(object):
 
         while self.running:
             throttle_tx, steering_tx, ch5_tx, ch6_tx, freq_tx = self.tx.poll(self.mode)
-            if throttle_tx > self.throttle_tx_thresh:
-                self.throttle = map_range(throttle_tx, self.throttle_tx_min, self.throttle_tx_max, -1, 1)
+            if throttle_tx > myConfig['TX']['TX_THROTTLE_TRESH']:
+                self.throttle = map_range(throttle_tx, myConfig['TX']['TX_THROTTLE_MIN'], myConfig['TX']['TX_THROTTLE_MAX'], -1, 1)
             else:
                 self.throttle = 0
             self.on_throttle_changes()
-            self.angle = 0-map_range(steering_tx, self.steering_tx_min, self.steering_tx_max, -1, 1)
+            self.angle = 0-map_range(steering_tx, myConfig['TX']['TX_STEERING_MIN'], myConfig['TX']['TX_STEERING_MAX'], -1, 1)
 
-            if (ch5_tx > self.ch_aux_tx_thresh+100):
+            if (ch5_tx > myConfig['TX']['TX_CH_AUX_TRESH']+100):
                 self.ch5 = True
 
-            if (ch5_tx < self.ch_aux_tx_thresh-100):
+            if (ch5_tx < myConfig['TX']['TX_CH_AUX_TRESH']-100):
                 self.ch5 = False
 
-            if (ch6_tx > self.ch_aux_tx_thresh+100):
+            if (ch6_tx > myConfig['TX']['TX_CH_AUX_TRESH']+100):
                 self.ch6 = True
 
-            if (ch6_tx < self.ch_aux_tx_thresh-100):
+            if (ch6_tx < myConfig['TX']['TX_CH_AUX_TRESH']-100):
                 self.ch6 = False
 
             logger.debug('angle= {:01.2f} throttle= {:01.2f}'.format (self.angle, self.throttle))
