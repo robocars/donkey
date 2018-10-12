@@ -113,7 +113,7 @@ class PWMThrottle:
                     logger.debug('constant speed mode : regular speed')
                     pulse = myConfig['ACTUATOR']['THROTTLE_KICK_PULSE']
 # Motor cann not start a too low throttle, kick it for the first cycles             
-            if len(self.kick)>0:
+            if (self.mode != "user" and len(self.kick)>0):
                 logger.debug('Kicker active')
                 pulse = self.kick.pop()
 
