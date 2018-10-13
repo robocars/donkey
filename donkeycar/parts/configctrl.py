@@ -75,7 +75,6 @@ class ConfigController(object):
         self.w = Watcher(self.configPath, self.event_handler)
         
     def run_threaded(self):
-        time.sleep(1)
         return
 
     def update(self):

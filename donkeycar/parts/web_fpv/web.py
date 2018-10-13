@@ -159,5 +159,5 @@ class TelemetrySource(tornado.web.RequestHandler):
         while True:
             yield self.publish(json.dumps(self.source.teledata, ensure_ascii=False, use_decimal=True))
             self._last = self.source.teledata
-            yield tornado.gen.sleep(0.200)
+            yield tornado.gen.sleep(0.050)
 
