@@ -86,8 +86,8 @@ class FPVWebController(tornado.web.Application):
                 self.teledata["user_throttle"]  = self.pilot_throttle.item()
         if (self.fullspeed != None):
             self.teledata["fullspeed"] = self.fullspeed.item()
-        if (self.pilot_angle_bind!=None):
-             self.teledata["pilot_angle_bind"] = self.fullspeed.item()
+#        if (self.pilot_angle_bind!=None):
+#             self.teledata["pilot_angle_bind"] = self.fullspeed.item()
 
     def run_threaded(self, img_arr=None, annoted_img=None, user_angle=None, user_throttle=None, user_mode=None, pilot_angle=None, pilot_throttle=None, throttle_boost=None, fullspeed=None, pilot_angle_bind=None):
         self._run (img_arr, annoted_img, user_angle, user_throttle, user_mode, pilot_angle, pilot_throttle, throttle_boost, fullspeed, pilot_angle_bind)
