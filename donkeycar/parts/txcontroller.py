@@ -53,7 +53,7 @@ class Txserial():
     def __init__(self):
         self.ser = None
         self.lastLocalTs = 0
-        self.lastDistTs = 0;
+        self.lastDistTs = 0
 
     def init(self):
         # Open serial link
@@ -201,12 +201,13 @@ class TxController(object):
             logger.debug('angle= {:01.2f} throttle= {:01.2f}'.format (self.angle, self.throttle))
             time.sleep(self.poll_delay)
 
-    def run_threaded(self, img_arr=None, annoted_img=None):
+    def run_threaded(self, mode=None, img_arr=None, annoted_img=None):
+        self.mode = mode
         if (annoted_img is not None):
             self.img_arr = annoted_img
         else:
             self.img_arr = img_arr
-        return self.angle, self.throttle, self.mode, self.recording, self.ch5, self.ch6
+        return self.angle, self.throttle, self.recording, self.ch5, self.ch6
 
     def run(self, img_arr=None, img_annoted=None):
         raise Exception("We expect for this part to be run with the threaded=True argument.")

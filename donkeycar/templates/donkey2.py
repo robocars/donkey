@@ -110,26 +110,35 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
                                  btn_toggle_const_throttle = cfg.JOYSTICK_TOGGLE_CONSTANT_THROTTLE_BUTTON,
                                  verbose = cfg.JOYSTICK_VERBOSE
                                  )
+        V.add(ctr,
+              inputs=['cam/image_array', 'pilot/annoted_img'],
+              outputs=['user/angle', 'user/throttle', 'user/mode', 'recording'],
+              threaded=True)
+
     elif use_tx or cfg.USE_TX_AS_DEFAULT:
+        #This is Tx controller (pilot Donkey from a RC Tx transmiter/receiver)
         ctr = TxController(verbose = cfg.TX_VERBOSE
                            )
-    else:        
-        #This web controller will create a web server that is capable
-        #of managing steering, throttle, and modes, and more.
-        ctr = LocalWebController()
+        V.add(ctr,
+              inputs=['user/mode', 'cam/image_array', 'pilot/annoted_img'],
+              outputs=['user/angle', 'user/throttle', 'recording', 'ch5', 'ch6'],
+              threaded=True)
 
-    V.add(ctr,
-          inputs=['cam/image_array', 'pilot/annoted_img'],
-          outputs=['user/angle', 'user/throttle', 'user/mode', 'recording', 'ch5', 'ch6'],
-          threaded=True)
-
-
-    if use_tx or cfg.USE_TX_AS_DEFAULT:
         actionctr = TxAuxCh()
         V.add(actionctr,
           inputs=['user/mode', 'ch5', 'ch6', 'recording'],
           outputs=['user/mode', 'flag', 'recording'],
           threaded=False)
+
+    else:        
+        #This web controller will create a web server that is capable
+        #of managing steering, throttle, and modes, and more.
+        ctr = LocalWebController()
+        V.add(ctr,
+              inputs=['cam/image_array', 'pilot/annoted_img'],
+              outputs=['user/angle', 'user/throttle', 'user/mode', 'recording'],
+              threaded=True)
+
 
     if cfg.USE_THROTTLEINLINE:
         logger.info("Init throttleInLine part")
@@ -172,7 +181,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
             kl.load2(model_path)
 
     V.add(kl, inputs=['cam/image_array'],
-        outputs=['pilot/angle', 'pilot/throttle', 'pilot/fullspeed', 'pilot/brake'],
+        outputs=['pilot/angle', 'pilot/throttle', 'pilot/fullspeed', 'pilot/brake', 'pilot/throttle_bind'],
         run_condition='run_pilot')
 
     # Choose what inputs should change the car.
@@ -230,7 +239,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
     if use_tx or cfg.USE_TX_AS_DEFAULT:
         fpv = FPVWebController()
         V.add(fpv,
-                inputs=['cam/image_array', 'pilot/annoted_img', 'user/angle', 'user/throttle', 'user/mode', 'pilot/angle', 'pilot/throttle', 'pilot/throttle_boost', 'pilot/fullspeed'],
+                inputs=['cam/image_array', 'pilot/annoted_img', 'user/angle', 'user/throttle', 'user/mode', 'pilot/angle', 'pilot/throttle', 'pilot/throttle_boost', 'pilot/fullspeed', 'pilot/throttle_bind'],
                 threaded=True)        
     logger.info("Start main loop")
 
