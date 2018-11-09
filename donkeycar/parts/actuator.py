@@ -82,7 +82,7 @@ class PWMThrottle:
         self.kick = [myConfig['ACTUATOR']['THROTTLE_KICK_PULSE']]*myConfig['ACTUATOR']['THROTTLE_KICK_LENGTH']
         logger.debug('Kicker reloaded')
 
-    def run(self, throttle, mode, fullspeed, brake):
+    def run(self, throttle, mode=None, fullspeed=None, brake=None):
 
         global myConfig
 
