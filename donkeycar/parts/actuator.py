@@ -99,7 +99,7 @@ class PWMThrottle:
             pulse = dk.utils.map_range(throttle,
                                     0, self.MAX_THROTTLE, 
                                     myConfig['ACTUATOR']['THROTTLE_STOPPED_PWM'], myConfig['ACTUATOR']['THROTTLE_FORWARD_PWM'])
-            if (self.mode != "user") 
+            if (self.mode != "user"):
                 # Autonomous mode
                 if (myConfig['ACTUATOR']['THROTTLE_CONSTANT_MODE'] == 1):
                     # If constant mode, just apply always kick  as nominal value 
