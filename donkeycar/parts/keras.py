@@ -95,7 +95,7 @@ class KerasCategorical(KerasPilot):
         angle_unbinned = dk.utils.linear_unbin(angle_binned)
         fullspeed_unbinned = dk.utils.linear_unbin(fullspeed_binned)
         brake_unbinned = dk.utils.linear_unbin(brake_binned)
-        return angle_unbinned, throttle[0][0], fullspeed_unbinned, brake_unbinned
+        return angle_unbinned, throttle[0][0], fullspeed_unbinned, brake_unbinned, angle_binned
     
     
     

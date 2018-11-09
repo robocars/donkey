@@ -181,7 +181,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
             kl.load2(model_path)
 
     V.add(kl, inputs=['cam/image_array'],
-        outputs=['pilot/angle', 'pilot/throttle', 'pilot/fullspeed', 'pilot/brake', 'pilot/throttle_bind'],
+        outputs=['pilot/angle', 'pilot/throttle', 'pilot/fullspeed', 'pilot/brake', 'pilot/angle_bind'],
         run_condition='run_pilot')
 
     # Choose what inputs should change the car.
@@ -239,7 +239,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
     if use_tx or cfg.USE_TX_AS_DEFAULT:
         fpv = FPVWebController()
         V.add(fpv,
-                inputs=['cam/image_array', 'pilot/annoted_img', 'user/angle', 'user/throttle', 'user/mode', 'pilot/angle', 'pilot/throttle', 'pilot/throttle_boost', 'pilot/fullspeed', 'pilot/throttle_bind'],
+                inputs=['cam/image_array', 'pilot/annoted_img', 'user/angle', 'user/throttle', 'user/mode', 'pilot/angle', 'pilot/throttle', 'pilot/throttle_boost', 'pilot/fullspeed', 'pilot/angle_bind'],
                 threaded=True)        
     logger.info("Start main loop")
 
