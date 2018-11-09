@@ -93,6 +93,11 @@ class PWMThrottle:
         fullspeed_hysteresis = 0
         brake_hysteresis = 0
 
+        if (fullspeed==None):
+            fullspeed = 0
+        if (brake==None):
+            brake=0
+            
         logger.debug('Output throttle order= {:01.2f}'.format(throttle))
         if ((throttle > 0) or (self.mode != "user")):
             #Forward direction
