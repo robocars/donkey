@@ -89,6 +89,8 @@ class Txserial():
         ch6_tx = 0
         freq_tx = 60
         ts = 0
+        acc_x = 0
+        acc_y = 0
         msg=""
 
         if (Txserial.counter%10 == 0):
@@ -100,7 +102,7 @@ class Txserial():
                 logger.debug('poll: Serial buffer overrun {} ... flushing'.format(str(self.ser.in_waiting)))
                 self.ser.reset_input_buffer()
             msg=self.ser.readline().decode('utf-8')
-            ts, steering_tx, throttle_tx, ch5_tx, ch6_tx, freq_tx = map(int,msg.split(','))
+            ts, steering_tx, throttle_tx, ch5_tx, ch6_tx, freq_tx, acc_x, acc_y = map(int,msg.split(','))
 
         except:
             logger.debug('poll: Exception while parsing msg')
