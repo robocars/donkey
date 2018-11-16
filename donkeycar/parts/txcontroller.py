@@ -116,10 +116,10 @@ class Txserial():
             logger.debug('poll: underun dist {} local {}'.format(ts-self.lastDistTs, now-self.lastLocalTs))
         self.lastLocalTs = now
         self.lastDistTs = ts
-        logger.debug('poll: ts {} steering_tx= {:05.0f} throttle_tx= {:05.0f} freq_tx= {:02.0f}'.format(ts, steering_tx, throttle_tx, freq_tx))
+        logger.debug('poll: ts {} steering_tx= {:05.0f} throttle_tx= {:05.0f} acc_x= {:03.0f} acc_y= {:03.0f}'.format(ts, steering_tx, throttle_tx, acc_x, acc_y))
 
 
-        return throttle_tx, steering_tx, ch5_tx, ch6_tx, freq_tx
+        return throttle_tx, steering_tx, ch5_tx, ch6_tx, freq_tx, acc_x, acc_y
 
     def ledStatus (self, status):
         status = status + "\n"
@@ -142,7 +142,8 @@ class TxController(object):
         self.mode = 'user'
         self.poll_delay = poll_delay
         self.running = True
-
+        self.acc_x = 0
+        self.acc_y = 0
         self.ch5 = False
         self.ch6 = False
         self.recording = False
@@ -180,14 +181,15 @@ class TxController(object):
             time.sleep(5)
 
         while self.running:
-            throttle_tx, steering_tx, ch5_tx, ch6_tx, freq_tx = self.tx.poll(self.mode)
+            throttle_tx, steering_tx, ch5_tx, ch6_tx, freq_tx, acc_x, acc_y = self.tx.poll(self.mode)
             if throttle_tx > myConfig['TX']['TX_THROTTLE_TRESH']:
                 self.throttle = map_range(throttle_tx, myConfig['TX']['TX_THROTTLE_MIN'], myConfig['TX']['TX_THROTTLE_MAX'], -1, 1)
             else:
                 self.throttle = 0
             self.on_throttle_changes()
             self.angle = 0-map_range(steering_tx, myConfig['TX']['TX_STEERING_MIN'], myConfig['TX']['TX_STEERING_MAX'], -1, 1)
-
+            self.acc_x = acc_x
+            self.acc_y = acc_y
             if (ch5_tx > myConfig['TX']['TX_CH_AUX_TRESH']+100):
                 self.ch5 = True
 
@@ -200,7 +202,7 @@ class TxController(object):
             if (ch6_tx < myConfig['TX']['TX_CH_AUX_TRESH']-100):
                 self.ch6 = False
 
-            logger.debug('angle= {:01.2f} throttle= {:01.2f}'.format (self.angle, self.throttle))
+            logger.debug('angle= {:01.2f} throttle= {:01.2f} throttle= {:03.0f} throttle= {:03.0f}'.format (self.angle, self.throttle, self.acc_x, self.acc_y))
             time.sleep(self.poll_delay)
 
     def run_threaded(self, mode=None, img_arr=None, annoted_img=None):
@@ -209,7 +211,7 @@ class TxController(object):
             self.img_arr = annoted_img
         else:
             self.img_arr = img_arr
-        return self.angle, self.throttle, self.recording, self.ch5, self.ch6
+        return self.angle, self.throttle, self.recording, self.ch5, self.ch6, self.acc_x, self.acc_y
 
     def run(self, img_arr=None, img_annoted=None):
         raise Exception("We expect for this part to be run with the threaded=True argument.")

@@ -121,7 +121,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
                            )
         V.add(ctr,
               inputs=['user/mode', 'cam/image_array', 'pilot/annoted_img'],
-              outputs=['user/angle', 'user/throttle', 'recording', 'ch5', 'ch6'],
+              outputs=['user/angle', 'user/throttle', 'recording', 'ch5', 'ch6', 'acc_x', 'acc_y'],
               threaded=True)
 
         actionctr = TxAuxCh()
@@ -228,8 +228,8 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
         V.add(battery_controller, outputs = ['battery'], threaded=True)
 
     # add tub to save data
-    inputs = ['cam/image_array', 'user/angle', 'user/throttle', 'user/mode', 'pilot/angle', 'pilot/throttle', 'flag']
-    types = ['image_array', 'float', 'float', 'str', 'numpy.float32', 'numpy.float32', 'str']
+    inputs = ['cam/image_array', 'user/angle', 'user/throttle', 'user/mode', 'pilot/angle', 'pilot/throttle', 'flag', 'acc_x', 'acc_y']
+    types = ['image_array', 'float', 'float', 'str', 'numpy.float32', 'numpy.float32', 'str', 'numpy.float32',  'numpy.float32']
 
     logger.info("Init Tub Handler part")
     th = TubHandler(path=cfg.DATA_PATH)
