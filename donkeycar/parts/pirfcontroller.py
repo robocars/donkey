@@ -19,7 +19,8 @@ from threading import Thread
 import donkeycar as dk
 from sys import platform
 
-import pigpio
+if platform != "darwin":
+    import pigpio
 
 import logging
 logger = logging.getLogger('donkey.pirfctrl')

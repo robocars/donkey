@@ -157,7 +157,7 @@ class Tub(object):
         print('path_in_tub:', self.path)
         self.meta_path = os.path.join(self.path, 'meta.json')
         self.df = None
-
+        self.suffix_mode = 0
         exists = os.path.exists(self.path)
 
         if exists:
@@ -343,21 +343,37 @@ class Tub(object):
 
 
     def get_json_record_path(self, ix):
-        #return os.path.join(self.path, 'record_'+str(ix)+'.json')
+        # get file, index suffix is supposed to be at constant length 
         return os.path.join(self.path,'record_{:08d}.json'.format(ix))
 
+    def get_json_record_path_2(self, ix):
+        # get file, index suffix is supposed to be at variable length 
+        return os.path.join(self.path, 'record_'+str(ix)+'.json')
+
     def get_json_record(self, ix):
-        path = self.get_json_record_path(ix)
-        try:
-            with open(path, 'r') as fp:
-                json_data = json.load(fp)
-        except UnicodeDecodeError:
-            raise Exception('bad record: %d. You may want to run `python manage.py check --fix`' % ix)
-        except FileNotFoundError:
-            raise
-        except:
-            print("Unexpected error:", sys.exc_info()[0])
-            raise
+        for attempt in range(2):
+            # Depending on whether data come from simulator or local recording, file numlbering format is different.
+            if (self.suffix_mode == 0):
+                path = self.get_json_record_path(ix)
+            else:
+                path = self.get_json_record_path_2(ix)
+
+            try:
+                with open(path, 'r') as fp:
+                    json_data = json.load(fp)
+            except UnicodeDecodeError:
+                raise Exception('bad record: %d. You may want to run `python manage.py check --fix`' % ix)
+            except FileNotFoundError:
+                print("FileNotFoundError, trying alternative naming convention")
+                self.suffix_mode = 1-self.suffix_mode
+                continue
+            except:
+                print("Unexpected error:", sys.exc_info()[0])
+                raise
+            else:
+                break
+        else:
+            raise Exception('Was not able to get record for index %d' % ix)
 
         record_dict = self.make_record_paths_absolute(json_data)
         return record_dict
