@@ -118,7 +118,7 @@ class Txserial():
         logger.debug('poll: ts {} steering_tx= {:05.0f} throttle_tx= {:05.0f} speedometer== {:03.0f}'.format(ts, steering_tx, throttle_tx, speedometer))
 
 
-        return throttle_tx, steering_tx, ch5_tx, ch6_tx, freq_tx, speedometer
+        return throttle_tx, steering_tx, ch5_tx, ch6_tx, speedometer, freq_tx, 
 
     def ledStatus (self, status):
         status = status + "\n"
