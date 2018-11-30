@@ -121,7 +121,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
                            )
         V.add(ctr,
               inputs=['user/mode', 'cam/image_array', 'pilot/annoted_img'],
-              outputs=['user/angle', 'user/throttle', 'recording', 'ch5', 'ch6', 'acc_x', 'acc_y'],
+              outputs=['user/angle', 'user/throttle', 'recording', 'ch5', 'ch6', 'speedometer'],
               threaded=True)
 
         actionctr = TxAuxCh()
@@ -169,7 +169,10 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
 
     logger.info("Init Model part")
     # Run the pilot if the mode is not user and not Tx.
-    kl = KerasCategorical()
+    if (myConfig['MODEL']['MODEL_IN_USE'] == 0):
+        kl = KerasCategorical()
+    if (myConfig['MODEL']['MODEL_IN_USE'] == 1):
+        kl = KerasCategorical1()
     #kl = KerasLinear()
     if model_path:
         if (os.path.exists(model_path)):
@@ -180,9 +183,15 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
             logger.info("IA : Load Weights + Model Architecture model")
             kl.load2(model_path)
 
-    V.add(kl, inputs=['cam/image_array'],
-        outputs=['pilot/angle', 'pilot/throttle', 'pilot/fullspeed', 'pilot/brake', 'pilot/angle_bind'],
-        run_condition='run_pilot')
+    if (myConfig['MODEL']['MODEL_IN_USE'] == 0):
+        V.add(kl, inputs=['cam/image_array'],
+            outputs=['pilot/angle', 'pilot/throttle', 'pilot/fullspeed', 'pilot/brake', 'pilot/angle_bind'],
+            run_condition='run_pilot')
+
+    if (myConfig['MODEL']['MODEL_IN_USE'] == 1):
+        V.add(kl, inputs=['cam/image_array', 'pilot/throttle'],
+            outputs=['pilot/angle', 'pilot/throttle', 'pilot/fullspeed', 'pilot/brake', 'pilot/angle_bind'],
+            run_condition='run_pilot')
 
     # Choose what inputs should change the car.
     def drive_mode(mode,
@@ -228,8 +237,8 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
         V.add(battery_controller, outputs = ['battery'], threaded=True)
 
     # add tub to save data
-    inputs = ['cam/image_array', 'user/angle', 'user/throttle', 'user/mode', 'pilot/angle', 'pilot/throttle', 'flag', 'acc_x', 'acc_y']
-    types = ['image_array', 'float', 'float', 'str', 'numpy.float32', 'numpy.float32', 'str', 'numpy.float32',  'numpy.float32']
+    inputs = ['cam/image_array', 'user/angle', 'user/throttle', 'user/mode', 'pilot/angle', 'pilot/throttle', 'flag', 'speedometer']
+    types = ['image_array', 'float', 'float', 'str', 'numpy.float32', 'numpy.float32', 'str', 'int']
 
     logger.info("Init Tub Handler part")
     th = TubHandler(path=cfg.DATA_PATH)
