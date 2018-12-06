@@ -189,7 +189,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
             run_condition='run_pilot')
 
     if (myConfig['MODEL']['MODEL_IN_USE'] == 1):
-        V.add(kl, inputs=['cam/image_array', 'pilot/throttle'],
+        V.add(kl, inputs=['cam/image_array', 'speedometer'],
             outputs=['pilot/angle', 'pilot/throttle', 'pilot/fullspeed', 'pilot/brake', 'pilot/angle_bind'],
             run_condition='run_pilot')
 

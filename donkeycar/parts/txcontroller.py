@@ -186,7 +186,7 @@ class TxController(object):
                 self.throttle = 0
             self.on_throttle_changes()
             self.angle = 0-map_range(steering_tx, myConfig['TX']['TX_STEERING_MIN'], myConfig['TX']['TX_STEERING_MAX'], -1, 1)
-            self.speedometer = speedometer
+            self.speedometer = 1-map_range(speedometer,myConfig['TX']['TX_SPEEDOMETER_MIN'], myConfig['TX']['TX_SPEEDOMETER_MAX'], 0, 1)
             if (ch5_tx > myConfig['TX']['TX_CH_AUX_TRESH']+100):
                 self.ch5 = True
 
