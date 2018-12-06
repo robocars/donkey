@@ -16,6 +16,7 @@ import os
 import numpy as np
 import keras
 from keras.models import model_from_json
+from keras.layers.merge import concatenate
 
 
 import donkeycar as dk
