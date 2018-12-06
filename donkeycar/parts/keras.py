@@ -227,7 +227,7 @@ def default_categorical1():
     from keras.layers import Activation, Dropout, Flatten, Dense
     
     img_in = Input(shape=(120, 160, 3), name='img_in')                      # First layer, input layer, Shape comes from camera.py resolution, RGB
-    throttle_in = Input(shape=(1,), name="throttle")
+    throttle_in = Input(shape=(1,), name="throttle_in")
 
     x = img_in
     x = Convolution2D(24, (5,5), strides=(2,2), activation='relu')(x)       # 24 features, 5 pixel x 5 pixel kernel (convolution, feauture) window, 2wx2h stride, relu activation
@@ -264,7 +264,7 @@ def default_categorical1():
     fullspeed_out = Dense(15, activation='softmax', name='fullspeed_out')(z)        
     brake_out = Dense(15, activation='softmax', name='brake_out')(z)
 
-    model = Model(inputs=[img_in], outputs=[angle_out, throttle_out, fullspeed_out, brake_out])
+    model = Model(inputs=[img_in, throttle_in], outputs=[angle_out, throttle_out, fullspeed_out, brake_out])
     model.compile(optimizer='adam',
                   loss={'angle_out': 'categorical_crossentropy', 
                         'throttle_out': 'mean_absolute_error', 
