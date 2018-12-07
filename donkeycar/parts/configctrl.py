@@ -40,9 +40,9 @@ class ConfigFile(FileSystemEventHandler):
             myConfig.update(yaml.load(ymlfile))
             for section in myConfig:
                 logger.info("Section found :"+section)
-            if (myConfig['DEBUG']['LEVEL']=="DEBUG")
+            if (myConfig['DEBUG']['LEVEL']=="DEBUG"):
                 logging.getLogger().setLevel(logging.DEBUG)
-            if (myConfig['DEBUG']['LEVEL']=="INFO")
+            if (myConfig['DEBUG']['LEVEL']=="INFO"):
                 logging.getLogger().setLevel(logging.INFO)
 
 
