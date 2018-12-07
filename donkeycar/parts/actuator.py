@@ -91,7 +91,7 @@ class PWMThrottle:
         if self.mode == "user" and mode != "user":
             self.reloadKick()
 
-        if (self.mode == "local" and mode == "user"):
+        if (self.mode != "user" and mode == "user"):
             self.brake_hysteresis = myConfig['ACTUATOR']['FULLSPEED_HYSTERESIS_LENGTH']
 
         self.mode = mode
@@ -140,14 +140,14 @@ class PWMThrottle:
                                     myConfig['ACTUATOR']['THROTTLE_REVERSE_PWM'], myConfig['ACTUATOR']['THROTTLE_STOPPED_PWM'])
 
         if (self.brake_hysteresis>0):
-            logger.debug('Apply brake for next '+str(brake_hysteresis-1)+' cycle')
+            logger.debug('Apply brake for next '+str(self.brake_hysteresis-1)+' cycle')
             pulse = myConfig['ACTUATOR']['THROTTLE_BRAKE_PULSE']
             self.brake_hysteresis -= 1
             if (self.brake_hysteresis == 0):
                 self.reloadKick()
             
         if (self.fullspeed_hysteresis>0):
-            logger.debug('Appluy fullspeed for next '+str(fullspeed_hysteresis-1)+' cycle')
+            logger.debug('Appluy fullspeed for next '+str(self.fullspeed_hysteresis-1)+' cycle')
             pulse = myConfig['ACTUATOR']['THROTTLE_FULLSPEED_PULSE']
             self.fullspeed_hysteresis -= 1
 
