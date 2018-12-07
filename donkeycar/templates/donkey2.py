@@ -82,6 +82,13 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
 
     V.add(configCtrl, threaded=True)
 
+    def get_tsc():
+        return int(round(time.time() * 1000))
+
+    logger.info("Init timestamper")
+    get_tsc_part = Lambda(get_tsc)
+    V.add(get_tsc_part, outputs=['ms'])
+
     logger.info("Init Cam part")
     if cfg.USE_WEB_CAMERA:
         cam = Webcam(resolution=cfg.CAMERA_RESOLUTION, fps=cfg.CAMERA_FPS, framerate=cfg.CAMERA_FRAMERATE)
@@ -238,8 +245,8 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
         V.add(battery_controller, outputs = ['battery'], threaded=True)
 
     # add tub to save data
-    inputs = ['cam/image_array', 'user/angle', 'user/throttle', 'user/mode', 'pilot/angle', 'pilot/throttle', 'flag', 'speedometer']
-    types = ['image_array', 'float', 'float', 'str', 'numpy.float32', 'numpy.float32', 'str', 'int']
+    inputs = ['cam/image_array', 'ms', 'user/angle', 'user/throttle', 'user/mode', 'pilot/angle', 'pilot/throttle', 'flag', 'speedometer']
+    types = ['image_array', 'int', 'float', 'float', 'str', 'numpy.float32', 'numpy.float32', 'str', 'float']
 
     logger.info("Init Tub Handler part")
     th = TubHandler(path=cfg.DATA_PATH)
