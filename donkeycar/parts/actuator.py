@@ -139,7 +139,7 @@ class PWMThrottle:
                                     self.MIN_THROTTLE, 0, 
                                     myConfig['ACTUATOR']['THROTTLE_REVERSE_PWM'], myConfig['ACTUATOR']['THROTTLE_STOPPED_PWM'])
 
-        if (self.brake_hysteresis>0)
+        if (self.brake_hysteresis>0):
             logger.debug('Apply brake for next '+str(brake_hysteresis-1)+' cycle')
             pulse = myConfig['ACTUATOR']['THROTTLE_BRAKE_PULSE']
             self.brake_hysteresis -= 1
