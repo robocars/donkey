@@ -115,7 +115,7 @@ class Txserial():
             logger.debug('poll: underun dist {} local {}'.format(ts-self.lastDistTs, now-self.lastLocalTs))
         self.lastLocalTs = now
         self.lastDistTs = ts
-        logger.debug('poll: ts {} steering_tx= {:05.0f} throttle_tx= {:05.0f} speedometer== {:03.0f}'.format(ts, steering_tx, throttle_tx, speedometer))
+        logger.debug('poll: ts {} steering_tx= {:05.0f} throttle_tx= {:05.0f} speedometer= {:03.0f}'.format(ts, steering_tx, throttle_tx, speedometer))
 
 
         return throttle_tx, steering_tx, ch5_tx, ch6_tx, speedometer, freq_tx, 
@@ -199,7 +199,7 @@ class TxController(object):
             if (ch6_tx < myConfig['TX']['TX_CH_AUX_TRESH']-100):
                 self.ch6 = False
 
-            logger.debug('angle= {:01.2f} throttle= {:01.2f} speed= {:03.0f}'.format (self.angle, self.throttle, self.speedometer))
+            logger.debug('angle= {:01.2f} throttle= {:01.2f} speed= {:01.2f}'.format (self.angle, self.throttle, self.speedometer))
             time.sleep(self.poll_delay)
 
     def run_threaded(self, mode=None, img_arr=None, annoted_img=None):
