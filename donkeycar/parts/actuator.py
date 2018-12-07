@@ -116,7 +116,7 @@ class PWMThrottle:
                     if (brake > myConfig['ACTUATOR']['BRAKE_DECISION_THRESH']):
                         logger.debug('constant speed mode : brake')
                         self.brake_hysteresis = myConfig['ACTUATOR']['FULLSPEED_HYSTERESIS_LENGTH']
-                    elif (fullspeed > myConfig['ACTUATOR']['FULLSPEED_DECISION_THRESH']:
+                    elif (fullspeed > myConfig['ACTUATOR']['FULLSPEED_DECISION_THRESH']):
                         logger.debug('constant speed mode : fullspeed')
                         self.fullspeed_hysteresis = myConfig['ACTUATOR']['FULLSPEED_HYSTERESIS_LENGTH']
                     else:
