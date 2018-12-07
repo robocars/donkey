@@ -5,6 +5,8 @@ from PIL import Image
 import glob
 import cv2
 
+import donkeycar as dk
+
 import logging
 logger = logging.getLogger('donkey.camera')
 
@@ -108,7 +110,8 @@ class Webcam(BaseCamera):
         while self.on:
             start = datetime.now()
 
-            ret, snapshot = self.cam.read()
+            with dk.utils.MeasureDuration('WebCam') as m:
+                ret, snapshot = self.cam.read()
             if ret:
                 self.frame = cv2.cvtColor(snapshot, cv2.COLOR_BGR2RGB)
                 # We don't need anymore this resizing, we configure the right resolution in the WebCam

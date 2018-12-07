@@ -267,6 +267,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
     print("You can now go to <your pi ip address>:8887 to drive your car.")
 
 
+
 def train(cfg, tub_names, model_name, base_model=None):
     '''
     use the specified data in tub_names to train an artifical neural network
@@ -311,6 +312,8 @@ def train(cfg, tub_names, model_name, base_model=None):
              train_split=cfg.TRAIN_TEST_SPLIT)
 
 def softExit():
+        dd = dk.utils.DumpDuration()
+        dd.dumptAll()
         if (ctr  != None):
             ctr.gracefull_shutdown()
         if (throttle != None):
@@ -351,7 +354,10 @@ if __name__ == '__main__':
         base_model = args['--base_model']
         cache = not args['--no_cache']
         train(cfg, tub, model, base_model=base_model)
-    
+
+    dd = dk.utils.DumpDuration()
+    dd.dumptAll()
+
 #    while True:
 #        time.sleep(1)
 #        if killer.kill_now:
