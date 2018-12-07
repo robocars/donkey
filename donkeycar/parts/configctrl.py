@@ -40,6 +40,11 @@ class ConfigFile(FileSystemEventHandler):
             myConfig.update(yaml.load(ymlfile))
             for section in myConfig:
                 logger.info("Section found :"+section)
+            if (myConfig['DEBUG']['LEVEL']=="DEBUG")
+                logging.getLogger().setLevel(logging.DEBUG)
+            if (myConfig['DEBUG']['LEVEL']=="INFO")
+                logging.getLogger().setLevel(logging.INFO)
+
 
     def on_any_event(self, event):
         if event.is_directory:

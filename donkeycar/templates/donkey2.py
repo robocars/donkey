@@ -58,6 +58,7 @@ import time
 
 #ctr is global
 ctr = None
+throttle = None
 
 def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
 
@@ -305,6 +306,8 @@ def train(cfg, tub_names, model_name, base_model=None):
 def softExit():
         if (ctr  != None):
             ctr.gracefull_shutdown()
+        if (throttle != None):
+            throttle.gracefull_shutdown()
         time.sleep(0.2)
         logger.info ('Exit')
         os._exit(1)        

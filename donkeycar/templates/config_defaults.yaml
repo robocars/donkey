@@ -1,3 +1,5 @@
+DEBUG:
+  LEVEL: "INFO"
 MODEL:
   MODEL_IN_USE: 0
 

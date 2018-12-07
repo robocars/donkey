@@ -36,7 +36,7 @@ class TxAuxCh(object):
                 logger.info('Ch6 - switch to Off')
                 logger.info('ChAux : Switch drive mode to user')
                 self.user_mode = 'user'
-        if (ch5 != self.ch5):
+        if ((ch5 != self.ch5) or (ch6 != self.ch6)):
                 if (ch5 == True):
                     logger.info('Ch5 - switch to On')
                     if (self.user_mode == 'user'):

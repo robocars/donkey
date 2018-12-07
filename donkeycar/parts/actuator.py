@@ -76,6 +76,8 @@ class PWMThrottle:
         #send zero pulse to calibrate ESC
         self.controller = controller
         self.controller.set_pulse(myConfig['ACTUATOR']['THROTTLE_STOPPED_PWM'])
+        self.fullspeed_hysteresis = 0
+        self.brake_hysteresis = 0
         time.sleep(1)
 
     def reloadKick(self):
@@ -89,16 +91,18 @@ class PWMThrottle:
         if self.mode == "user" and mode != "user":
             self.reloadKick()
 
+        if (self.mode == "local" and mode == "user"):
+            self.brake_hysteresis = myConfig['ACTUATOR']['FULLSPEED_HYSTERESIS_LENGTH']
+
         self.mode = mode
-        fullspeed_hysteresis = 0
-        brake_hysteresis = 0
 
         if (fullspeed==None):
             fullspeed = 0
         if (brake==None):
             brake=0
             
-        logger.debug('Output throttle order= {:01.2f}'.format(throttle))
+        logger.debug('throttle order= {:01.2f}'.format(throttle))
+
         if ((throttle > 0) or (self.mode != "user")):
             #Forward direction
             pulse = dk.utils.map_range(throttle,
@@ -108,25 +112,19 @@ class PWMThrottle:
                 # Autonomous mode
                 if (myConfig['ACTUATOR']['THROTTLE_CONSTANT_MODE'] == 1):
                     # If constant mode, just apply always kick  as nominal value 
-                    logger.debug('constant speed mode : fullspeed prediction = '+str(fullspeed))
-                    if (brake > myConfig['ACTUATOR']['BRAKE_DECISION_THRESH'] or brake_hysteresis>0):
-                        if (brake_hysteresis == 0):
-                            brake_hysteresis = myConfig['ACTUATOR']['FULLSPEED_HYSTERESIS_LENGTH']
+                    logger.debug('constant speed mode : fullspeed prediction = '+str(fullspeed) + ' brake_decision = '+str(brake))
+                    if (brake > myConfig['ACTUATOR']['BRAKE_DECISION_THRESH']):
                         logger.debug('constant speed mode : brake')
-                        pulse = myConfig['ACTUATOR']['THROTTLE_BRAKE_PULSE']
-                        brake_hysteresis -= 1
-                    elif (fullspeed > myConfig['ACTUATOR']['FULLSPEED_DECISION_THRESH'] or fullspeed_hysteresis>0):
-                        if (fullspeed_hysteresis == 0):
-                            fullspeed_hysteresis = myConfig['ACTUATOR']['FULLSPEED_HYSTERESIS_LENGTH']
-                        logger.debug('constant speed mode : fullspeed (hyst='+str(fullspeed_hysteresis)+')')
-                        pulse = myConfig['ACTUATOR']['THROTTLE_FULLSPEED_PULSE']
-                        fullspeed_hysteresis -= 1
+                        self.brake_hysteresis = myConfig['ACTUATOR']['FULLSPEED_HYSTERESIS_LENGTH']
+                    elif (fullspeed > myConfig['ACTUATOR']['FULLSPEED_DECISION_THRESH']:
+                        logger.debug('constant speed mode : fullspeed')
+                        self.fullspeed_hysteresis = myConfig['ACTUATOR']['FULLSPEED_HYSTERESIS_LENGTH']
                     else:
                         logger.debug('constant speed mode : regular speed')
                         pulse = myConfig['ACTUATOR']['THROTTLE_KICK_PULSE']
                 else:
                     # Not in constant mode, Ensure thottle order would not go below a limit (risk of motor shutdown)
-                    if self.mode != "user" and pulse < myConfig['ACTUATOR']['THROTTLE_MIN_SPD_PULSE']:
+                    if pulse < myConfig['ACTUATOR']['THROTTLE_MIN_SPD_PULSE']:
                         logger.debug('PWMThrottle order too low')
                         pulse = myConfig['ACTUATOR']['THROTTLE_MIN_SPD_PULSE']
 
@@ -140,11 +138,28 @@ class PWMThrottle:
             pulse = dk.utils.map_range(throttle,
                                     self.MIN_THROTTLE, 0, 
                                     myConfig['ACTUATOR']['THROTTLE_REVERSE_PWM'], myConfig['ACTUATOR']['THROTTLE_STOPPED_PWM'])
+
+        if (self.brake_hysteresis>0)
+            logger.debug('Apply brake for next '+str(brake_hysteresis-1)+' cycle')
+            pulse = myConfig['ACTUATOR']['THROTTLE_BRAKE_PULSE']
+            self.brake_hysteresis -= 1
+            if (self.brake_hysteresis == 0):
+                self.reloadKick()
+            
+        if (self.fullspeed_hysteresis>0):
+            logger.debug('Appluy fullspeed for next '+str(fullspeed_hysteresis-1)+' cycle')
+            pulse = myConfig['ACTUATOR']['THROTTLE_FULLSPEED_PULSE']
+            self.fullspeed_hysteresis -= 1
+
         logger.debug('Output throttle pulse= {:03.0f}'.format(pulse))
         self.controller.set_pulse(pulse)
         
     def shutdown(self):
-        self.run(0) #stop vehicle
+        self.controller.set_pulse(0) #stop vehicle
+
+    def gracefull_shutdown(self):
+        self.controller.set_pulse(0) #stop vehicle
+
 
 
 
