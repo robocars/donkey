@@ -112,13 +112,14 @@ class KerasCategorical1(KerasPilot):
             speedometer = 0.5
         img_arr = img_arr.reshape((1,) + img_arr.shape)
         speedometer_arr = np.array([speedometer]).reshape(1,1)
-        with dk.perfom.MeasureDuration('Model Predict') as m:
+        with dk.perfom.MeasureDuration('Model-Predict') as m:
             angle_binned, throttle, fullspeed_binned, brake_binned = self.model.predict([img_arr, speedometer_arr])
         #print('throttle', throttle)
         #angle_certainty = max(angle_binned[0])
         angle_unbinned = dk.utils.linear_unbin(angle_binned)
         fullspeed_unbinned = dk.utils.linear_unbin(fullspeed_binned)
         brake_unbinned = dk.utils.linear_unbin(brake_binned)
+        dk.perfmon.LogEvent('Model-Poll')
         return angle_unbinned, throttle[0][0], fullspeed_unbinned, brake_unbinned, angle_binned
         
     

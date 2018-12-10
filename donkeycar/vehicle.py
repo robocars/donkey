@@ -10,6 +10,8 @@ import time
 from threading import Thread
 from .memory import Memory
 
+import donkeycar as dk
+
 
 class Vehicle():
     def __init__(self, mem=None):
@@ -98,7 +100,8 @@ class Vehicle():
 
                 sleep_time = 1.0 / rate_hz - (time.time() - start_time)
                 if sleep_time > 0.0:
-                    time.sleep(sleep_time)
+                    with dk.perfmon.MeasureDuration('mainLoopSleep') as m:
+                        time.sleep(sleep_time)
 
         except KeyboardInterrupt:
             pass

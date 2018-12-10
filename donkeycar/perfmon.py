@@ -1,7 +1,7 @@
 import time
 import operator
 import logging
-import codecs
+from threading import get_ident, current_thread
 
 from donkeycar.parts.configctrl import myConfig, CONFIG2LEVEL
 
@@ -15,11 +15,13 @@ def timelineAddEvent (tag, state):
     evt={}
     ts = int(round(time.time() * 1000))
     evt['ts']=ts
+    evt['thread']=current_thread().name
     evt['tag']=tag
     evt['state']=state
     timeline.append(evt)
     if (len(timeline) > 3000):
         timeline.pop(0)
+
 def keys_exists(element, *keys):
     '''
     Check if *keys (nested) exists in `element` (dict).
@@ -36,6 +38,9 @@ def keys_exists(element, *keys):
         except KeyError:
             return False
     return True
+
+def LogEvent(tag):
+    timelineAddEvent(tag, 'evt')
 
 class MeasureDuration:
     def __init__(self, tag):
@@ -72,14 +77,21 @@ class PerfReportManager:
             return (sorted(distriDuration[tag].items(), key=lambda kv: kv[0]))
 
     def dumptAll(self):
-        print("Dump all perfmon recorded timings :")
+        self.logger.info("Dump all perfmon recorded timings :")
         for part in distriDuration:
             sorted_distriDuration = self.getSorted(part)
-            print('Timing for parts :'+part)
+            #self.logger.info('Timing for parts :'+part)
             #self.logger.info (sorted_distriDuration)
-            graph = Pyasciigraph(graphsymbol='str')
-            with  codecs.open(myConfig['DEBUG']['PARTS']['PERFMON']['FILE'], "w+", "utf-8") as myfile:
+            graph = Pyasciigraph(graphsymbol='#')
+            with  open(myConfig['DEBUG']['PARTS']['PERFMON']['FILE'], "w+") as myfile:
+                myfile.write("Timing for parts : {}\n".format(part))
                 for line in  graph.graph(part, sorted_distriDuration):
-                    myfile.write(line)
+                    myfile.write("{}\n".format(line.encode('ascii','ignore').decode('utf-8')))
+                #self.logger.info(line.encode('ascii','ignore').decode('utf-8'))
             myfile.close()
+        with  open(myConfig['DEBUG']['PARTS']['TRACER']['FILE'], "w+") as myfile:
+            for evt in  timeline:
+                myfile.write("{0} {1} {2} {3}\n".format(evt['ts'], evt['thread'], evt['tag'], evt['state']))
+            myfile.close()
+
     

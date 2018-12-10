@@ -130,11 +130,13 @@ class Webcam(BaseCamera):
             stop = datetime.now()
             s = 1 / self.framerate - (stop - start).total_seconds()
             if s > 0:
-                time.sleep(s)
+                with dk.perfmon.MeasureDuration('WebCamLoopSleep') as m:
+                    time.sleep(s)
 
         self.cam.release()
 
     def run_threaded(self):
+        dk.perfmon.LogEvent('WebCam-Poll')
         return self.frame
 
     def shutdown(self):

@@ -211,6 +211,7 @@ class TxController(object):
             self.img_arr = annoted_img
         else:
             self.img_arr = img_arr
+        dk.perfmon.LogEvent('TXCtrl-Poll')
         return self.angle, self.throttle, self.recording, self.ch5, self.ch6, self.speedometer
 
     def run(self, img_arr=None, img_annoted=None):
