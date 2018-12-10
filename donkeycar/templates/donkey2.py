@@ -312,7 +312,7 @@ def train(cfg, tub_names, model_name, base_model=None):
              train_split=cfg.TRAIN_TEST_SPLIT)
 
 def softExit():
-        dd = dk.perfmon.DumpDuration()
+        dd = dk.perfmon.PerfReportManager()
         dd.dumptAll()
         if (ctr  != None):
             ctr.gracefull_shutdown()
@@ -354,7 +354,7 @@ if __name__ == '__main__':
         cache = not args['--no_cache']
         train(cfg, tub, model, base_model=base_model)
 
-    dd = dk.perfmon.DumpDuration()
+    dd = dk.perfmon.PerfReportManager()
     dd.dumptAll()
 
 #    while True:

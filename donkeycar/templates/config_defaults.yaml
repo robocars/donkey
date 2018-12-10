@@ -4,6 +4,9 @@ DEBUG:
     MAIN:
       NAME: "donkey.manage"
       LEVEL: "INFO"
+    PERFMON:
+      NAME: "donkey.perfmon"
+      LEVEL: "INFO"
     TXCTRL:
       NAME: "donkey.txctrl"
       LEVEL: "INFO"

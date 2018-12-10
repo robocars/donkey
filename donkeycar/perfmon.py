@@ -1,6 +1,8 @@
 import time
 import operator
 
+from donkeycar.parts.configctrl import myConfig, CONFIG2LEVEL
+
 from ascii_graph import Pyasciigraph
 
 distriDuration = {}
@@ -57,20 +59,23 @@ class MeasureDuration:
         #newmax = max(distri[self.tag]['max'], duration)
         #distri[self.tag]['max']=newmax
 
-class DumpDuration:
+class PerfReportManager:
     def __init__(self):
         self.init=True
+        self.logger = logging.getLogger(myConfig['DEBUG']['PARTS']['PERFMON']['NAME'])
+        self.logger.setLevel(CONFIG2LEVEL[myConfig['DEBUG']['PARTS']['PERFMON']['LEVEL']])
+
     
     def getSorted(self, tag):
             return (sorted(distriDuration[tag].items(), key=lambda kv: kv[0]))
 
     def dumptAll(self):
-        print("Dump all timings :")
+        self.logger.info("Dump all perfmon recorded timings :")
         for part in distriDuration:
             sorted_distriDuration = self.getSorted(part)
-            print('Timing for parts :'+part)
-            print (sorted_distriDuration)
+            self.logger.info('Timing for parts :'+part)
+            #self.logger.info (sorted_distriDuration)
             graph = Pyasciigraph()
             for line in  graph.graph(part, sorted_distriDuration):
-                print(line)
+                self.logger.info(line)
     
