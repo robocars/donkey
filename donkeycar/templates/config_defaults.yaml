@@ -7,7 +7,7 @@ DEBUG:
     PERFMON:
       NAME: "donkey.perfmon"
       LEVEL: "INFO"
-      FILE: "/tmps/perfmon.txt"
+      FILE: "/tmpfs/perfmon.txt"
     TXCTRL:
       NAME: "donkey.txctrl"
       LEVEL: "INFO"
