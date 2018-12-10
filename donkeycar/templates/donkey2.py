@@ -329,8 +329,8 @@ class GracefulKiller:
         signal.signal(signal.SIGTERM, self.exit_gracefully)
 
     def exit_gracefully(self,signum, frame):
-        self.kill_now = True
         softExit()
+        self.kill_now = True
 
 def log_exception(*args):
     logger.info ('Got exception %s' % (args,))
@@ -342,7 +342,7 @@ if __name__ == '__main__':
     args = docopt(__doc__)
     cfg = dk.load_config()
 
-#    killer = GracefulKiller()
+    killer = GracefulKiller()
 
     if args['drive']:
         drive(cfg, model_path=args['--model'], use_joystick=args['--js'], use_tx=args['--tx'])
@@ -354,13 +354,14 @@ if __name__ == '__main__':
         cache = not args['--no_cache']
         train(cfg, tub, model, base_model=base_model)
 
-    dd = dk.perfmon.PerfReportManager()
-    dd.dumptAll()
-
 #    while True:
 #        time.sleep(1)
 #        if killer.kill_now:
 #            break
+
+    dd = dk.perfmon.PerfReportManager()
+    dd.dumptAll()
+
 
 
 

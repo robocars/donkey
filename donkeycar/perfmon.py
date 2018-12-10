@@ -1,5 +1,6 @@
 import time
 import operator
+import logging
 
 from donkeycar.parts.configctrl import myConfig, CONFIG2LEVEL
 
