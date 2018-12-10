@@ -80,4 +80,5 @@ class PerfReportManager:
             with open(myConfig['DEBUG']['PARTS']['PERFMON']['FILE'], "w+") as myfile:
                 for line in  graph.graph(part, sorted_distriDuration):
                     myfile.write(line)
+            myfile.close()
     
