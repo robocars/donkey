@@ -77,7 +77,7 @@ class PerfReportManager:
             print('Timing for parts :'+part)
             #self.logger.info (sorted_distriDuration)
             graph = Pyasciigraph()
-            with open(myConfig['DEBUG']['PARTS']['PERFMON']['FILE'], "a") as myfile:
+            with open(myConfig['DEBUG']['PARTS']['PERFMON']['FILE'], "w+") as myfile:
                 for line in  graph.graph(part, sorted_distriDuration):
                     myfile.write(line)
     
