@@ -71,12 +71,12 @@ class PerfReportManager:
             return (sorted(distriDuration[tag].items(), key=lambda kv: kv[0]))
 
     def dumptAll(self):
-        self.logger.info("Dump all perfmon recorded timings :")
+        print("Dump all perfmon recorded timings :")
         for part in distriDuration:
             sorted_distriDuration = self.getSorted(part)
-            self.logger.info('Timing for parts :'+part)
+            print('Timing for parts :'+part)
             #self.logger.info (sorted_distriDuration)
             graph = Pyasciigraph()
             for line in  graph.graph(part, sorted_distriDuration):
-                self.logger.info(line)
+                print(line)
     

@@ -319,7 +319,7 @@ def softExit():
         if (throttle != None):
             throttle.gracefull_shutdown()
         time.sleep(0.2)
-        logger.info ('Exit')
+        print ('Exit')
         os._exit(1)        
 
 class GracefulKiller:
@@ -333,7 +333,7 @@ class GracefulKiller:
         self.kill_now = True
 
 def log_exception(*args):
-    logger.info ('Got exception %s' % (args,))
+    print ('Got exception %s' % (args,))
     softExit()
 
 #sys.excepthook = log_exception
@@ -353,14 +353,6 @@ if __name__ == '__main__':
         base_model = args['--base_model']
         cache = not args['--no_cache']
         train(cfg, tub, model, base_model=base_model)
-
-#    while True:
-#        time.sleep(1)
-#        if killer.kill_now:
-#            break
-
-    dd = dk.perfmon.PerfReportManager()
-    dd.dumptAll()
 
 
 
