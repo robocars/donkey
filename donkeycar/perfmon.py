@@ -1,6 +1,7 @@
 import time
 import operator
 import logging
+import codecs
 
 from donkeycar.parts.configctrl import myConfig, CONFIG2LEVEL
 
@@ -77,7 +78,7 @@ class PerfReportManager:
             print('Timing for parts :'+part)
             #self.logger.info (sorted_distriDuration)
             graph = Pyasciigraph()
-            with open(myConfig['DEBUG']['PARTS']['PERFMON']['FILE'], "w+") as myfile:
+            with  codecs.open(myConfig['DEBUG']['PARTS']['PERFMON']['FILE'], "w+", "utf-8") as myfile:
                 for line in  graph.graph(part, sorted_distriDuration):
                     myfile.write(line)
             myfile.close()
