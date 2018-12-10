@@ -20,10 +20,9 @@ from threading import Thread
 import donkeycar as dk
 from sys import platform
 
-from donkeycar.parts.configctrl import myConfig
+from donkeycar.parts.configctrl import myConfig, CONFIG2LEVEL
 
 import logging
-logger = logging.getLogger('donkey.txctrl')
 
 #if platform != "darwin":
 import serial
@@ -50,10 +49,11 @@ class Txserial():
     '''
     counter = 0
 
-    def __init__(self):
+    def __init__(self, logger):
         self.ser = None
         self.lastLocalTs = 0
         self.lastDistTs = 0
+        self.logger = logger
 
     def init(self):
         # Open serial link
@@ -67,11 +67,11 @@ class Txserial():
                 bytesize=serial.EIGHTBITS,
                 timeout=1
             )
-            logger.info('/dev/serial0 initialized') 
+            self.logger.info('/dev/serial0 initialized') 
             self.ledStatus("init")       
 
         except:
-            logger.info('Serial port not initialized')
+            self.logger.info('Serial port not initialized')
 
         return True
 
@@ -98,32 +98,33 @@ class Txserial():
 
         try:
             if self.ser.in_waiting > 50:
-                logger.debug('poll: Serial buffer overrun {} ... flushing'.format(str(self.ser.in_waiting)))
+                self.logger.debug('poll: Serial buffer overrun {} ... flushing'.format(str(self.ser.in_waiting)))
                 self.ser.reset_input_buffer()
             msg=self.ser.readline().decode('utf-8')
             ts, steering_tx, throttle_tx, ch5_tx, ch6_tx, speedometer, freq_tx = map(int,msg.split(','))
 
         except:
-            logger.debug('poll: Exception while parsing msg')
+            self.logger.debug('poll: Exception while parsing msg')
 
         now=time.clock()*1000
-        logger.debug('poll: {} {}'.format(msg.strip(),len(msg)))
+        self.logger.debug('poll: {} {}'.format(msg.strip(),len(msg)))
         if (steering_tx == -1):
-            logger.debug('poll: No Rx signal , forcing idle position')
+            self.logger.debug('poll: No Rx signal , forcing idle position')
             return 0,1500,0,0,60
         if (ts-self.lastDistTs < 2*(now-self.lastLocalTs)):
-            logger.debug('poll: underun dist {} local {}'.format(ts-self.lastDistTs, now-self.lastLocalTs))
+            self.logger.debug('poll: underun dist {} local {}'.format(ts-self.lastDistTs, now-self.lastLocalTs))
         self.lastLocalTs = now
         self.lastDistTs = ts
-        logger.debug('poll: ts {} steering_tx= {:05.0f} throttle_tx= {:05.0f} speedometer= {:03.0f}'.format(ts, steering_tx, throttle_tx, speedometer))
+        self.logger.debug('poll: ts {} steering_tx= {:05.0f} throttle_tx= {:05.0f} speedometer= {:03.0f}'.format(ts, steering_tx, throttle_tx, speedometer))
 
 
         return throttle_tx, steering_tx, ch5_tx, ch6_tx, speedometer, freq_tx, 
 
     def ledStatus (self, status):
-        status = status + "\n"
-        if (self.ser != None):
-            self.ser.write(status.encode())    
+        if (status!=None):
+            status = status + "\n"
+            if (self.ser != None):
+                self.ser.write(status.encode())    
    
 
 class TxController(object):
@@ -136,6 +137,8 @@ class TxController(object):
                  verbose = False
                  ):
 
+        self.logger = logging.getLogger(myConfig['DEBUG']['PARTS']['TXCTRL']['NAME'])
+        self.logger.setLevel(CONFIG2LEVEL[myConfig['DEBUG']['PARTS']['TXCTRL']['LEVEL']])
         self.angle = 0.0
         self.throttle = 0.0
         self.mode = 'user'
@@ -161,7 +164,7 @@ class TxController(object):
         attempt to init Tx
         '''
         try:
-            self.tx = Txserial()
+            self.tx = Txserial(self.logger)
             self.tx.init()
         except FileNotFoundError:
             print(" Unable to init Tx receiver.")
@@ -199,7 +202,7 @@ class TxController(object):
             if (ch6_tx < myConfig['TX']['TX_CH_AUX_TRESH']-100):
                 self.ch6 = False
 
-            logger.debug('angle= {:01.2f} throttle= {:01.2f} speed= {:01.2f}'.format (self.angle, self.throttle, self.speedometer))
+            self.logger.debug('angle= {:01.2f} throttle= {:01.2f} speed= {:01.2f}'.format (self.angle, self.throttle, self.speedometer))
             time.sleep(self.poll_delay)
 
     def run_threaded(self, mode=None, img_arr=None, annoted_img=None):

@@ -278,35 +278,3 @@ def expand_path_arg(path_str):
         expanded_paths += paths
     return expanded_paths
 
-
-import time
-
-distri = {}
-
-class MeasureDuration:
-    def __init__(self, tag):
-        self.tag = tag
-        self.start = None
-        distri[tag]={}
-
-    def __enter__(self):
-        self.start = time.time()
-        return self
- 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        duration = int((time.time() - self.start) * 1000)
-        if duration in distri[self.tag]:
-            distri[self.tag][duration]+=1
-        else:
-            distri[self.tag][duration]=1
-            distri[self.tag]['max']=duration
-        newmax = max(distri[self.tag]['max'], duration)
-        distri[self.tag]['max']=newmax
-
-class DumpDuration:
-    def __init__(self):
-        self.init=True
-    
-    def dumptAll(self):
-        print("Dump all timings :")
-        print (distri)

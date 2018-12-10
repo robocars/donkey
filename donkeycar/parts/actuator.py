@@ -8,10 +8,9 @@ import time
 
 import donkeycar as dk
 
-from donkeycar.parts.configctrl import myConfig
+from donkeycar.parts.configctrl import myConfig, CONFIG2LEVEL
 
 import logging
-logger = logging.getLogger('donkey.actuator')
 
 class PCA9685:
     ''' 
@@ -42,18 +41,20 @@ class PWMSteering:
                        left_pulse=290,
                        right_pulse=490):
 
+        self.logger = logging.getLogger(myConfig['DEBUG']['PARTS']['ACT-STEERING']['NAME'])
+        self.logger.setLevel(myConfig['DEBUG']['PARTS']['ACT-STEERING']['LEVEL'])
         self.controller = controller
         self.left_pulse = left_pulse
         self.right_pulse = right_pulse
 
     def run(self, angle):
         #map absolute angle to angle that vehicle can implement.
-        logger.debug('Output angle order= {:01.2f}'.format(angle))
+        self.logger.debug('Output angle order= {:01.2f}'.format(angle))
         pulse = dk.utils.map_range(angle,
                                 self.LEFT_ANGLE, self.RIGHT_ANGLE,
                                 self.left_pulse, self.right_pulse)
 #        print ("PWMSteering pulse="+str(pulse))
-        logger.debug('Output angle pulse= {:03.0f}'.format(pulse))
+        self.logger.debug('Output angle pulse= {:03.0f}'.format(pulse))
         self.controller.set_pulse(pulse)
 
     def shutdown(self):
@@ -71,6 +72,8 @@ class PWMThrottle:
 
     def __init__(self, controller=None):
 
+        self.logger = logging.getLogger(myConfig['DEBUG']['PARTS']['ACT-THROTTLE']['NAME'])
+        self.logger.setLevel(myConfig['DEBUG']['PARTS']['ACT-THROTTLE']['LEVEL'])
         self.mode = "user"
         self.kick = []
         #send zero pulse to calibrate ESC
@@ -82,7 +85,7 @@ class PWMThrottle:
 
     def reloadKick(self):
         self.kick = [myConfig['ACTUATOR']['THROTTLE_KICK_PULSE']]*myConfig['ACTUATOR']['THROTTLE_KICK_LENGTH']
-        logger.debug('Kicker reloaded')
+        self.logger.debug('Kicker reloaded')
 
     def run(self, throttle, mode=None, fullspeed=None, brake=None):
 
@@ -101,7 +104,7 @@ class PWMThrottle:
         if (brake==None):
             brake=0
             
-        logger.debug('throttle order= {:01.2f}'.format(throttle))
+        self.logger.debug('throttle order= {:01.2f}'.format(throttle))
 
         if ((throttle > 0) or (self.mode != "user")):
             #Forward direction
@@ -112,25 +115,25 @@ class PWMThrottle:
                 # Autonomous mode
                 if (myConfig['ACTUATOR']['THROTTLE_CONSTANT_MODE'] == 1):
                     # If constant mode, just apply always kick  as nominal value 
-                    logger.debug('constant speed mode : fullspeed prediction = '+str(fullspeed) + ' brake_decision = '+str(brake))
+                    self.logger.debug('constant speed mode : fullspeed prediction = '+str(fullspeed) + ' brake_decision = '+str(brake))
                     if (brake > myConfig['ACTUATOR']['BRAKE_DECISION_THRESH']):
-                        logger.debug('constant speed mode : brake')
+                        self.logger.debug('constant speed mode : brake')
                         self.brake_hysteresis = myConfig['ACTUATOR']['FULLSPEED_HYSTERESIS_LENGTH']
                     elif (fullspeed > myConfig['ACTUATOR']['FULLSPEED_DECISION_THRESH']):
-                        logger.debug('constant speed mode : fullspeed')
+                        self.logger.debug('constant speed mode : fullspeed')
                         self.fullspeed_hysteresis = myConfig['ACTUATOR']['FULLSPEED_HYSTERESIS_LENGTH']
                     else:
-                        logger.debug('constant speed mode : regular speed')
+                        self.logger.debug('constant speed mode : regular speed')
                         pulse = myConfig['ACTUATOR']['THROTTLE_KICK_PULSE']
                 else:
                     # Not in constant mode, Ensure thottle order would not go below a limit (risk of motor shutdown)
                     if pulse < myConfig['ACTUATOR']['THROTTLE_MIN_SPD_PULSE']:
-                        logger.debug('PWMThrottle order too low')
+                        self.logger.debug('PWMThrottle order too low')
                         pulse = myConfig['ACTUATOR']['THROTTLE_MIN_SPD_PULSE']
 
                 # Motor cann not start at too low throttle, kick it for the first cycles             
                 if (len(self.kick)>0):
-                    logger.debug('Kicker active')
+                    self.logger.debug('Kicker active')
                     pulse = self.kick.pop()
 
         else:
@@ -140,18 +143,18 @@ class PWMThrottle:
                                     myConfig['ACTUATOR']['THROTTLE_REVERSE_PWM'], myConfig['ACTUATOR']['THROTTLE_STOPPED_PWM'])
 
         if (self.brake_hysteresis>0):
-            logger.debug('Apply brake for next '+str(self.brake_hysteresis-1)+' cycle')
+            self.logger.debug('Apply brake for next '+str(self.brake_hysteresis-1)+' cycle')
             pulse = myConfig['ACTUATOR']['THROTTLE_BRAKE_PULSE']
             self.brake_hysteresis -= 1
             if (self.brake_hysteresis == 0):
                 self.reloadKick()
             
         if (self.fullspeed_hysteresis>0):
-            logger.debug('Appluy fullspeed for next '+str(self.fullspeed_hysteresis-1)+' cycle')
+            self.logger.debug('Appluy fullspeed for next '+str(self.fullspeed_hysteresis-1)+' cycle')
             pulse = myConfig['ACTUATOR']['THROTTLE_FULLSPEED_PULSE']
             self.fullspeed_hysteresis -= 1
 
-        logger.debug('Output throttle pulse= {:03.0f}'.format(pulse))
+        self.logger.debug('Output throttle pulse= {:03.0f}'.format(pulse))
         self.controller.set_pulse(pulse)
         
     def shutdown(self):

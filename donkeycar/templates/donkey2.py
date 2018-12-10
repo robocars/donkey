@@ -30,8 +30,6 @@ console.setFormatter(formatter)
 # add the handler to the root logger
 logging.getLogger('').addHandler(console)
 
-logger = logging.getLogger('donkey.manage')
-
 from docopt import docopt
 
 import donkeycar as dk
@@ -48,7 +46,7 @@ from donkeycar.parts.txauxch import TxAuxCh
 from donkeycar.parts.emergency import EmergencyController
 from donkeycar.parts.throttle_in_line import ThrottleInLine
 from donkeycar.parts.battery import BatteryController
-from donkeycar.parts.configctrl import ConfigController, myConfig
+from donkeycar.parts.configctrl import ConfigController, myConfig, CONFIG2LEVEL
 
 from sys import platform
 
@@ -75,10 +73,12 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
     '''
 
     # Initialize car
-    logger.info("Init Vehicle main object")
     V = dk.vehicle.Vehicle()
 
     configCtrl = ConfigController(cfg.CONFIG_PATH)
+
+    logger = logging.getLogger(myConfig['DEBUG']['PARTS']['MAIN']['NAME'])
+    logger.setLevel(CONFIG2LEVEL[myConfig['DEBUG']['PARTS']['MAIN']['LEVEL']])
 
     V.add(configCtrl, threaded=True)
 
@@ -312,7 +312,7 @@ def train(cfg, tub_names, model_name, base_model=None):
              train_split=cfg.TRAIN_TEST_SPLIT)
 
 def softExit():
-        dd = dk.utils.DumpDuration()
+        dd = dk.perfmon.DumpDuration()
         dd.dumptAll()
         if (ctr  != None):
             ctr.gracefull_shutdown()
@@ -345,7 +345,6 @@ if __name__ == '__main__':
 #    killer = GracefulKiller()
 
     if args['drive']:
-        logger.info("Start in drive mode")
         drive(cfg, model_path=args['--model'], use_joystick=args['--js'], use_tx=args['--tx'])
 
     elif args['train']:
@@ -355,7 +354,7 @@ if __name__ == '__main__':
         cache = not args['--no_cache']
         train(cfg, tub, model, base_model=base_model)
 
-    dd = dk.utils.DumpDuration()
+    dd = dk.perfmon.DumpDuration()
     dd.dumptAll()
 
 #    while True:

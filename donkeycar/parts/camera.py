@@ -7,8 +7,9 @@ import cv2
 
 import donkeycar as dk
 
+from donkeycar.parts.configctrl import myConfig, CONFIG2LEVEL
+
 import logging
-logger = logging.getLogger('donkey.camera')
 
 class BaseCamera:
 
@@ -17,6 +18,10 @@ class BaseCamera:
 
 class PiCamera(BaseCamera):
     def __init__(self, resolution=(120, 160), framerate=20):
+
+        self.logger = logging.getLogger(myConfig['DEBUG']['PARTS']['CAMERA']['NAME'])
+        self.logger.setLevel(myConfig['DEBUG']['PARTS']['CAMERA']['LEVEL'])
+
         from picamera.array import PiRGBArray
         from picamera import PiCamera
         resolution = (resolution[1], resolution[0])
@@ -36,7 +41,7 @@ class PiCamera(BaseCamera):
         self.frame = None
         self.on = True
 
-        logger.info('PiCamera loaded.. .warming camera')
+        self.logger.info('PiCamera loaded.. .warming camera')
         time.sleep(2)
 
 
@@ -61,7 +66,7 @@ class PiCamera(BaseCamera):
     def shutdown(self):
         # indicate that the thread should be stopped
         self.on = False
-        logger.info('stoping PiCamera')
+        self.logger.info('stoping PiCamera')
         time.sleep(.5)
         self.stream.close()
         self.rawCapture.close()
@@ -69,6 +74,10 @@ class PiCamera(BaseCamera):
 
 class Webcam(BaseCamera):
     def init_cam (self, resolution = (160, 120), fps=60):
+        
+        self.logger = logging.getLogger(myConfig['DEBUG']['PARTS']['CAMERA']['NAME'])
+        self.logger.setLevel(CONFIG2LEVEL[myConfig['DEBUG']['PARTS']['CAMERA']['LEVEL']])
+
         self.cam = cv2.VideoCapture(0)
         self.cam.set(cv2.CAP_PROP_FRAME_WIDTH,resolution[1])
         self.cam.set(cv2.CAP_PROP_FRAME_HEIGHT,resolution[0])
@@ -88,21 +97,21 @@ class Webcam(BaseCamera):
         self.frame = None
         self.on = True
 
-        logger.info('WebcamVideoStream loaded.. .warming camera')
+        self.logger.info('WebcamVideoStream loaded.. .warming camera')
 
         time.sleep(2)
         check_fps = self.cam.get(cv2.CAP_PROP_FPS)
         if (check_fps == 0):
             self.cam.release()
-            logger.info('WebcamVideoStream loaded.. .Error, busy, retstarting')
+            self.logger.info('WebcamVideoStream loaded.. .Error, busy, retstarting')
             os._exit(1)
             time.sleep(2)
 
         check_fps = self.cam.get(cv2.CAP_PROP_FPS)
-        logger.info("Camera read configuration:")
-        logger.info("Camera Width :"+str(self.cam.get(cv2.CAP_PROP_FRAME_WIDTH)))
-        logger.info("Camera Height :"+str(self.cam.get(cv2.CAP_PROP_FRAME_HEIGHT)))
-        logger.info("Camera FPS :"+str(check_fps))
+        self.logger.info("Camera read configuration:")
+        self.logger.info("Camera Width :"+str(self.cam.get(cv2.CAP_PROP_FRAME_WIDTH)))
+        self.logger.info("Camera Height :"+str(self.cam.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+        self.logger.info("Camera FPS :"+str(check_fps))
 
     def update(self):
         from datetime import datetime, timedelta
@@ -110,8 +119,9 @@ class Webcam(BaseCamera):
         while self.on:
             start = datetime.now()
 
-            with dk.utils.MeasureDuration('WebCam') as m:
+            with dk.perfmon.MeasureDuration('WebCam') as m:
                 ret, snapshot = self.cam.read()
+            self.logger.debug("New image acquired")
             if ret:
                 self.frame = cv2.cvtColor(snapshot, cv2.COLOR_BGR2RGB)
                 # We don't need anymore this resizing, we configure the right resolution in the WebCam
@@ -130,7 +140,7 @@ class Webcam(BaseCamera):
     def shutdown(self):
         # indicate that the thread should be stopped
         self.on = False
-        logger.info('stoping Webcam')
+        self.logger.info('stoping Webcam')
         time.sleep(.5)
 
 class MockCamera(BaseCamera):

@@ -9,6 +9,12 @@ import logging
 logger = logging.getLogger('donkey.dynconfig')
 
 myConfig = {}
+CONFIG2LEVEL = {}
+CONFIG2LEVEL['CRITICAL']=logging.CRITICAL
+CONFIG2LEVEL['ERROR']=logging.ERROR
+CONFIG2LEVEL['WARNING']=logging.WARNING
+CONFIG2LEVEL['INFO']=logging.INFO
+CONFIG2LEVEL['DEBUG']=logging.DEBUG
 
 class Watcher:
     def __init__(self, configPath, eventHandler):
@@ -40,10 +46,12 @@ class ConfigFile(FileSystemEventHandler):
             myConfig.update(yaml.load(ymlfile))
             for section in myConfig:
                 logger.info("Section found :"+section)
-            if (myConfig['DEBUG']['LEVEL']=="DEBUG"):
-                logging.getLogger().setLevel(logging.DEBUG)
-            if (myConfig['DEBUG']['LEVEL']=="INFO"):
-                logging.getLogger().setLevel(logging.INFO)
+
+            logging.getLogger().setLevel(CONFIG2LEVEL[myConfig['DEBUG']['LEVEL']])
+            logging.getLogger(myConfig['DEBUG']['PARTS']['TXCTRL']['NAME']).setLevel(CONFIG2LEVEL[myConfig['DEBUG']['PARTS']['TXCTRL']['LEVEL']])
+            logging.getLogger(myConfig['DEBUG']['PARTS']['CAMERA']['NAME']).setLevel(CONFIG2LEVEL[myConfig['DEBUG']['PARTS']['CAMERA']['LEVEL']])
+            logging.getLogger(myConfig['DEBUG']['PARTS']['ACT-THROTTLE']['NAME']).setLevel(CONFIG2LEVEL[myConfig['DEBUG']['PARTS']['ACT-THROTTLE']['LEVEL']])
+            logging.getLogger(myConfig['DEBUG']['PARTS']['ACT-STEERING']['NAME']).setLevel(CONFIG2LEVEL[myConfig['DEBUG']['PARTS']['ACT-STEERING']['LEVEL']])
 
 
     def on_any_event(self, event):

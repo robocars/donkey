@@ -1,5 +1,22 @@
 DEBUG:
   LEVEL: "INFO"
+  PARTS:
+    MAIN:
+      NAME: "donkey.manage"
+      LEVEL: "INFO"
+    TXCTRL:
+      NAME: "donkey.txctrl"
+      LEVEL: "INFO"
+    CAMERA:
+      NAME: "donkey.camera"
+      LEVEL: "INFO"
+    ACT-THROTTLE:
+      NAME: "donkey.act-throttle"
+      LEVEL: "INFO"
+    ACT-STEERING:
+      NAME: "donkey.act-steering"
+      LEVEL: "INFO"
+  
 MODEL:
   MODEL_IN_USE: 0
 
