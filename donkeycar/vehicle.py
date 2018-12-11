@@ -138,7 +138,11 @@ class Vehicle():
 
                 #save the output to memory
                 if outputs is not None:
-                    self.mem.put(entry['outputs'], outputs)
+                    try:
+                        self.mem.put(entry['outputs'], outputs)
+                    except :
+                        print("Part in error "+p.__class__.__name__)
+
 
                     
 
