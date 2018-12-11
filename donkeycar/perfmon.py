@@ -78,17 +78,17 @@ class PerfReportManager:
 
     def dumptAll(self):
         self.logger.info("Dump all perfmon recorded timings :")
-        for part in distriDuration:
-            sorted_distriDuration = self.getSorted(part)
-            #self.logger.info('Timing for parts :'+part)
-            #self.logger.info (sorted_distriDuration)
-            graph = Pyasciigraph(graphsymbol='#')
-            with  open(myConfig['DEBUG']['PARTS']['PERFMON']['FILE'], "w+") as myfile:
+        with  open(myConfig['DEBUG']['PARTS']['PERFMON']['FILE'], "w+") as myfile:
+            for part in distriDuration:
+                sorted_distriDuration = self.getSorted(part)
+                #self.logger.info('Timing for parts :'+part)
+                #self.logger.info (sorted_distriDuration)
+                graph = Pyasciigraph(graphsymbol='#')
                 myfile.write("Timing for parts : {}\n".format(part))
                 for line in  graph.graph(part, sorted_distriDuration):
                     myfile.write("{}\n".format(line.encode('ascii','ignore').decode('utf-8')))
                 #self.logger.info(line.encode('ascii','ignore').decode('utf-8'))
-            myfile.close()
+        myfile.close()
         with  open(myConfig['DEBUG']['PARTS']['TRACER']['FILE'], "w+") as myfile:
             for evt in  timeline:
                 myfile.write("{0} {1} {2} {3}\n".format(evt['ts'], evt['thread'], evt['tag'], evt['state']))
