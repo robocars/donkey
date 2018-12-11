@@ -130,8 +130,7 @@ class Webcam(BaseCamera):
             stop = datetime.now()
             s = 1 / self.framerate - (stop - start).total_seconds()
             if s > 0:
-                with dk.perfmon.MeasureDuration('WebCamLoopSleep') as m:
-                    time.sleep(s)
+                time.sleep(s)
 
         self.cam.release()
 

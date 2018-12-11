@@ -8,6 +8,10 @@ DEBUG:
       NAME: "donkey.perfmon"
       LEVEL: "INFO"
       FILE: "./perfmon.txt"
+    PERFDUMP:
+      NAME: "donkey.perfdump"
+      LEVEL: "INFO"
+      TIMEOUT: 30
     TRACER:
       FILE: "./trace.log"
     TXCTRL:

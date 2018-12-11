@@ -43,6 +43,7 @@ from donkeycar.parts.actuator import PCA9685, PWMSteering, PWMThrottle
 from donkeycar.parts.datastore import TubHandler, TubGroup
 from donkeycar.parts.controller import LocalWebController, FPVWebController, JoystickController, TxController
 from donkeycar.parts.txauxch import TxAuxCh
+from donkeycar.parts.dumpPerf import dumpPerf
 from donkeycar.parts.emergency import EmergencyController
 from donkeycar.parts.throttle_in_line import ThrottleInLine
 from donkeycar.parts.battery import BatteryController
@@ -57,11 +58,14 @@ import time
 #ctr is global
 ctr = None
 throttle = None
+V = None
 
 def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
 
     global myConfig
-
+    global throttle
+    global ctr
+    global V
     '''
     Start the drive loop
     Each part runs as a job in the Vehicle loop, calling either
@@ -163,6 +167,13 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
           inputs=['user/mode'],
           outputs=['user/mode'],
           threaded=True)
+
+    perfMngt = dumpPerf()
+
+    V.add(perfMngt,
+          inputs=['user/mode'],
+          threaded=False)
+
     # See if we should even run the pilot module.
     # This is only needed because the part run_condition only accepts boolean
     def pilot_condition(mode):
@@ -312,8 +323,10 @@ def train(cfg, tub_names, model_name, base_model=None):
              train_split=cfg.TRAIN_TEST_SPLIT)
 
 def softExit():
-        dd = dk.perfmon.PerfReportManager()
-        dd.dumptAll()
+        #dd = dk.perfmon.PerfReportManager()
+        #dd.dumptAll()
+        if V != None:
+            V.stop()
         if (ctr  != None):
             ctr.gracefull_shutdown()
         if (throttle != None):

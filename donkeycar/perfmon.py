@@ -76,22 +76,31 @@ class PerfReportManager:
     def getSorted(self, tag):
             return (sorted(distriDuration[tag].items(), key=lambda kv: kv[0]))
 
-    def dumptAll(self):
-        self.logger.info("Dump all perfmon recorded timings :")
-        with  open(myConfig['DEBUG']['PARTS']['PERFMON']['FILE'], "w+") as myfile:
+    def dumptAll(self, context=""):
+        global distriDuration
+        self.logger.info("Dump all perfmon recorded timings")
+        with  open(myConfig['DEBUG']['PARTS']['PERFMON']['FILE'], "a+") as myfile:
             for part in distriDuration:
                 sorted_distriDuration = self.getSorted(part)
                 #self.logger.info('Timing for parts :'+part)
                 #self.logger.info (sorted_distriDuration)
                 graph = Pyasciigraph(graphsymbol='#')
+                myfile.write("----------------------- {}\n".format(context))
                 myfile.write("Timing for parts : {}\n".format(part))
                 for line in  graph.graph(part, sorted_distriDuration):
                     myfile.write("{}\n".format(line.encode('ascii','ignore').decode('utf-8')))
                 #self.logger.info(line.encode('ascii','ignore').decode('utf-8'))
         myfile.close()
-        with  open(myConfig['DEBUG']['PARTS']['TRACER']['FILE'], "w+") as myfile:
+        with  open(myConfig['DEBUG']['PARTS']['TRACER']['FILE'], "a+") as myfile:
+            myfile.write("----------------------- {}\n".format(context))
             for evt in  timeline:
                 myfile.write("{0} {1} {2} {3}\n".format(evt['ts'], evt['thread'], evt['tag'], evt['state']))
             myfile.close()
+
+    def resetPerf(self):
+        global distriDuration
+        global timeline
+        distriDuration = {}
+        timeline = {}
 
     

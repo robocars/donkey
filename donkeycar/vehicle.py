@@ -100,8 +100,7 @@ class Vehicle():
 
                 sleep_time = 1.0 / rate_hz - (time.time() - start_time)
                 if sleep_time > 0.0:
-                    with dk.perfmon.MeasureDuration('mainLoopSleep') as m:
-                        time.sleep(sleep_time)
+                    time.sleep(sleep_time)
 
         except KeyboardInterrupt:
             pass
