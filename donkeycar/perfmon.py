@@ -101,6 +101,6 @@ class PerfReportManager:
         global distriDuration
         global timeline
         distriDuration = {}
-        timeline = {}
+        timeline = []
 
     
