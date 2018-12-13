@@ -46,7 +46,8 @@ class PiCamera(BaseCamera):
 
 
     def run(self):
-        f = next(self.stream)
+        with dk.perfmon.MeasureDuration('RaspiCam') as m:
+            f = next(self.stream)
         frame = f.array
         self.rawCapture.truncate(0)
         return frame
