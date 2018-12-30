@@ -154,6 +154,8 @@ class LocalWebController(tornado.web.Application):
         #logger.info('LocalWebServer : drive_mode set to {}'.format(self.mode))
         return self.angle, self.throttle, self.mode, self.recording
 
+    def gracefull_shutdown(self):
+        pass
 
 class DriveAPI(tornado.web.RequestHandler):
 
