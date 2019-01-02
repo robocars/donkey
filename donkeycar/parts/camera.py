@@ -79,7 +79,7 @@ class Webcam(BaseCamera):
         self.logger = logging.getLogger(myConfig['DEBUG']['PARTS']['CAMERA']['NAME'])
         self.logger.setLevel(CONFIG2LEVEL[myConfig['DEBUG']['PARTS']['CAMERA']['LEVEL']])
 
-        self.cam = cv2.VideoCapture(0)
+        self.cam = cv2.VideoCapture(0+cv2.CAP_CAMV4L2)
         self.cam.set(cv2.CAP_PROP_FRAME_WIDTH,resolution[1])
         self.cam.set(cv2.CAP_PROP_FRAME_HEIGHT,resolution[0])
         self.cam.set(cv2.CAP_PROP_FPS, fps)
