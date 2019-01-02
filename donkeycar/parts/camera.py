@@ -74,17 +74,22 @@ class PiCamera(BaseCamera):
         self.camera.close()
 
 class Webcam(BaseCamera):
-    def init_cam (self, resolution = (160, 120), fps=60):
+    def init_cam (self, resolution = (160, 120), fps=60, async=True):
         
         self.logger = logging.getLogger(myConfig['DEBUG']['PARTS']['CAMERA']['NAME'])
         self.logger.setLevel(CONFIG2LEVEL[myConfig['DEBUG']['PARTS']['CAMERA']['LEVEL']])
-
-        self.cam = cv2.VideoCapture(0+cv2.CAP_V4L2)
+        self.async = async
+        if self.async:
+            self.cam = VideoCaptureAsync(0)
+        else:
+            self.cam = cv2.VideoCapture(0+cv2.CAP_V4L2)
         self.cam.set(cv2.CAP_PROP_FRAME_WIDTH,resolution[1])
         self.cam.set(cv2.CAP_PROP_FRAME_HEIGHT,resolution[0])
         self.cam.set(cv2.CAP_PROP_FPS, fps)
         self.resolution = resolution
         self.fps = fps
+        if self.async:
+            self.cam.start()
 
     def __init__(self, resolution = (160, 120), fps=60, framerate = 20):
 
@@ -143,6 +148,8 @@ class Webcam(BaseCamera):
         # indicate that the thread should be stopped
         self.on = False
         self.logger.info('stoping Webcam')
+        if self.async:
+            self.cam.stop()
         time.sleep(.5)
 
 class MockCamera(BaseCamera):
