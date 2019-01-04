@@ -60,7 +60,7 @@ class Txserial():
         try:
             self.ser = serial.Serial(
 
-                port='/dev/serial0',
+                port=myConfig['TX']['TX_SERIAL'],
                 baudrate = 115200,
                 parity=serial.PARITY_NONE,
                 stopbits=serial.STOPBITS_ONE,
