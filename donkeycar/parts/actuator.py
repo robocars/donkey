@@ -17,7 +17,7 @@ class PCA9685:
     PWM motor controler using PCA9685 boards. 
     This is used for most RC Cars
     '''
-    def __init__(self, channel, frequency=60, , **kwargs):
+    def __init__(self, channel, frequency=60, **kwargs):
         import Adafruit_PCA9685
         # Initialise the PCA9685 using the default address (0x40).
         self.pwm = Adafruit_PCA9685.PCA9685(, **kwargs)
