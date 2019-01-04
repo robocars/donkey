@@ -238,13 +238,13 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
 
     if cfg.USE_PWM_ACTUATOR:
         logger.info("Init Actuator part")
-        steering_controller = PCA9685(cfg.STEERING_CHANNEL)
+        steering_controller = PCA9685(channel=cfg.STEERING_CHANNEL, bus=cfg.STEERING_I2C_BUS)
 
         steering = PWMSteering(controller=steering_controller,
                             left_pulse=cfg.STEERING_LEFT_PWM,
                             right_pulse=cfg.STEERING_RIGHT_PWM)
 
-        throttle_controller = PCA9685(cfg.THROTTLE_CHANNEL)
+        throttle_controller = PCA9685(channel=cfg.THROTTLE_CHANNEL, bus=cfg.THROTTLE_I2C_BUS)
         throttle = PWMThrottle(controller=throttle_controller)
 
         V.add(steering, inputs=['angle'])
