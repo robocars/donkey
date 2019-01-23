@@ -46,6 +46,7 @@ class PWMSteering:
         self.controller = controller
         self.left_pulse = left_pulse
         self.right_pulse = right_pulse
+        self.perflogger = dk.perfmon.TaskCycle('SteeringOutput')
 
     def run(self, angle):
         #map absolute angle to angle that vehicle can implement.
@@ -56,7 +57,7 @@ class PWMSteering:
 #        print ("PWMSteering pulse="+str(pulse))
         self.logger.debug('Output angle pulse= {:03.0f}'.format(pulse))
         dk.perfmon.LogEvent('ActuatorSteering-setPulse')
-        dk.perfmon.TaskCycle('SteeringOutput').LogCycle()
+        self.perflogger.LogCycle()
         self.controller.set_pulse(pulse)
 
     def shutdown(self):
@@ -83,6 +84,7 @@ class PWMThrottle:
         self.controller.set_pulse(myConfig['ACTUATOR']['THROTTLE_STOPPED_PWM'])
         self.fullspeed_hysteresis = 0
         self.brake_hysteresis = 0
+        self.perflogger = dk.perfmon.TaskCycle('ThrottleOutput')
         time.sleep(1)
 
     def reloadKick(self):
@@ -158,7 +160,7 @@ class PWMThrottle:
 
         self.logger.debug('Output throttle pulse= {:03.0f}'.format(pulse))
         dk.perfmon.LogEvent('ActuatorThrottle-setPulse')
-        dk.perfmon.TaskCycle('ThrottleOutput').LogCycle()
+        self.perflogger.LogCycle()
         self.controller.set_pulse(pulse)
         
     def shutdown(self):

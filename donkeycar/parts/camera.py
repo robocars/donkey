@@ -97,7 +97,7 @@ class Webcam(BaseCamera):
         # if the thread should be stopped
         self.frame = None
         self.on = True
-
+        self.perflogger = dk.perfmon.TaskCycle('WebCam')
         self.logger.info('WebcamVideoStream loaded.. .warming camera')
 
         time.sleep(2)
@@ -121,7 +121,7 @@ class Webcam(BaseCamera):
             start = datetime.now()
 
             with dk.perfmon.TaskDuration('WebCam') as m:
-                dk.perfmon.TaskCycle('WebCam').LogCycle()
+                self.perflogger.LogCycle()
                 ret, snapshot = self.cam.read()
             self.logger.debug("New image acquired")
             if ret:

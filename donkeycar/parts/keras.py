@@ -83,6 +83,7 @@ class KerasPilot():
 class KerasCategorical(KerasPilot):
     def __init__(self, model=None, *args, **kwargs):
         super(KerasCategorical, self).__init__(*args, **kwargs)
+        self.perflogger = dk.perfmon.TaskCycle('Model Predict')
         if model:
             self.model = model
         else:
@@ -91,7 +92,7 @@ class KerasCategorical(KerasPilot):
     def run(self, img_arr):
         img_arr = img_arr.reshape((1,) + img_arr.shape)
         with dk.perfmon.TaskDuration('Model Predict') as m:
-            dk.perfmon.TaskCycle('Model Predict').LogCycle()
+            self.perflogger.LogCycle()
             angle_binned, throttle, fullspeed_binned, brake_binned = self.model.predict(img_arr)
         #print('throttle', throttle)
         #angle_certainty = max(angle_binned[0])
