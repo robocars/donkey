@@ -75,7 +75,7 @@ class TaskCycle:
     def LogCycle(self):
         ts = time.time()
         if (self.last != None):
-            cycle = ts-self.last
+            cycle = round(ts-self.last*1000)
             if not (keys_exists(distriCycle, self.tag)):
                 distriCycle[self.tag]={}
             if keys_exists(distriCycle, self.tag, cycle):
