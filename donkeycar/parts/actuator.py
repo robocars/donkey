@@ -56,6 +56,7 @@ class PWMSteering:
 #        print ("PWMSteering pulse="+str(pulse))
         self.logger.debug('Output angle pulse= {:03.0f}'.format(pulse))
         dk.perfmon.LogEvent('ActuatorSteering-setPulse')
+        dk.perfmon.TaskCycle('SteeringOutput').LogCycle()
         self.controller.set_pulse(pulse)
 
     def shutdown(self):
@@ -157,6 +158,7 @@ class PWMThrottle:
 
         self.logger.debug('Output throttle pulse= {:03.0f}'.format(pulse))
         dk.perfmon.LogEvent('ActuatorThrottle-setPulse')
+        dk.perfmon.TaskCycle('ThrottleOutput').LogCycle()
         self.controller.set_pulse(pulse)
         
     def shutdown(self):

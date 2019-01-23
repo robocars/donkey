@@ -8,6 +8,7 @@ from donkeycar.parts.configctrl import myConfig, CONFIG2LEVEL
 from ascii_graph import Pyasciigraph
 
 distriDuration = {}
+distriDuration = {}
 timeline = []
 
 def timelineAddEvent (tag, state):
@@ -42,7 +43,7 @@ def keys_exists(element, *keys):
 def LogEvent(tag):
     timelineAddEvent(tag, 'evt')
 
-class MeasureDuration:
+class TaskDuration:
     def __init__(self, tag):
         self.tag = tag
         self.start = None
@@ -65,6 +66,24 @@ class MeasureDuration:
             #distri[self.tag]['max']=duration
         #newmax = max(distri[self.tag]['max'], duration)
         #distri[self.tag]['max']=newmax
+
+class TaskCycle:
+    def __init__(self, tag):
+        self.tag = tag
+        self.last = None
+
+    def LogCycle(self):
+        ts = time.time()
+        if (self.last != None):
+            cycle = ts-self.last
+            if not (keys_exists(distriCycle, self.tag)):
+                distriCycle[self.tag]={}
+            if keys_exists(distriCycle, self.tag, cycle):
+                distriCycle[self.tag][cycle]+=1
+            else:
+                distriCycle[self.tag][cycle]=1
+        self.last = ts
+        return self
 
 class PerfReportManager:
     def __init__(self):

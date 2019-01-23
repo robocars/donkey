@@ -46,7 +46,7 @@ class PiCamera(BaseCamera):
 
 
     def run(self):
-        with dk.perfmon.MeasureDuration('RaspiCam') as m:
+        with dk.perfmon.TaskDuration('RaspiCam') as m:
             f = next(self.stream)
         frame = f.array
         self.rawCapture.truncate(0)
@@ -120,7 +120,8 @@ class Webcam(BaseCamera):
         while self.on:
             start = datetime.now()
 
-            with dk.perfmon.MeasureDuration('WebCam') as m:
+            with dk.perfmon.TaskDuration('WebCam') as m:
+                dk.perfmon.TaskCycle('WebCam').LogCycle()
                 ret, snapshot = self.cam.read()
             self.logger.debug("New image acquired")
             if ret:
