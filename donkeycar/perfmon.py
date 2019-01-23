@@ -8,7 +8,7 @@ from donkeycar.parts.configctrl import myConfig, CONFIG2LEVEL
 from ascii_graph import Pyasciigraph
 
 distriDuration = {}
-distriDuration = {}
+distriCycle = {}
 timeline = []
 
 def timelineAddEvent (tag, state):
@@ -92,23 +92,33 @@ class PerfReportManager:
         self.logger.setLevel(CONFIG2LEVEL[myConfig['DEBUG']['PARTS']['PERFMON']['LEVEL']])
 
     
-    def getSorted(self, tag):
+    def getSortedDuration(self, tag):
             return (sorted(distriDuration[tag].items(), key=lambda kv: kv[0]))
+
+    def getSortedCycle(self, tag):
+            return (sorted(distriCycle[tag].items(), key=lambda kv: kv[0]))
 
     def dumptAll(self, context=""):
         global distriDuration
         self.logger.info("Dump all perfmon recorded timings")
         with  open(myConfig['DEBUG']['PARTS']['PERFMON']['FILE'], "a+") as myfile:
             for part in distriDuration:
-                sorted_distriDuration = self.getSorted(part)
+                sorted_distriDuration = self.getSortedDuration(part)
                 #self.logger.info('Timing for parts :'+part)
                 #self.logger.info (sorted_distriDuration)
                 graph = Pyasciigraph(graphsymbol='#')
                 myfile.write("----------------------- {}\n".format(context))
-                myfile.write("Timing for parts : {}\n".format(part))
+                myfile.write("Duration Timing for parts : {}\n".format(part))
                 for line in  graph.graph(part, sorted_distriDuration):
                     myfile.write("{}\n".format(line.encode('ascii','ignore').decode('utf-8')))
                 #self.logger.info(line.encode('ascii','ignore').decode('utf-8'))
+            for part in distriCycle:
+                sorted_distriCycle = self.getSortedCycle(part)
+                graph = Pyasciigraph(graphsymbol='#')
+                myfile.write("----------------------- {}\n".format(context))
+                myfile.write("Cycle Timing for parts : {}\n".format(part))
+                for line in  graph.graph(part, sorted_distriCycle):
+                    myfile.write("{}\n".format(line.encode('ascii','ignore').decode('utf-8')))
         myfile.close()
         with  open(myConfig['DEBUG']['PARTS']['TRACER']['FILE'], "a+") as myfile:
             myfile.write("----------------------- {}\n".format(context))
