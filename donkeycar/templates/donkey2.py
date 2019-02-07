@@ -138,8 +138,8 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
 
         actionctr = TxAuxCh()
         V.add(actionctr,
-          inputs=['user/mode', 'ch5', 'ch6', 'recording'],
-          outputs=['user/mode', 'flag', 'recording'],
+          inputs=['user/mode', 'vehicle_armed', 'ch5', 'ch6', 'recording'],
+          outputs=['user/mode', 'vehicle_armed', 'flag', 'recording'],
           threaded=False)
 
     else:        

@@ -17,14 +17,23 @@ class TxAuxCh(object):
         self.user_mode = 'user'
         self.ch5 = False
         self.ch6 = False
+        self.vehicle_armed = False
         self.recording = False
         self.flag = ""
+        self.armed_ph1 = False
+        self.armed_ph2 = False
 
     def run_threaded(self):
         raise Exception("We expect for this part to be run with the threaded=False argument.")
         return False
 
-    def run(self, user_mode, ch5, ch6, recording):
+    def run(self, user_mode, vehicle_armed, ch5, ch6, recording):
+
+        if (vehicle_armed != None):
+            self.vehicle_armed = vehicle_armed
+        else:
+            logger.info('Vehicule Disarmed')
+            self.vehicle_armed = False
 
         #ch6 is used to switch manual/autonomous driving
         if (ch6 != self.ch6):
@@ -36,7 +45,9 @@ class TxAuxCh(object):
                 logger.info('Ch6 - switch to Off')
                 logger.info('ChAux : Switch drive mode to user')
                 self.user_mode = 'user'
+        #ch5 has two functions, Mark images when drigin manually, or order record when driving autonomously 
         if ((ch5 != self.ch5) or (ch6 != self.ch6)):
+                if (self.vehicle_armed == False):
                 if (ch5 == True):
                     logger.info('Ch5 - switch to On')
                     if (self.user_mode == 'user'):
@@ -53,6 +64,16 @@ class TxAuxCh(object):
                     else:
                         logger.info('ChAux - switch recording to Off')
                         self.recording = False
+                if (ch5 == True and self.ch5==False):
+                    logger.info('ChAux - armed_ph1')
+                    self.armed_ph1 = True
+                if (ch5 == False and self.ch5==True):
+                    logger.info('ChAux - armed_ph2')
+                    self.armed_ph2 = True
+
+        if (self.armed_ph1 == True and self.armed_ph2 == True):
+            logger.info('Vehicule Armed')
+            self.vehicle_armed = True
 
         self.ch5 = ch5
         self.ch6 = ch6
