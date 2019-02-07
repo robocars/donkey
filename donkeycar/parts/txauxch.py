@@ -77,7 +77,7 @@ class TxAuxCh(object):
 
         self.ch5 = ch5
         self.ch6 = ch6
-        return self.user_mode, self.flag, self.recording or recording
+        return self.user_mode, self.vehicle_armed, self.flag, self.recording or recording
     
     def shutdown(self):
         self.running = False
