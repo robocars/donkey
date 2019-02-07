@@ -47,7 +47,6 @@ class TxAuxCh(object):
                 self.user_mode = 'user'
         #ch5 has two functions, Mark images when drigin manually, or order record when driving autonomously 
         if ((ch5 != self.ch5) or (ch6 != self.ch6)):
-                if (self.vehicle_armed == False):
                 if (ch5 == True):
                     logger.info('Ch5 - switch to On')
                     if (self.user_mode == 'user'):
@@ -64,12 +63,13 @@ class TxAuxCh(object):
                     else:
                         logger.info('ChAux - switch recording to Off')
                         self.recording = False
-                if (ch5 == True and self.ch5==False):
-                    logger.info('ChAux - armed_ph1')
-                    self.armed_ph1 = True
-                if (ch5 == False and self.ch5==True):
-                    logger.info('ChAux - armed_ph2')
-                    self.armed_ph2 = True
+                if (self.vehicle_armed == False):
+                    if (ch5 == True and self.ch5==False):
+                        logger.info('ChAux - armed_ph1')
+                        self.armed_ph1 = True
+                    if (ch5 == False and self.ch5==True):
+                        logger.info('ChAux - armed_ph2')
+                        self.armed_ph2 = True
 
         if (self.armed_ph1 == True and self.armed_ph2 == True):
             logger.info('Vehicule Armed')
