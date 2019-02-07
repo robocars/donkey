@@ -71,7 +71,7 @@ class TxAuxCh(object):
                         logger.info('ChAux - armed_ph2')
                         self.armed_ph2 = True
 
-        if (self.armed_ph1 == True and self.armed_ph2 == True):
+        if (self.vehicle_armed = False and self.armed_ph1 == True and self.armed_ph2 == True):
             logger.info('Vehicule Armed')
             self.vehicle_armed = True
 

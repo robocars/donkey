@@ -91,7 +91,7 @@ class PWMThrottle:
         self.kick = [myConfig['ACTUATOR']['THROTTLE_KICK_PULSE']]*myConfig['ACTUATOR']['THROTTLE_KICK_LENGTH']
         self.logger.debug('Kicker reloaded')
 
-    def run(self, throttle, mode=None, fullspeed=None, brake=None):
+    def run(self, throttle, mode=None, vehicle_armed=None, fullspeed=None, brake=None):
 
         global myConfig
 
@@ -161,7 +161,10 @@ class PWMThrottle:
         self.logger.debug('Output throttle pulse= {:03.0f}'.format(pulse))
         dk.perfmon.LogEvent('ActuatorThrottle-setPulse')
         self.perflogger.LogCycle()
-        self.controller.set_pulse(pulse)
+        if (vehicle_armed == True):
+            self.controller.set_pulse(pulse)
+        else:
+            self.controller.set_pulse(0)
         
     def shutdown(self):
         self.controller.set_pulse(0) #stop vehicle

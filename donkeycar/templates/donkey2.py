@@ -248,7 +248,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
         throttle = PWMThrottle(controller=throttle_controller)
 
         V.add(steering, inputs=['angle'])
-        V.add(throttle, inputs=['throttle', 'user/mode', 'pilot/fullspeed', 'pilot/brake'])
+        V.add(throttle, inputs=['throttle', 'user/mode', 'vehicle_armed', 'pilot/fullspeed', 'pilot/brake'])
 
     if cfg.BATTERY_USE_MONITOR:
         logger.info("Init Battery Monitor part")
