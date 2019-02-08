@@ -153,6 +153,7 @@ class TxController(object):
         self.recording = False
         self.auto_record_on_throttle = auto_record_on_throttle
         self.tx = None
+        self.vehicle_armed = None
         self.verbose = verbose
 
     def on_throttle_changes(self):
@@ -185,7 +186,7 @@ class TxController(object):
             time.sleep(5)
 
         while self.running:
-            throttle_tx, steering_tx, ch5_tx, ch6_tx, speedometer, freq_tx = self.tx.poll(self.mode)
+            throttle_tx, steering_tx, ch5_tx, ch6_tx, speedometer, freq_tx = self.tx.poll(self.mode, self.vehicle_armed)
             if throttle_tx > myConfig['TX']['TX_THROTTLE_TRESH']:
                 self.throttle = map_range(throttle_tx, myConfig['TX']['TX_THROTTLE_MIN'], myConfig['TX']['TX_THROTTLE_MAX'], -1, 1)
             else:
@@ -208,8 +209,9 @@ class TxController(object):
             self.logger.debug('angle= {:01.2f} throttle= {:01.2f} speed= {:01.2f}'.format (self.angle, self.throttle, self.speedometer))
             time.sleep(self.poll_delay)
 
-    def run_threaded(self, mode=None, img_arr=None, annoted_img=None):
+    def run_threaded(self, mode=None, vehicle_armed=None, img_arr=None, annoted_img=None):
         self.mode = mode
+        self.vehicle_armed = vehicle_armed
         if (annoted_img is not None):
             self.img_arr = annoted_img
         else:
