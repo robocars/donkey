@@ -132,7 +132,7 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
         ctr = TxController(verbose = cfg.TX_VERBOSE
                            )
         V.add(ctr,
-              inputs=['user/mode', 'cam/image_array', 'pilot/annoted_img'],
+              inputs=['user/mode', 'vehicle_armed', 'cam/image_array', 'pilot/annoted_img'],
               outputs=['user/angle', 'user/throttle', 'recording', 'ch5', 'ch6', 'speedometer'],
               threaded=True)
 

@@ -75,7 +75,7 @@ class Txserial():
 
         return True
 
-    def poll(self, mode):
+    def poll(self, mode, vehicle_armed=None):
         '''
         query the state of the joystick, returns button which was pressed, if any,
         and axis which was moved, if any. button_state will be None, 1, or 0 if no changes,
@@ -93,7 +93,10 @@ class Txserial():
         msg=""
 
         if (Txserial.counter%10 == 0):
-            self.ledStatus(mode)       
+            if (vehicle_armed==None or vehicle_armed==False):
+                self.ledStatus("disarmed")       
+            else:
+                self.ledStatus(mode)       
         Txserial.counter += 1
 
         try:

@@ -161,7 +161,7 @@ class PWMThrottle:
         self.logger.debug('Output throttle pulse= {:03.0f}'.format(pulse))
         dk.perfmon.LogEvent('ActuatorThrottle-setPulse')
         self.perflogger.LogCycle()
-        if (vehicle_armed == True):
+        if (vehicle_armed == True or myConfig['ACTUATOR']['USE_ARM_LOGIC']==0):
             self.controller.set_pulse(pulse)
         else:
             self.controller.set_pulse(0)
