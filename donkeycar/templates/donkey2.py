@@ -59,6 +59,7 @@ import time
 ctr = None
 throttle = None
 V = None
+perfMngt : None
 
 def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
 
@@ -340,10 +341,15 @@ class GracefulKiller:
     def __init__(self):
         signal.signal(signal.SIGINT, self.exit_gracefully)
         signal.signal(signal.SIGTERM, self.exit_gracefully)
+        signal.signal(signal.SIGUSR1, self.resetPerfStats)
 
+    def resetPerfStats(self,signum, frame):
+        perfMngt.resetPerf("SIGUSR1")
+        
     def exit_gracefully(self,signum, frame):
         softExit()
         self.kill_now = True
+
 
 def log_exception(*args):
     print ('Got exception %s' % (args,))

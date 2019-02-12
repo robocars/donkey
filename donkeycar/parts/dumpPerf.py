@@ -30,11 +30,14 @@ class dumpPerf(object):
         self.t.start()
         self.dd.dumptAll("timeout "+self.user_mode)
 
+    def resetPerf (self, reason):
+        self.dd.dumptAll(reason)
+        self.dd.resetPerf()
+
     def run(self, user_mode):
 
         if (self.user_mode != user_mode):
-            self.dd.dumptAll("switching to "+user_mode)
-            self.dd.resetPerf()
+            self.resetPerf("switching to "+user_mode)
             self.user_mode = user_mode
 
         return 
