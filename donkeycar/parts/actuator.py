@@ -164,7 +164,7 @@ class PWMThrottle:
         if (vehicle_armed == True or myConfig['ACTUATOR']['USE_ARM_LOGIC']==0):
             self.controller.set_pulse(pulse)
         else:
-            self.controller.set_pulse(0)
+            self.controller.set_pulse(1500)
         
     def shutdown(self):
         self.controller.set_pulse(0) #stop vehicle
