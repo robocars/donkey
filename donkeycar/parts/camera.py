@@ -84,14 +84,6 @@ class Webcam(BaseCamera):
         self.cam.set(cv2.CAP_PROP_FRAME_WIDTH,resolution[1])
         self.cam.set(cv2.CAP_PROP_FRAME_HEIGHT,resolution[0])
         self.cam.set(cv2.CAP_PROP_FPS, fps)
-        if (myConfig['CAMERA']['AUTO_EXP'] == 1):
-            subprocess.run(["v4l2-ctl", "-d /dev/video0 -c exposure_auto=3"])             
-            self.logger.info('Exp mode : auto')
-        else:
-            subprocess.run(["v4l2-ctl", "-d /dev/video0 -c exposure_auto=1"])
-            time.sleep(2)             
-            subprocess.run(["v4l2-ctl", "-d /dev/video0 -c exposure_absolute="+str(myConfig['CAMERA']['EXP'])])             
-            self.logger.info('Exp mode : manual ('+str(myConfig['CAMERA']['EXP'])+')')
         
         self.resolution = resolution
         self.fps = fps
@@ -118,6 +110,15 @@ class Webcam(BaseCamera):
             os._exit(1)
             time.sleep(2)
 
+        if (myConfig['CAMERA']['AUTO_EXP'] == 1):
+            subprocess.run(["v4l2-ctl", "-d /dev/video0 -c exposure_auto=3"])             
+            self.logger.info('Exp mode : auto')
+        else:
+            subprocess.run(["v4l2-ctl", "-d /dev/video0 -c exposure_auto=1"])
+            time.sleep(2)             
+            subprocess.run(["v4l2-ctl", "-d /dev/video0 -c exposure_absolute="+str(myConfig['CAMERA']['EXP'])])             
+            self.logger.info('Exp mode : manual ('+str(myConfig['CAMERA']['EXP'])+')')
+
         check_fps = self.cam.get(cv2.CAP_PROP_FPS)
         self.logger.info("Camera read configuration:")
         self.logger.info("Camera Width :"+str(self.cam.get(cv2.CAP_PROP_FRAME_WIDTH)))
@@ -126,6 +127,7 @@ class Webcam(BaseCamera):
         self.logger.info("Camera backend :"+str(self.cam.get(cv2.CAP_PROP_MODE)))
         self.logger.info("Camera Exp :"+str(self.cam.get(cv2.CAP_PROP_EXPOSURE)))
         self.logger.info("Camera Auto Exp :"+str(self.cam.get(cv2.CAP_PROP_AUTO_EXPOSURE)))
+
     def update(self):
         from datetime import datetime, timedelta
 
