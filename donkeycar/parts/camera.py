@@ -87,7 +87,8 @@ class Webcam(BaseCamera):
         if (myConfig['CAMERA']['AUTO_EXP'] == 1):
             subprocess.run(["v4l2-ctl", "-d /dev/video0 -c exposure_auto=3"])             
         else:
-            subprocess.run(["v4l2-ctl", "-d /dev/video0 -c exposure_auto=1"])             
+            subprocess.run(["v4l2-ctl", "-d /dev/video0 -c exposure_auto=1"])
+            time.sleep(2)             
             subprocess.run(["v4l2-ctl", "-d /dev/video0 -c exposure_absolute="+str(myConfig['CAMERA']['EXP'])])             
         self.resolution = resolution
         self.fps = fps
