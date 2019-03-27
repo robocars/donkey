@@ -110,14 +110,9 @@ class Webcam(BaseCamera):
             os._exit(1)
             time.sleep(2)
 
-        if (myConfig['CAMERA']['AUTO_EXP'] == 1):
-            os.system("/usr/bin/v4l2-ctl -d /dev/video0 -c exposure_auto=3")             
-            self.logger.info('Exp mode : auto')
-        else:
-            os.system("/usr/bin/v4l2-ctl -d /dev/video0 -c exposure_auto=1")
-            time.sleep(2)             
-            os.system("/usr/bin/v4l2-ctl -d /dev/video0 -c exposure_absolute="+str(myConfig['CAMERA']['EXP']))             
-            self.logger.info('Exp mode : manual ('+str(myConfig['CAMERA']['EXP'])+')')
+        if (len(myConfig['CAMERA']['POSTFIX_SCRIPT']) > 0):
+            self.logger.info('Postfix setting script called :'+myConfig['CAMERA']['POSTFIX_SCRIPT'])
+            os.system(myConfig['CAMERA']['POSTFIX_SCRIPT'])             
 
         check_fps = self.cam.get(cv2.CAP_PROP_FPS)
         self.logger.info("Camera read configuration:")
