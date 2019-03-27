@@ -229,6 +229,10 @@ def drive(cfg, model_path=None, use_joystick=False, use_tx=False):
                 return pilot_angle, user_throttle
             else:
                 logger.debug('drive_mode: Pilot return angle={:01.2f} throttle={:01.2f}'.format(pilot_angle, pilot_throttle))
+                if (pilot_angle>myConfig['POST_PILOT']['STEERING_TRIM_RIGHT_THRES']):
+                    pilot_angle=pilot_angle*myConfig['POST_PILOT']['STEERING_TRIM_RIGHT_FACTOR']
+                if (pilot_angle<-myConfig['POST_PILOT']['STEERING_TRIM_LEFT_THRES']):
+                    pilot_angle=pilot_angle*myConfig['POST_PILOT']['STEERING_TRIM_LEFT_FACTOR']
                 return pilot_angle, pilot_throttle
 
     drive_mode_part = Lambda(drive_mode)

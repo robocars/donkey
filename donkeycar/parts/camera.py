@@ -6,6 +6,7 @@ import glob
 import cv2
 
 import donkeycar as dk
+import subprocess
 
 from donkeycar.parts.configctrl import myConfig, CONFIG2LEVEL
 
@@ -83,6 +84,11 @@ class Webcam(BaseCamera):
         self.cam.set(cv2.CAP_PROP_FRAME_WIDTH,resolution[1])
         self.cam.set(cv2.CAP_PROP_FRAME_HEIGHT,resolution[0])
         self.cam.set(cv2.CAP_PROP_FPS, fps)
+        if (myConfig['CAMERA']['AUTO_EXP'] == 1):
+            subprocess.run(["v4l2-ctl", "-d /dev/video0 -c exposure_auto=3"])             
+        else:
+            subprocess.run(["v4l2-ctl", "-d /dev/video0 -c exposure_auto=1"])             
+            subprocess.run(["v4l2-ctl", "-d /dev/video0 -c exposure_absolute="+myConfig['CAMERA']['EXP']])             
         self.resolution = resolution
         self.fps = fps
 
@@ -113,7 +119,9 @@ class Webcam(BaseCamera):
         self.logger.info("Camera Width :"+str(self.cam.get(cv2.CAP_PROP_FRAME_WIDTH)))
         self.logger.info("Camera Height :"+str(self.cam.get(cv2.CAP_PROP_FRAME_HEIGHT)))
         self.logger.info("Camera FPS :"+str(check_fps))
-
+        self.logger.info("Camera backend :"+str(self.cam.get(cv2.CAP_PROP_MODE)))
+        self.logger.info("Camera Exp :"+str(self.cam.get(cv2.CAP_PROP_EXPOSURE)))
+        self.logger.info("Camera Auto Exp :"+str(self.cam.get(cv2.CAP_PROP_AUTO_EXPOSURE)))
     def update(self):
         from datetime import datetime, timedelta
 
