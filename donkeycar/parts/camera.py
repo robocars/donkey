@@ -92,7 +92,8 @@ class Webcam(BaseCamera):
             time.sleep(2)             
             subprocess.run(["v4l2-ctl", "-d /dev/video0 -c exposure_absolute="+str(myConfig['CAMERA']['EXP'])])             
             self.logger.info('Exp mode : manual ('+str(myConfig['CAMERA']['EXP'])+')')
-    self.resolution = resolution
+        
+        self.resolution = resolution
         self.fps = fps
 
     def __init__(self, resolution = (160, 120), fps=60, framerate = 20):
