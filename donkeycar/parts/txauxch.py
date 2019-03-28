@@ -71,7 +71,7 @@ class TxAuxCh(object):
                         logger.info('ChAux - armed_ph1')
                         self.armed_ph1 = True
                         self.arm_ph1ts = time.time()
-                    if (ch5 == False and self.armed_ph1 = True):
+                    if (ch5 == False and self.armed_ph1 == True):
                         if ((time.time() - start_time) < 2):
                             logger.info('ChAux - armed_ph2')
                             self.armed_ph2 = True
