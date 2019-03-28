@@ -22,6 +22,8 @@ class TxAuxCh(object):
         self.flag = ""
         self.armed_ph1 = False
         self.armed_ph2 = False
+        self.arm_ph1ts = 0
+
 
     def run_threaded(self):
         raise Exception("We expect for this part to be run with the threaded=False argument.")
@@ -68,13 +70,23 @@ class TxAuxCh(object):
                     if (ch5 == True):
                         logger.info('ChAux - armed_ph1')
                         self.armed_ph1 = True
-                    if (ch5 == False):
-                        logger.info('ChAux - armed_ph2')
-                        self.armed_ph2 = True
+                        self.arm_ph1ts = time.time()
+                    if (ch5 == False and self.armed_ph1 = True):
+                        if ((time.time() - start_time) < 2):
+                            logger.info('ChAux - armed_ph2')
+                            self.armed_ph2 = True
+                            if (self.vehicle_armed == False and self.armed_ph1 == True and self.armed_ph2 == True):
+                                logger.info('Vehicule Armed')
+                                self.vehicle_armed = True
+                            elif (self.vehicle_armed == True and self.armed_ph1 == True and self.armed_ph2 == True):
+                                logger.info('Vehicule Disarmed')
+                                self.vehicle_armed = False
+                        else :
+                            self.armed_ph2 = False
+                            self.armed_ph1 = False
 
-        if (self.vehicle_armed == False and self.armed_ph1 == True and self.armed_ph2 == True):
-            logger.info('Vehicule Armed')
-            self.vehicle_armed = True
+
+
 
         self.ch5 = ch5
         self.ch6 = ch6
