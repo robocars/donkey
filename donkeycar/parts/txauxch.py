@@ -49,41 +49,41 @@ class TxAuxCh(object):
                 self.user_mode = 'user'
         #ch5 has two functions, Mark images when drigin manually, or order record when driving autonomously 
         if ((ch5 != self.ch5) or (ch6 != self.ch6)):
-                if (self.vehicle_armed == True):
-                    if (ch5 == True):
-                        logger.info('Ch5 - switch to On')
-                        if (self.user_mode == 'user'):
-                            logger.info('ChAux - Switch Flag MK1 on')
-                            self.flag = "MK1"
-                        else:
-                            logger.info('ChAux - switch recording to On')
-                            self.recording = True
-                    if (ch5 == False):
-                        logger.info('Ch5 - switch to Off')
-                        if (self.user_mode == 'user'):
-                            logger.info('ChAux - Switch Flag off')
-                            self.flag = ""
-                        else:
-                            logger.info('ChAux - switch recording to Off')
-                            self.recording = False
-                else:
-                    if (ch5 == True):
-                        logger.info('ChAux - armed_ph1')
-                        self.armed_ph1 = True
-                        self.arm_ph1ts = time.time()
-                    if (ch5 == False and self.armed_ph1 == True):
-                        if ((time.time() - start_time) < 2):
-                            logger.info('ChAux - armed_ph2')
-                            self.armed_ph2 = True
-                            if (self.vehicle_armed == False and self.armed_ph1 == True and self.armed_ph2 == True):
-                                logger.info('Vehicule Armed')
-                                self.vehicle_armed = True
-                            elif (self.vehicle_armed == True and self.armed_ph1 == True and self.armed_ph2 == True):
-                                logger.info('Vehicule Disarmed')
-                                self.vehicle_armed = False
-                        else :
-                            self.armed_ph2 = False
-                            self.armed_ph1 = False
+                if (ch5 == True):
+                    logger.info('Ch5 - switch to On')
+                    if (self.user_mode == 'user'):
+                        logger.info('ChAux - Switch Flag MK1 on')
+                        self.flag = "MK1"
+                    else:
+                        logger.info('ChAux - switch recording to On')
+                        self.recording = True
+                if (ch5 == False):
+                    logger.info('Ch5 - switch to Off')
+                    if (self.user_mode == 'user'):
+                        logger.info('ChAux - Switch Flag off')
+                        self.flag = ""
+                    else:
+                        logger.info('ChAux - switch recording to Off')
+                        self.recording = False
+
+                # Arm/Disarm logic
+                if (ch5 == True):
+                    logger.info('ChAux - armed_ph1')
+                    self.armed_ph1 = True
+                    self.arm_ph1ts = time.time()
+                if (ch5 == False and self.armed_ph1 == True):
+                    if ((time.time() - self.arm_ph1ts) < 2):
+                        logger.info('ChAux - armed_ph2')
+                        self.armed_ph2 = True
+                        if (self.vehicle_armed == False and self.armed_ph1 == True and self.armed_ph2 == True):
+                            logger.info('Vehicule Armed')
+                            self.vehicle_armed = True
+                        elif (self.vehicle_armed == True and self.armed_ph1 == True and self.armed_ph2 == True):
+                            logger.info('Vehicule Disarmed')
+                            self.vehicle_armed = False
+                    else :
+                        self.armed_ph2 = False
+                        self.armed_ph1 = False
 
 
 
