@@ -1,0 +1,6 @@
+#!/bin/sh
+. ~/.bashrc
+sudo /home/pi/CPUPerformance.sh
+sudo /home/pi/IRQAffinity.sh
+taskset 0x30 /usr/bin/python3 manage.py drive --tx --model=models/model_cat
+

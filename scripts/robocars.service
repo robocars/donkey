@@ -1,0 +1,19 @@
+[Unit]
+Description=donkey
+After=multi-user.target
+
+[Service]
+Type=idle
+WorkingDirectory=/home/pi/d2
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=donkey
+User=pi
+Group=pi
+Environment=NODE_ENV=production
+ExecStart=/home/pi/startDonkey > /home/pi/donkey.log 2>&1
+
+[Install]
+WantedBy=multi-user.target
+

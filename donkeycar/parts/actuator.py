@@ -99,7 +99,7 @@ class PWMThrottle:
             self.reloadKick()
 
         if (self.mode != "user" and mode == "user"):
-            self.brake_hysteresis = myConfig['ACTUATOR']['FULLSPEED_HYSTERESIS_LENGTH']
+            self.brake_hysteresis = myConfig['ACTUATOR']['BRAKE_HYSTERESIS_LENGTH']
 
         self.mode = mode
 
@@ -122,7 +122,7 @@ class PWMThrottle:
                     self.logger.debug('constant speed mode : fullspeed prediction = '+str(fullspeed) + ' brake_decision = '+str(brake))
                     if (brake > myConfig['ACTUATOR']['BRAKE_DECISION_THRESH']):
                         self.logger.debug('constant speed mode : brake')
-                        self.brake_hysteresis = myConfig['ACTUATOR']['FULLSPEED_HYSTERESIS_LENGTH']
+                        self.brake_hysteresis = myConfig['ACTUATOR']['BRAKE_HYSTERESIS_LENGTH']
                     elif (fullspeed > myConfig['ACTUATOR']['FULLSPEED_DECISION_THRESH']):
                         self.logger.debug('constant speed mode : fullspeed')
                         self.fullspeed_hysteresis = myConfig['ACTUATOR']['FULLSPEED_HYSTERESIS_LENGTH']
