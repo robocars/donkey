@@ -1,5 +1,5 @@
 [Unit]
-Description=donkey
+Description=robocars
 After=multi-user.target
 
 [Service]
@@ -8,7 +8,7 @@ WorkingDirectory=/home/pi/d2
 Restart=always
 StandardOutput=syslog
 StandardError=syslog
-SyslogIdentifier=donkey
+SyslogIdentifier=robocars
 User=pi
 Group=pi
 Environment=NODE_ENV=production
