@@ -1,5 +1,6 @@
 import os
 import time
+from multiprocessing import Process
 import numpy as np
 from PIL import Image
 import glob
@@ -124,26 +125,33 @@ class Webcam(BaseCamera):
         self.logger.info("Camera Exp :"+str(self.cam.get(cv2.CAP_PROP_EXPOSURE)))
         self.logger.info("Camera Auto Exp :"+str(self.cam.get(cv2.CAP_PROP_AUTO_EXPOSURE)))
 
+        self.p = Process(target=self.update_process, args=())
+        self.p.start()
+
+    def update_process(self)
+        start = datetime.now()
+
+        with dk.perfmon.TaskDuration('WebCam') as m:
+            self.perflogger.LogCycle()
+            ret, snapshot = self.cam.read()
+        self.logger.debug("New image acquired")
+        if ret:
+            self.frame = cv2.cvtColor(snapshot, cv2.COLOR_BGR2RGB)
+            # We don't need anymore this resizing, we configure the right resolution in the WebCam
+            #self.frame = cv2.resize(snapshot1,(160,120), interpolation = cv2.INTER_AREA)
+
+        stop = datetime.now()
+        s = 1 / self.framerate - (stop - start).total_seconds()
+        if s > 0:
+            time.sleep(s)
+
+
     def update(self):
         from datetime import datetime, timedelta
 
         while self.on:
-            start = datetime.now()
-
-            with dk.perfmon.TaskDuration('WebCam') as m:
-                self.perflogger.LogCycle()
-                ret, snapshot = self.cam.read()
-            self.logger.debug("New image acquired")
-            if ret:
-                self.frame = cv2.cvtColor(snapshot, cv2.COLOR_BGR2RGB)
-                # We don't need anymore this resizing, we configure the right resolution in the WebCam
-                #self.frame = cv2.resize(snapshot1,(160,120), interpolation = cv2.INTER_AREA)
-
-            stop = datetime.now()
-            s = 1 / self.framerate - (stop - start).total_seconds()
-            if s > 0:
-                time.sleep(s)
-
+            time.sleep(0.01)
+#            self.update_process()
         self.cam.release()
 
     def run_threaded(self):
@@ -154,6 +162,7 @@ class Webcam(BaseCamera):
         # indicate that the thread should be stopped
         self.on = False
         self.logger.info('stoping Webcam')
+        self.p.join()
         time.sleep(.5)
 
 class MockCamera(BaseCamera):
